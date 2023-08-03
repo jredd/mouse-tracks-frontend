@@ -9,11 +9,18 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { dbConfig } from './db.config';
 import { NgxIndexedDBModule } from 'ngx-indexed-db';
+import { HeaderComponent } from './components/header/header.component';
+import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
+import { HomeComponent } from './components/home/home.component';
+import { RouterModule, Routes } from '@angular/router';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HeaderComponent,
+    NavMenuComponent,
+    HomeComponent
   ],
   imports: [
     NgxIndexedDBModule.forRoot(dbConfig),
