@@ -6,28 +6,12 @@ import {Destination} from "../../app.interfaces";
 import {ActivatedRoute} from "@angular/router";
 import {FormGroup, FormControl, FormBuilder} from '@angular/forms';
 import { Validators } from '@angular/forms';
-// import {MAT_DATE_FORMATS} from "@angular/material/core";
 
-
-// export const MY_DATE_FORMATS = {
-//     parse: {
-//       dateInput: 'DD/MM/YYYY',
-//     },
-//     display: {
-//       dateInput: 'DD/MM/YYYY',
-//       monthYearLabel: 'MMMM YYYY',
-//       dateA11yLabel: 'LL',
-//       monthYearA11yLabel: 'MMMM YYYY'
-//     },
-// };
 
 @Component({
   selector: 'app-trip-planner',
   templateUrl: './trip-planner.component.html',
   styleUrls: ['./trip-planner.component.scss'],
-  // providers: [
-  //   { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
-  // ]
 })
 export class TripPlannerComponent implements OnInit {
 
@@ -36,7 +20,6 @@ export class TripPlannerComponent implements OnInit {
   trip?: Trip;
   tripId?: string | null;
   destinations: Destination[] = [];
-  // disableCreateButton = true;
 
   constructor(private route: ActivatedRoute, private tripService: TripService, private appService: AppService, fb: FormBuilder,) {
     this.fb = fb;
@@ -109,19 +92,18 @@ export class TripPlannerComponent implements OnInit {
           console.log('shit hit the fan')
         }
       } else {
-        // this.prepareCreateFormData()
         this.createTrip(this.prepareCreateFormData())
       }
     }
   }
 
   private formatDate(date: Date): string {
-  // Here you would convert your Date object to the format that your API expects.
-  // This is just an example, replace it with your actual date formatting logic.
-  return date.toISOString().slice(0,10);  // returns YYYY-MM-DD
-}
+    // Here you would convert your Date object to the format that your API expects.
+    // This is just an example, replace it with your actual date formatting logic.
+    return date.toISOString().slice(0,10);  // returns YYYY-MM-DD
+  }
 
-  private prepareUpdateFormData(): Trip | null {
+  prepareUpdateFormData(): Trip | null {
     if (this.trip) {
       const formData = this.editTrip.value;
       this.trip.title = formData.title
