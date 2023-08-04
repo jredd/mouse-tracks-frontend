@@ -1,0 +1,3 @@
+<mat-button-toggle-group #group="matButtonToggleGroup" (change)="onExperienceTypeChange($event)">
+  <mat-button-toggle *ngFor="let type of experienceTypes" [value]="type">{{type}}</mat-button-toggle>
+</mat-button-toggle-group>

@@ -1,9 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {HomeComponent} from "./components/home/home.component";
+import {TripDashboardComponent} from "./components/trip-dashboard/trip-dashboard.component";
+import {TripPlannerComponent} from "./components/trip-planner/trip-planner.component";
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: TripDashboardComponent },
+  { path: 'trip-planner', component: TripPlannerComponent },
+  { path: 'trip-planner/:id', component: TripPlannerComponent },
 ];
 
 @NgModule({

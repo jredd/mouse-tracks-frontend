@@ -1,0 +1,11 @@
+.mat-button-disabled {
+  color: gray !important;
+  background-color: lightgray !important;
+  /* Add any other styles you want for the disabled state */
+}
+
+.full-width {
+  width: 100% !important;
+}
+
+/*# sourceMappingURL=trip-planner.component.css.map */

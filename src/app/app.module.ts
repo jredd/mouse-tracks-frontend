@@ -11,21 +11,23 @@ import { dbConfig } from './db.config';
 import { NgxIndexedDBModule } from 'ngx-indexed-db';
 import { HeaderComponent } from './components/header/header.component';
 import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
-import { HomeComponent } from './components/home/home.component';
-import { RouterModule, Routes } from '@angular/router';
+import {HttpClientModule} from "@angular/common/http";
+import {TripDashboardModule} from "./components/trip-dashboard/trip-dashboard.module";
 
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    NavMenuComponent,
-    HomeComponent
+    NavMenuComponent
   ],
   imports: [
     NgxIndexedDBModule.forRoot(dbConfig),
+    TripDashboardModule,
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable
