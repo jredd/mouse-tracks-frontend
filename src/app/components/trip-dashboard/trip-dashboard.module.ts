@@ -7,16 +7,18 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { TripDashboardComponent } from "./trip-dashboard.component";
-import { TripPlannerComponent } from "../trip-planner/trip-planner.component";
 import { RouterModule } from "@angular/router";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
-import { ItineraryComponent } from "../itinerary/itinerary.component";
 import { MatCardModule } from "@angular/material/card";
-import { DateRangePipe } from "../../pipes/date-range.pipe";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+
+import { DateRangePipe } from "../../pipes/date-range.pipe";
+import { ItineraryComponent } from "../itinerary/itinerary.component";
+import { TripDashboardComponent } from "./trip-dashboard.component";
+import { TripPlannerComponent } from "../trip-planner/trip-planner.component";
+
 
 @NgModule({
   declarations: [

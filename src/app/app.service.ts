@@ -4,8 +4,10 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+
 import { environment } from '../environments/environment';
 import { Destination, Location, Land, Experience } from './store/';
+
 
 @Injectable({
   providedIn: 'root'
@@ -87,5 +89,4 @@ export class AppService {
       return of(result as T);
     };
   }
-
 }

@@ -3,6 +3,8 @@ import { Trip } from "./trip.interfaces";
 import * as tripActions from './trip.actions';
 
 
+export const tripFeatureKey = 'trip';
+
 export interface TripState {
   trips: Trip[];
   current_trip: Trip | null;
@@ -24,12 +26,8 @@ export const tripReducer = createReducer(
   on(tripActions.loadTrips, state => {
     return {...state, loading: true }
   }),
-
   on(tripActions.loadTripsSuccess, (state,  action) => {
-    const newState = {...state, loading: false, trips: action.trips};
-    console.log("trip reducer:", newState);
-    // console.log("reducer trips:", trips)
-    return newState;
+    return {...state, loading: false, trips: action.trips};
   }),
   on(tripActions.loadTripsFailure, (state, action) => ({
     ...state,
@@ -60,10 +58,7 @@ export const tripReducer = createReducer(
     const current_trip = state.trips.find(trip => trip.id === trip_id) || null;
     return { ...state, current_trip: current_trip, tripNotFoundInStore: !current_trip };
   }),
-
   on(tripActions.deactivateCurrentTrip, state => {
-    // Logic to deactivate or reset current_trip
     return { ...state, current_trip: null };
   })
-
 );

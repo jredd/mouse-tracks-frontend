@@ -4,10 +4,16 @@ import { catchError, map, mergeMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 import * as DestinationActions from './destination.actions';
-import {AppService} from "../../app.service";
+import { AppService } from "../../app.service";
+
 
 @Injectable()
 export class DestinationEffects {
+
+  constructor(
+    private actions$: Actions,
+    private appService: AppService
+  ) {}
 
   loadDestinations$ = createEffect(() =>
     this.actions$.pipe(
@@ -32,10 +38,4 @@ export class DestinationEffects {
       )
     )
   );
-
-  constructor(
-    private actions$: Actions,
-    private appService: AppService
-  ) {}
-
 }

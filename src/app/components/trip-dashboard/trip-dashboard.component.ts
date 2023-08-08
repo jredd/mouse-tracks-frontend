@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { EMPTY, Observable } from 'rxjs';
-import { loadTrips, selectAllTrips, selectLoading } from "../../store/trip";
-import { AppState } from "../../store/app.state";
-import { Trip } from "../../store";
 import { ChangeDetectorRef } from '@angular/core';
-import {staggeredFadeIn} from "./trip-dashboard.animation";
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+
+import { AppState } from "../../store/app.state";
+import { loadTrips, selectAllTrips, selectLoading } from "../../store/trip";
+import { Trip } from "../../store";
+import { staggeredFadeIn } from "./trip-dashboard.animation";
+
 
 @Component({
   selector: 'app-trip-dashboard',
@@ -41,5 +43,5 @@ export class TripDashboardComponent implements OnInit {
   animateTrips() {
     this.displayTrips = false;
     setTimeout(() => this.displayTrips = true, 100);
-}
+  }
 }

@@ -4,13 +4,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from "@angular/common/http";
+
 import { dbConfig } from './db.config';
 import { NgxIndexedDBModule } from 'ngx-indexed-db';
 import { HeaderComponent } from './components/header/header.component';
 import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
-import { HttpClientModule } from "@angular/common/http";
 import { TripDashboardModule } from "./components/trip-dashboard/trip-dashboard.module";
 import { StateModule } from "./store/state.module";
+
 
 @NgModule({
   declarations: [

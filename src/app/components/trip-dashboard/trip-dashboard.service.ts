@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { Observable, of } from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
-import {Trip, ItineraryItem, Break, TravelEvent, Meal, ApiTrip} from '../../store/';
-import {environment} from "../../../environments/environment";
+import { catchError, map, tap} from 'rxjs/operators';
 import * as moment from 'moment';
+
+import { Trip, ItineraryItem, Break, TravelEvent, Meal, ApiTrip} from '../../store/';
+import { environment } from "../../../environments/environment";
+
 
 @Injectable({
   providedIn: 'root'
@@ -65,22 +67,6 @@ export class TripService {
       catchError(this.handleError<Trip>('updateTrip'))
     );
   }
-
-
-
-  // createTrip(trip: Partial<Trip>): Observable<Trip> {
-  //   return this.http.post<Trip>(`${this.BASE_URL}/trips/`, trip).pipe(
-  //     tap((newTrip: Trip) => this.dbService.add('trip', newTrip)),
-  //     catchError(this.handleError<Trip>('createTrip'))
-  //   );
-  // }
-  //
-  // updateTrip(trip: Partial<Trip>): Observable<Trip> {
-  //   return this.http.put<Trip>(`${this.BASE_URL}/trips/${trip.id}`, trip).pipe(
-  //     tap((updatedTrip: Trip) => this.dbService.update('trip', updatedTrip)),
-  //     catchError(this.handleError<Trip>('updateTrip'))
-  //   );
-  // }
 
   getItineraryItems(tripId: number): Observable<ItineraryItem[]> {
     return this.http.get<ItineraryItem[]>(`${this.BASE_URL}/trips/${tripId}/itinerary-items/`).pipe(

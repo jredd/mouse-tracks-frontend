@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import {of, take, delay} from 'rxjs';
-import { catchError, map, mergeMap, withLatestFrom, concatMap } from 'rxjs/operators';
+import { of, take } from 'rxjs';
+import { catchError, map, mergeMap, concatMap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+
 import { TripService } from "../../components/trip-dashboard/trip-dashboard.service";
 import * as tripActions from './trip.actions';
 import { selectTripNotFoundInStore} from "./trip.selectors";
-import { Store } from '@ngrx/store';
 
 
 @Injectable()

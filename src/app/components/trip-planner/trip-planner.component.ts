@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Store } from "@ngrx/store";
-import { Destination, Trip } from "../../store";
-import { AppState } from "../../store/app.state";
 import { BehaviorSubject, EMPTY, Observable, Subject } from "rxjs";
+
 import { loadDestinations, selectAllDestinations, selectAllDestinationsLoading } from "../../store/destination";
+import { fadeIn } from "../trip-dashboard/trip-dashboard.animation";
 import * as tripSelector from '../../store/trip/trip.selectors';
 import * as tripActions from '../../store/trip/trip.actions';
-import { fadeIn } from "../trip-dashboard/trip-dashboard.animation";
+import { Destination, Trip } from "../../store";
+import { AppState } from "../../store/app.state";
 
 
 @Component({
@@ -16,7 +17,7 @@ import { fadeIn } from "../trip-dashboard/trip-dashboard.animation";
   styleUrls: ['./trip-planner.component.scss'],
   animations: [fadeIn],
 })
-export class TripPlannerComponent implements OnInit {
+export class TripPlannerComponent implements OnInit, OnDestroy {
 
   destinations$: Observable<Destination[]> = EMPTY;
   isDestinationsLoading$: Observable<boolean> = this.store.select(selectAllDestinationsLoading);
@@ -107,5 +108,5 @@ export class TripPlannerComponent implements OnInit {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-}
+  }
 }

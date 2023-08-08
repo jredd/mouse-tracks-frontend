@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { Trip } from "./trip.interfaces";
 
+
 export const loadTrips = createAction(
   '[Trip] Load Trips'
 );
@@ -47,7 +48,7 @@ export const createTripFailure = createAction(
 
 export const updateTrip = createAction(
   '[Trip] Update Trip',
-  props<{ trip: Partial<Trip> }>() // assuming the trip has an id field to determine which trip to update
+  props<{ trip: Partial<Trip> }>()
 );
 
 export const updateTripSuccess = createAction(

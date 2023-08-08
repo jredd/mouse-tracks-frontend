@@ -1,5 +1,7 @@
 import { createAction, props } from '@ngrx/store';
+
 import { Destination } from "./destination.interfaces";
+
 
 export const loadDestinations = createAction(
   '[Destination] Load Destinations'

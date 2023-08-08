@@ -1,8 +1,9 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { DestinationState } from './destination.reducer';
-import * as fromDestination from "./index";
 
-export const selectDestinationState = createFeatureSelector<DestinationState>('destination');
+import { destinationFeatureKey, DestinationState } from './destination.reducer';
+
+
+export const selectDestinationState = createFeatureSelector<DestinationState>(destinationFeatureKey);
 
 export const selectDestinations = createSelector(
   selectDestinationState,
