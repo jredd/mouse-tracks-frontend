@@ -5,12 +5,16 @@ import { catchError, map, mergeMap, withLatestFrom, concatMap } from 'rxjs/opera
 import { TripService } from "../../components/trip-dashboard/trip-dashboard.service";
 import * as tripActions from './trip.actions';
 import { selectTripNotFoundInStore} from "./trip.selectors";
-import {EMPTY, Observable} from "rxjs";
 import { Store } from '@ngrx/store';
 
 
 @Injectable()
 export class TripEffects {
+  constructor(
+    private actions$: Actions,
+    private tripService: TripService,
+    private store: Store
+  ) {}
 
   loadTrips$ = createEffect(() =>
     this.actions$.pipe(
@@ -36,7 +40,6 @@ export class TripEffects {
     )
   );
 
-  // selectTripNotFoundInStore
   loadTripWhenNotFound$ = createEffect(() =>
     this.actions$.pipe(
       ofType(tripActions.setCurrentTrip),
@@ -58,7 +61,6 @@ export class TripEffects {
     )
   );
 
-
   createTrip$ = createEffect(() =>
     this.actions$.pipe(
       ofType(tripActions.createTripRequest),
@@ -79,11 +81,4 @@ export class TripEffects {
         catchError(error => of(tripActions.updateTripFailure({ error })))
       ))
   ));
-
-
-  constructor(
-    private actions$: Actions,
-    private tripService: TripService,
-    private store: Store
-  ) {}
 }
