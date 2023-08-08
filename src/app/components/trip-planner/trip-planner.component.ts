@@ -1,10 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Store } from "@ngrx/store";
-import { BehaviorSubject, EMPTY, Observable, Subject } from "rxjs";
+import {BehaviorSubject, EMPTY, Observable, of, Subject} from "rxjs";
 
 import { loadDestinations, selectAllDestinations, selectAllDestinationsLoading } from "../../store/destination";
-import { fadeIn } from "../trip-dashboard/trip-dashboard.animation";
+import {disabledFadeIn, fadeIn, fadeInOut} from "../trip-dashboard/trip-dashboard.animation";
 import * as tripSelector from '../../store/trip/trip.selectors';
 import * as tripActions from '../../store/trip/trip.actions';
 import { Destination, Trip } from "../../store";
@@ -15,7 +15,7 @@ import { AppState } from "../../store/app.state";
   selector: 'app-trip-planner',
   templateUrl: './trip-planner.component.html',
   styleUrls: ['./trip-planner.component.scss'],
-  animations: [fadeIn],
+  animations: [fadeIn, fadeInOut],
 })
 export class TripPlannerComponent implements OnInit, OnDestroy {
 
@@ -47,13 +47,27 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
     this.destinations$ = this.store.select(selectAllDestinations);
     this.store.dispatch(loadDestinations());
     this.editTrip.disable();  // Disable the form while loading
+
+    this.store.select(tripSelector.selectCurrentTrip).subscribe(trip => {
+      this._currentTrip.next(trip);
+      if (trip) {
+        // Edit mode
+        this.editTrip.patchValue({
+            title: trip.title,
+            destination: trip.destination,
+            dateRange: {
+                start: trip.start_date,
+                end: trip.end_date
+            }
+        });
+        this.editTrip.enable();
+      }
+    });
+
     this.isLoading$.subscribe(trips => {
       this.editTrip.enable()
     });
 
-    this.store.select(tripSelector.selectCurrentTrip).subscribe(trip => {
-      this._currentTrip.next(trip);
-    });
   }
   createTrip(tripData: Partial<Trip>): void {
     // Handle trip creation logic

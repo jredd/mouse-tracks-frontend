@@ -56,3 +56,8 @@
       // styles for the button if needed
   }
 }
+
+
+button[mat-raised-button][disabled] {
+  opacity: 0 !important;
+}

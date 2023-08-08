@@ -6,7 +6,7 @@ import {
   stagger,
   animate,
   animateChild,
-  group, keyframes
+  group, state
 } from '@angular/animations';
 
 export const staggeredFadeIn = trigger('staggeredFadeIn', [
@@ -31,3 +31,19 @@ export const fadeIn = trigger('fadeIn', [
   ])
 ]);
 
+export const disabledFadeIn = trigger('fadeIn', [
+  transition(':enter', [
+    style({ opacity: 0 }),
+    animate('1000ms', style({ opacity: 1 }))
+  ])
+]);
+
+export const fadeInOut = trigger('fadeInOut', [
+  transition(':enter', [  // this is equivalent to 'void => *'
+    style({ opacity: 0 }),
+    animate('600ms', style({ opacity: 1 }))
+  ]),
+  transition(':leave', [  // this is equivalent to '* => void'
+    animate('600ms', style({ opacity: 0 }))
+  ])
+]);
