@@ -1,3 +1,9 @@
+#trips-header{
+  button {
+    text-align: right;
+  }
+}
+
 #noTrips {
   display: block;
   margin-top: 15%;
@@ -7,6 +13,41 @@
   width: 100% !important;
 }
 
-#turtles {
-  background-color: orange;
+#trip-card {
+  margin-bottom: 15px;
+  background-color: #fcfbfb;
+  &:hover {
+    background-color: #f5f4f4;
+    cursor: pointer
+  }
+  &:active {
+
+  }
+}
+
+.grid-tile {
+  padding: 0 !important;
+}
+
+
+.content-wrapper-left {
+  display: flex;
+  align-items: center;   // vertically center
+  justify-content: flex-start;  // align to left
+  width: 100%;
+
+  h1 {
+      margin: 0;
+  }
+}
+
+.content-wrapper-right {
+  display: flex;
+  align-items: center;   // vertically center
+  justify-content: flex-end;  // align to right
+  width: 100%;
+
+  button {
+      // styles for the button if needed
+  }
 }

@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-import { Trip, ItineraryItem, Break, TravelEvent, Meal } from './trip-dashboard.interfaces';
+import {catchError, map, tap} from 'rxjs/operators';
+import { Trip, ItineraryItem, Break, TravelEvent, Meal } from '../../store/';
 import {environment} from "../../../environments/environment";
-import {dbConfig} from "../../db.config"; // Be sure to define these models
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +16,11 @@ export class TripService {
 
   getTrips(): Observable<Trip[]> {
     return this.http.get<Trip[]>(`${this.BASE_URL}/trips/`).pipe(
+      map((trips: Trip[]) => trips.map(trip => ({
+        ...trip,
+        start_date: new Date(trip.start_date),
+        end_date: new Date(trip.end_date)
+      }))),
       tap((result: Trip[]) => this.dbService.bulkAdd('trip', result)),
       catchError(this.handleError<Trip[]>('getTrips', []))
     );
@@ -24,10 +28,16 @@ export class TripService {
 
   getTrip(id: string): Observable<Trip> {
     return this.http.get<Trip>(`${this.BASE_URL}/trips/${id}/`).pipe(
+      map((trip: Trip) => ({
+        ...trip,
+        start_date: new Date(trip.start_date),
+        end_date: new Date(trip.end_date),
+        last_content_update: new Date(trip.last_content_update)
+      })),
       tap((result: Trip) => this.dbService.update('trip', result)),
       catchError(this.handleError<Trip>('getTrip', {} as Trip))
     );
-  }
+}
 
   createTrip(trip: Partial<Trip>): Observable<Trip> {
     return this.http.post<Trip>(`${this.BASE_URL}/trips/`, trip).pipe(
@@ -36,8 +46,8 @@ export class TripService {
     );
   }
 
-  updateTrip(id: string, trip: Trip): Observable<Trip> {
-    return this.http.put<Trip>(`${this.BASE_URL}/trips/${id}`, trip).pipe(
+  updateTrip(trip: Partial<Trip>): Observable<Trip> {
+    return this.http.put<Trip>(`${this.BASE_URL}/trips/${trip.id}`, trip).pipe(
       tap((updatedTrip: Trip) => this.dbService.update('trip', updatedTrip)),
       catchError(this.handleError<Trip>('updateTrip'))
     );

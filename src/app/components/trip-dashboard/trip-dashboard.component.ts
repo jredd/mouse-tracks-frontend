@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Trip } from "./trip-dashboard.interfaces";
-import { TripService } from './trip-dashboard.service';
+import {select, Store} from '@ngrx/store';
+import { EMPTY, Observable } from 'rxjs';
+import {loadTrips, selectAllTrips, selectLoading, selectTrips} from "../../store/trip";
+import { AppState } from "../../store/app.state";
+import { Trip } from "../../store";
+import { tap } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
+import { ChangeDetectorRef } from '@angular/core';
+import {selectAllDestinations} from "../../store/destination";
 
 @Component({
   selector: 'app-trip-dashboard',
@@ -8,20 +15,17 @@ import { TripService } from './trip-dashboard.service';
   styleUrls: ['./trip-dashboard.component.scss']
 })
 export class TripDashboardComponent implements OnInit {
-  trips: Trip[] = []; // Array to store the trips
-  tiles = [
-    {text: 'One', cols: 3, rows: 1, color: 'lightblue'},
-    {text: 'Two', cols: 1, rows: 2, color: 'lightgreen'},
-    {text: 'Three', cols: 1, rows: 1, color: 'lightpink'},
-    {text: 'Four', cols: 2, rows: 1, color: '#DDBDF1'},
-  ];
-  constructor(private tripService: TripService) { }
+  loading$: Observable<boolean> = EMPTY;
+  trips$: Observable<Trip[]> = EMPTY;
 
-  ngOnInit() {
-    this.tripService.getTrips().subscribe((data: Trip[]) => {
-      this.trips = data;
-    });
+  constructor(private store: Store<AppState>, private cd: ChangeDetectorRef) {}
+  ngAfterInit() {
+
   }
-
-  protected readonly length = length;
+  ngOnInit() {
+    // Dispatch the action to load the trips
+    this.store.dispatch(loadTrips());
+    this.loading$ = this.store.select(selectLoading);
+    this.trips$ = this.store.select(selectAllTrips)
+  }
 }

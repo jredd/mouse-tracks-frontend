@@ -1,7 +1,44 @@
+#trips-header button {
+  text-align: right;
+}
+
 #noTrips {
   display: block;
   margin-top: 15%;
   text-align: center;
+}
+
+.full-width {
+  width: 100% !important;
+}
+
+#trip-card {
+  margin-bottom: 15px;
+  background-color: #fcfbfb;
+}
+#trip-card:hover {
+  background-color: #f5f4f4;
+  cursor: pointer;
+}
+.grid-tile {
+  padding: 0 !important;
+}
+
+.content-wrapper-left {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+.content-wrapper-left h1 {
+  margin: 0;
+}
+
+.content-wrapper-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
 }
 
 /*# sourceMappingURL=trip-dashboard.component.css.map */

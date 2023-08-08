@@ -1,25 +1,28 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { ReactiveFormsModule} from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import {TripDashboardComponent} from "./trip-dashboard.component";
-import {TripPlannerComponent} from "../trip-planner/trip-planner.component";
-import {RouterModule} from "@angular/router";
-import {MatGridListModule} from "@angular/material/grid-list";
-import {MomentDateModule} from "@angular/material-moment-adapter";
-import {MatButtonToggleGroup, MatButtonToggleModule} from "@angular/material/button-toggle";
-import {ItineraryComponent} from "../itinerary/itinerary.component";
+import { TripDashboardComponent } from "./trip-dashboard.component";
+import { TripPlannerComponent } from "../trip-planner/trip-planner.component";
+import { RouterModule } from "@angular/router";
+import { MatGridListModule } from "@angular/material/grid-list";
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { ItineraryComponent } from "../itinerary/itinerary.component";
+import { MatCardModule } from "@angular/material/card";
+import { DateRangePipe } from "../../pipes/date-range.pipe";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
     TripDashboardComponent,
     TripPlannerComponent,
     ItineraryComponent,
+    DateRangePipe,
   ],
   imports: [
     CommonModule,
@@ -33,10 +36,13 @@ import {ItineraryComponent} from "../itinerary/itinerary.component";
     MatGridListModule,
     MatFormFieldModule,
     MatInputModule,
+    MatProgressSpinnerModule,
     MatDatepickerModule,
     MatButtonToggleModule,
-    RouterModule
+    MatCardModule,
+    RouterModule,
+    // StoreModule.forFeature('trip', tripReducer),
   ],
-  exports: [TripDashboardComponent]
+  exports: [TripDashboardComponent, DateRangePipe]
 })
 export class TripDashboardModule { }
