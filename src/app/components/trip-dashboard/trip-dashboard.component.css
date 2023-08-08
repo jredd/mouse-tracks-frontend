@@ -12,9 +12,14 @@
   width: 100% !important;
 }
 
+.mdc-text-field {
+  background-color: orange !important;
+}
+
 #trip-card {
   margin-bottom: 15px;
   background-color: #fcfbfb;
+  will-change: transform, opacity;
 }
 #trip-card:hover {
   background-color: #f5f4f4;
