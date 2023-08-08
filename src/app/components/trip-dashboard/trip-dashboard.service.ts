@@ -3,8 +3,9 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { Observable, of } from 'rxjs';
 import {catchError, map, tap} from 'rxjs/operators';
-import { Trip, ItineraryItem, Break, TravelEvent, Meal } from '../../store/';
+import {Trip, ItineraryItem, Break, TravelEvent, Meal, ApiTrip} from '../../store/';
 import {environment} from "../../../environments/environment";
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -37,21 +38,49 @@ export class TripService {
       tap((result: Trip) => this.dbService.update('trip', result)),
       catchError(this.handleError<Trip>('getTrip', {} as Trip))
     );
-}
+  }
 
   createTrip(trip: Partial<Trip>): Observable<Trip> {
-    return this.http.post<Trip>(`${this.BASE_URL}/trips/`, trip).pipe(
+    const apiTrip: ApiTrip = {
+      ...trip,
+      start_date: moment(trip.start_date).format('YYYY-MM-DD'),
+      end_date: moment(trip.end_date).format('YYYY-MM-DD')
+    };
+
+    return this.http.post<Trip>(`${this.BASE_URL}/trips/`, apiTrip).pipe(
       tap((newTrip: Trip) => this.dbService.add('trip', newTrip)),
       catchError(this.handleError<Trip>('createTrip'))
     );
   }
 
   updateTrip(trip: Partial<Trip>): Observable<Trip> {
-    return this.http.put<Trip>(`${this.BASE_URL}/trips/${trip.id}`, trip).pipe(
+    const apiTrip: ApiTrip = {
+      ...trip,
+      start_date: moment(trip.start_date).format('YYYY-MM-DD'),
+      end_date: moment(trip.end_date).format('YYYY-MM-DD')
+    };
+
+    return this.http.put<Trip>(`${this.BASE_URL}/trips/${trip.id}`, apiTrip).pipe(
       tap((updatedTrip: Trip) => this.dbService.update('trip', updatedTrip)),
       catchError(this.handleError<Trip>('updateTrip'))
     );
   }
+
+
+
+  // createTrip(trip: Partial<Trip>): Observable<Trip> {
+  //   return this.http.post<Trip>(`${this.BASE_URL}/trips/`, trip).pipe(
+  //     tap((newTrip: Trip) => this.dbService.add('trip', newTrip)),
+  //     catchError(this.handleError<Trip>('createTrip'))
+  //   );
+  // }
+  //
+  // updateTrip(trip: Partial<Trip>): Observable<Trip> {
+  //   return this.http.put<Trip>(`${this.BASE_URL}/trips/${trip.id}`, trip).pipe(
+  //     tap((updatedTrip: Trip) => this.dbService.update('trip', updatedTrip)),
+  //     catchError(this.handleError<Trip>('updateTrip'))
+  //   );
+  // }
 
   getItineraryItems(tripId: number): Observable<ItineraryItem[]> {
     return this.http.get<ItineraryItem[]>(`${this.BASE_URL}/trips/${tripId}/itinerary-items/`).pipe(

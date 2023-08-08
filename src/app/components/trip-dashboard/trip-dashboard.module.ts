@@ -16,6 +16,7 @@ import { ItineraryComponent } from "../itinerary/itinerary.component";
 import { MatCardModule } from "@angular/material/card";
 import { DateRangePipe } from "../../pipes/date-range.pipe";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    BrowserAnimationsModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -41,7 +43,6 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     MatButtonToggleModule,
     MatCardModule,
     RouterModule,
-    // StoreModule.forFeature('trip', tripReducer),
   ],
   exports: [TripDashboardComponent, DateRangePipe]
 })

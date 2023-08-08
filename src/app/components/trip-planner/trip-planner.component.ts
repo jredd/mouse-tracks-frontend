@@ -1,129 +1,111 @@
 import { Component, OnInit } from '@angular/core';
-import {TripService} from "../trip-dashboard/trip-dashboard.service";
-import {Trip} from "../trip-dashboard/trip-dashboard.interfaces";
-import {AppService} from "../../app.service";
-import {Destination} from "../../app.interfaces";
-import {ActivatedRoute} from "@angular/router";
-import {FormGroup, FormControl, FormBuilder} from '@angular/forms';
-import { Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Store } from "@ngrx/store";
+import { Destination, Trip } from "../../store";
+import { AppState } from "../../store/app.state";
+import { BehaviorSubject, EMPTY, Observable, Subject } from "rxjs";
+import { loadDestinations, selectAllDestinations, selectAllDestinationsLoading } from "../../store/destination";
+import * as tripSelector from '../../store/trip/trip.selectors';
+import * as tripActions from '../../store/trip/trip.actions';
+import { fadeIn } from "../trip-dashboard/trip-dashboard.animation";
 
 
 @Component({
   selector: 'app-trip-planner',
   templateUrl: './trip-planner.component.html',
   styleUrls: ['./trip-planner.component.scss'],
+  animations: [fadeIn],
 })
 export class TripPlannerComponent implements OnInit {
 
-  fb: FormBuilder;
-  editTrip: FormGroup
-  trip?: Trip;
-  tripId?: string | null;
-  destinations: Destination[] = [];
+  destinations$: Observable<Destination[]> = EMPTY;
+  isDestinationsLoading$: Observable<boolean> = this.store.select(selectAllDestinationsLoading);
+  private _currentTrip = new BehaviorSubject<Trip | null>(null);
+  currentTrip$ = this._currentTrip.asObservable();
+  isLoading$: Observable<boolean> = this.store.select(tripSelector.selectLoading);
+  editTrip: FormGroup;
+  private destroy$ = new Subject<void>();
 
-  constructor(private route: ActivatedRoute, private tripService: TripService, private appService: AppService, fb: FormBuilder,) {
-    this.fb = fb;
+
+  constructor(
+    private store: Store<AppState>,
+    private fb: FormBuilder
+  ) {
+    this.isLoading$ = this.store.select(tripSelector.selectLoading);
     this.editTrip = this.fb.group({
-    title: new FormControl('', Validators.required),
-    destination: new FormControl('', Validators.required),
-    dateRange: new FormGroup({
-        start: new FormControl('', Validators.required),
-        end: new FormControl('', Validators.required)
-    })
-  });
-
+      title: ['', Validators.required],
+      destination: ['', Validators.required],
+      dateRange: this.fb.group({
+        start: ['', Validators.required],
+        end: ['', Validators.required]
+      })
+    });
   }
 
   ngOnInit(): void {
-    this.tripId = this.route.snapshot.paramMap.get('id');
-    this.getDestinations();
-    if (this.tripId) {
-      this.tripService.getTrip(this.tripId).subscribe(trip => {
-        this.trip = trip;
-        this.editTrip.setValue({
-          title: trip.title,
-          destination: trip.destination,  // assuming 'id' is the correct property of Destination
-          dateRange: {
-            start: trip.start_date,
-            end: trip.end_date
-          }
-        });
-        this.editTrip.get('destination')?.disable();
-      });
-    }
+    this.destinations$ = this.store.select(selectAllDestinations);
+    this.store.dispatch(loadDestinations());
+    this.editTrip.disable();  // Disable the form while loading
+    this.isLoading$.subscribe(trips => {
+      this.editTrip.enable()
+    });
+
+    this.store.select(tripSelector.selectCurrentTrip).subscribe(trip => {
+      this._currentTrip.next(trip);
+    });
+  }
+  createTrip(tripData: Partial<Trip>): void {
+    // Handle trip creation logic
+    this.store.dispatch(tripActions.createTripRequest({ trip: tripData }));
   }
 
-  getDestinations(): void {
-    this.appService.getDestinations().subscribe(destinations => this.destinations = destinations);
+  updateTrip(trip: Partial<Trip>): void {
+    this.store.dispatch(tripActions.updateTrip({ trip: trip }));
+    // Handle trip update logic
   }
 
-  updateTrip(trip: Trip) {
-    if (this.tripId) {
-        this.tripService.updateTrip(this.tripId, trip).subscribe(
-        response => {
-          console.log(response);
-        },
-        error => {
-          console.log(error);
-        }
-      );
-    }
-  }
-
-  createTrip(tripData: Partial<Trip>) {
-    this.tripService.createTrip(tripData).subscribe(response => {
-        console.log(response);
-        this.tripId = response.id
-      },
-      error => {
-        console.log(error);
-      }
-    );
-  }
-
-  onSubmit() {
-    console.log('trutesl');
+  onSubmit(): void {
     if (this.editTrip.valid) {
-      if (this.tripId) {
-        const trip = this.prepareUpdateFormData()
+      const currentTrip = this._currentTrip.value;
+
+      if (currentTrip) {
+        const trip = this.prepareUpdateFormData();
         if (trip) {
-          this.updateTrip(trip)
+          this.updateTrip(trip);  // Update the existing trip
         } else {
-          console.log('shit hit the fan')
+          console.log('Preparing the form data failed', trip);
         }
       } else {
-        this.createTrip(this.prepareCreateFormData())
+        console.log('Create Trip')
+        this.createTrip(this.prepareCreateFormData());  // Create a new trip
       }
     }
   }
 
-  private formatDate(date: Date): string {
-    // Here you would convert your Date object to the format that your API expects.
-    // This is just an example, replace it with your actual date formatting logic.
-    return date.toISOString().slice(0,10);  // returns YYYY-MM-DD
-  }
-
-  prepareUpdateFormData(): Trip | null {
-    if (this.trip) {
-      const formData = this.editTrip.value;
-      this.trip.title = formData.title
-      this.trip.destination = formData.destination
-      this.trip.start_date = formData.value.start.toDateString()
-      this.trip.end_date = formData.value.end.toDateString()
-      return this.trip
+  prepareUpdateFormData(): Partial<Trip> | null {
+    const formData = this.editTrip.value;
+    return {
+      title: formData.title,
+      destination_id: formData.destination,
+      start_date: formData.dateRange.start,
+      end_date: formData.dateRange.end
     }
-    return null
   }
 
   private prepareCreateFormData(): Partial<Trip> {
     const formData = this.editTrip.value;
-    console.log(formData.dateRange.start)
+    console.log("destination:", formData.destination)
     return {
       title: formData.title,
       created_by: 'a56ea5a9-2101-4df9-8d39-9fd762c8e11f',
-      destination: formData.destination,
-      start_date: this.formatDate(formData.dateRange.start),
-      end_date: this.formatDate(formData.dateRange.end)
+      destination_id: formData.destination,
+      start_date: formData.dateRange.start,
+      end_date: formData.dateRange.end
     };
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+}
 }
