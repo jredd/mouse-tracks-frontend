@@ -4,7 +4,7 @@ import { Location } from '../../store';
 
 export const loadLocations = createAction(
   '[Location] Load Locations',
-  props<{ destId: string }>()
+  props<{ dest_id: string }>()
 );
 
 export const loadLocationsSuccess = createAction(

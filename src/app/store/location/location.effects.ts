@@ -14,7 +14,7 @@ export class LocationEffects {
     this.actions$.pipe(
       ofType(locationActions.loadLocations),
       mergeMap((action) =>
-        this.appService.getLocations(action.destId).pipe(
+        this.appService.getLocations(action.dest_id).pipe(
           map((locations) => locationActions.loadLocationsSuccess({ locations })),
           catchError((error) => [locationActions.loadLocationsFailure({ error })])
         )
