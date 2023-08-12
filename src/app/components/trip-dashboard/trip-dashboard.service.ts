@@ -68,10 +68,43 @@ export class TripService {
     );
   }
 
-  getItineraryItems(tripId: number): Observable<ItineraryItem[]> {
+  // Existing function to get itinerary items by tripId
+  getItineraryItems(tripId: string): Observable<ItineraryItem[]> {
     return this.http.get<ItineraryItem[]>(`${this.BASE_URL}/trips/${tripId}/itinerary-items/`).pipe(
       tap((result: ItineraryItem[]) => this.dbService.bulkAdd('itinerary-item', result)),
       catchError(this.handleError<ItineraryItem[]>('getItineraryItems', []))
+    );
+  }
+
+  // Function to create a new itinerary item for a specific trip
+  createItineraryItem(tripId: string, item: ItineraryItem): Observable<ItineraryItem> {
+    return this.http.post<ItineraryItem>(`${this.BASE_URL}/trips/${tripId}/itinerary-items/`, item).pipe(
+      tap((result: ItineraryItem) => this.dbService.add('itinerary-item', result)),
+      catchError(this.handleError<ItineraryItem>('createItineraryItem'))
+    );
+  }
+
+  // Function to update an existing itinerary item by its id
+  updateItineraryItem(itemId: string, item: ItineraryItem): Observable<ItineraryItem> {
+    return this.http.put<ItineraryItem>(`${this.BASE_URL}/itinerary-items/${itemId}/`, item).pipe(
+      tap((result: ItineraryItem) => this.dbService.update('itinerary-item', result)),
+      catchError(this.handleError<ItineraryItem>('updateItineraryItem'))
+    );
+  }
+
+  // Function to partially update an existing itinerary item by its id
+  patchItineraryItem(itemId: string, item: Partial<ItineraryItem>): Observable<ItineraryItem> {
+    return this.http.patch<ItineraryItem>(`${this.BASE_URL}/itinerary-items/${itemId}/`, item).pipe(
+      tap((result: ItineraryItem) => this.dbService.update('itinerary-item', result)),
+      catchError(this.handleError<ItineraryItem>('patchItineraryItem'))
+    );
+  }
+
+  // Function to delete an itinerary item by its id
+  deleteItineraryItem(itemId: string): Observable<any> {
+    return this.http.delete(`${this.BASE_URL}/itinerary-items/${itemId}/`).pipe(
+      tap(() => this.dbService.delete('itinerary-item', itemId)),
+      catchError(this.handleError('deleteItineraryItem'))
     );
   }
 

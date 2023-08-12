@@ -4,12 +4,16 @@ import { tripReducer, TripState } from "./trip";
 import { environment } from "../../environments/environment";
 import { destinationReducer, DestinationState } from "./destination";
 import { locationReducer, LocationState } from "./location";
+import { experienceReducer, ExperienceState } from "./experience";
+import { itineraryReducer, ItineraryState } from "./itinerary-item";
 
 
 export interface AppState {
   trip: TripState;
   destination: DestinationState;
   location: LocationState;
+  experience: ExperienceState;
+  itinerary_item: ItineraryState
   // Add other feature states as needed
 }
 
@@ -17,6 +21,9 @@ export const appReducers: ActionReducerMap<AppState> = {
   trip: tripReducer,
   destination: destinationReducer,
   location: locationReducer,
+  experience: experienceReducer,
+  itinerary_item: itineraryReducer,
+
   // Add other feature reducers as needed
 };
 
@@ -24,7 +31,7 @@ export function debugLogger(appReducer: ActionReducer<any>): ActionReducer<any> 
   return function(state, action) {
     // console.log('state', state);
     // console.log('action', action);
-    //
+
     return appReducer(state, action);
   };
 }

@@ -6,6 +6,7 @@ import { mergeMap, map, catchError, tap } from 'rxjs/operators';
 
 import { AppService } from "../../app.service";
 import * as ExperienceActions from './experience.actions';
+import {loadExperiencesSuccess} from "./experience.actions";
 
 @Injectable()
 export class ExperienceEffects {
@@ -22,7 +23,7 @@ export class ExperienceEffects {
       .pipe(
         map(experiences => {
           ExperienceActions.setLoading({ isLoading: false });  // reset loading to false once we get data
-          return ExperienceActions.setExperiences({ experiences });
+          return ExperienceActions.loadExperiencesSuccess({ experiences });
         }),
         catchError(error => {
           ExperienceActions.setLoading({ isLoading: false });  // reset loading to false if there's an error

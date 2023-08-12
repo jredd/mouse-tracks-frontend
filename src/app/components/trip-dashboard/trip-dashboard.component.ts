@@ -32,7 +32,6 @@ export class TripDashboardComponent implements OnInit {
     this.trips$ = this.store.select(selectAllTrips)
     this.animateTrips(); // Call this for the initial animation
 
-
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {

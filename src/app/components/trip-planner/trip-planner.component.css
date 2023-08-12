@@ -8,4 +8,8 @@
   width: 100% !important;
 }
 
+#itinerary_container {
+  height: calc(100% - 150px);
+}
+
 /*# sourceMappingURL=trip-planner.component.css.map */

@@ -18,6 +18,8 @@ import { DateRangePipe } from "../../pipes/date-range.pipe";
 import { ItineraryComponent } from "../itinerary/itinerary.component";
 import { TripDashboardComponent } from "./trip-dashboard.component";
 import { TripPlannerComponent } from "../trip-planner/trip-planner.component";
+import {DayPlannerComponent} from "../day-planner/day-planner.component";
+import {DragDropModule} from "@angular/cdk/drag-drop";
 
 
 @NgModule({
@@ -26,6 +28,7 @@ import { TripPlannerComponent } from "../trip-planner/trip-planner.component";
     TripPlannerComponent,
     ItineraryComponent,
     DateRangePipe,
+    DayPlannerComponent,
   ],
   imports: [
     CommonModule,
@@ -44,6 +47,7 @@ import { TripPlannerComponent } from "../trip-planner/trip-planner.component";
     MatDatepickerModule,
     MatButtonToggleModule,
     MatCardModule,
+    DragDropModule,
     RouterModule,
   ],
   exports: [TripDashboardComponent, DateRangePipe]

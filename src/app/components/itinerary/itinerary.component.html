@@ -1,10 +1,18 @@
-<mat-form-field>
-  <mat-label>Locations</mat-label>
-  <mat-select>
-    <mat-option *ngFor="let location of locations$ | async" [value]="location.id">{{location.name}}</mat-option>
-  </mat-select>
-</mat-form-field>
+<mat-grid-list cols="6" rowHeight="60" gutterSize="10px">
+  <mat-grid-tile colspan="4">
+    <mat-form-field class="full-width">
+      <mat-label>Locations</mat-label>
+      <mat-select (selectionChange)="onLocationChange($event.value)">
+        <mat-option *ngFor="let location of locations$ | async" [value]="location.id">{{location.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-grid-tile>
 
-<mat-button-toggle-group #group="matButtonToggleGroup" (change)="onExperienceTypeChange($event)">
-  <mat-button-toggle *ngFor="let type of experienceTypes" [value]="type">{{type}}</mat-button-toggle>
-</mat-button-toggle-group>
+  <mat-grid-tile colspan="2">
+    <mat-button-toggle-group #group="matButtonToggleGroup" (change)="onExperienceTypeChange($event)">
+      <mat-button-toggle *ngFor="let type of experienceTypes" [value]="type">{{type}}</mat-button-toggle>
+    </mat-button-toggle-group>
+  </mat-grid-tile>
+</mat-grid-list>
+
+<app-day-planner></app-day-planner>

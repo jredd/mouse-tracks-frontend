@@ -8,6 +8,8 @@ import { appReducers, metaReducers } from "./app.state";
 import { TripEffects, tripFeatureKey, tripReducer } from "./trip";
 import { DestinationEffects, destinationFeatureKey, destinationReducer } from "./destination";
 import { LocationEffects, locationFeatureKey, locationReducer } from "./location";
+import {ExperienceEffects, experienceFeatureKey, experienceReducer} from "./experience";
+import {itineraryFeatureKey, ItineraryItemEffects, itineraryReducer} from "./itinerary-item";
 
 @NgModule({
   imports: [
@@ -15,7 +17,11 @@ import { LocationEffects, locationFeatureKey, locationReducer } from "./location
     StoreModule.forFeature(tripFeatureKey, { trip: tripReducer }),
     StoreModule.forFeature(destinationFeatureKey, { destination: destinationReducer }),
     StoreModule.forFeature(locationFeatureKey, { location: locationReducer }),
-    EffectsModule.forRoot([DestinationEffects, TripEffects, LocationEffects]),
+    StoreModule.forFeature(experienceFeatureKey, { experience: experienceReducer }),
+    StoreModule.forFeature(itineraryFeatureKey, { itinerary_item: itineraryReducer }),
+    EffectsModule.forRoot([
+      DestinationEffects, TripEffects, LocationEffects, ExperienceEffects, ItineraryItemEffects
+    ]),
     StoreRouterConnectingModule.forRoot(),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
   ]

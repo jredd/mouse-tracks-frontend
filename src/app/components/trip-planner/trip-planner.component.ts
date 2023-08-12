@@ -1,10 +1,10 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Store } from "@ngrx/store";
-import {BehaviorSubject, EMPTY, Observable, of, Subject} from "rxjs";
+import { BehaviorSubject, EMPTY, Observable, of, Subject } from "rxjs";
 
 import { loadDestinations, selectAllDestinations, selectAllDestinationsLoading } from "../../store/destination";
-import {disabledFadeIn, fadeIn, fadeInOut} from "../trip-dashboard/trip-dashboard.animation";
+import { fadeIn, fadeInOut } from "../trip-dashboard/trip-dashboard.animation";
 import * as tripSelector from '../../store/trip/trip.selectors';
 import * as tripActions from '../../store/trip/trip.actions';
 import { Destination, Trip } from "../../store";

@@ -18,10 +18,9 @@ import { StateModule } from "./store/state.module";
   declarations: [
     AppComponent,
     HeaderComponent,
-    NavMenuComponent
+    NavMenuComponent,
   ],
   imports: [
-    NgxIndexedDBModule.forRoot(dbConfig),
     StateModule,
     BrowserModule,
     AppRoutingModule,
@@ -33,6 +32,7 @@ import { StateModule } from "./store/state.module";
     }),
     BrowserAnimationsModule,
     TripDashboardModule,
+    NgxIndexedDBModule.forRoot(dbConfig),
   ],
   providers: [],
   bootstrap: [AppComponent]

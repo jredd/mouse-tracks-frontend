@@ -48,7 +48,9 @@
           </ng-container>
         </mat-grid-list>
   </form>
-  <app-itinerary *ngIf="currentTrip$ | async"></app-itinerary>
+  <div id="itinerary_container">
+    <app-itinerary *ngIf="currentTrip$ | async"></app-itinerary>
+  </div>
 
 
     <!-- Show trip details if tripId is present -->

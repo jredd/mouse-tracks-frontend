@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import {MatButtonToggleChange} from "@angular/material/button-toggle";
-import {TripService} from "../trip-dashboard/trip-dashboard.service";
-import { AppService } from "../../app.service";
-import {Destination, Location} from "../../store";
-import {select, Store} from "@ngrx/store";
-import {AppState} from "../../store/app.state";
+import { MatButtonToggleChange } from "@angular/material/button-toggle";
+import { EMPTY, Observable, take } from "rxjs";
+
+import { Location} from "../../store";
+import { select, Store} from "@ngrx/store";
+import { AppState } from "../../store/app.state";
 import * as fromLocationStore from '../../store/location/';
 import * as fromTripStore from '../../store/trip/';
-import {EMPTY, Observable, take} from "rxjs";
+import * as fromExperienceStore from '../../store/experience/';
 
 
 @Component({
@@ -16,11 +16,11 @@ import {EMPTY, Observable, take} from "rxjs";
   styleUrls: ['./itinerary.component.scss']
 })
 export class ItineraryComponent implements OnInit {
-  experienceTypes = ["Attractions", "Entertainment", "Event"]
-  // locations$: Observable<Location[]> = EMPTY;  // Declare locations array
+  experienceTypes = ["Attractions", "Entertainment", "Event", "Restaurant"]
+  currentTypeExperiences$: Observable<string> = EMPTY;  // Declare locations array
   locations$: Observable<Location[]> = this.store.pipe(select(fromLocationStore.selectAllLocations));
 
-  constructor(private store: Store<AppState>,) {}  // Inject TripService
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit() {
     this.store.pipe(
@@ -28,13 +28,17 @@ export class ItineraryComponent implements OnInit {
       take(1)
     ).subscribe(currentTrip => {
       if (currentTrip && currentTrip.destination.id) {
-        this.store.dispatch(fromLocationStore.loadLocations({ destId: currentTrip.destination.id }));
+        this.store.dispatch(fromLocationStore.loadLocations({ dest_id: currentTrip.destination.id }));
       }
     });
-
+    this.currentTypeExperiences$ = this.store.select(fromExperienceStore.selectCurrentExperienceType);
   }
 
+  onLocationChange(locId: string) {
+    console.log('Location:', locId)
+    this.store.dispatch(fromExperienceStore.loadExperiences({ loc_id: locId }));
+  }
   onExperienceTypeChange(event: MatButtonToggleChange) {
-    console.log(event.value); // prints the selected experience type
+    this.store.dispatch(fromExperienceStore.setCurrentExperienceType({ experienceType: event.value.toLowerCase() }));
   }
 }

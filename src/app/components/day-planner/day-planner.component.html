@@ -1,0 +1,43 @@
+<div *ngIf="itineraryItemsByDay$ | async as selectedItems">
+  <ng-container *ngIf="available$ | async as availableData; else noData">
+
+    <!-- My Day Plan Section wrapped in a container for selectedItems -->
+    <div class="planner-container">
+      <h2>My Day Plan</h2>
+      <div
+        cdkDropList
+        #selectedExperiences="cdkDropList"
+        [cdkDropListData]="selectedItems"
+        [cdkDropListConnectedTo]="[availableExperiences]"
+        id="MyDayPlan"
+        class="experience-list"
+        (cdkDropListDropped)="drop($event)">
+        <div class="experience-box" *ngFor="let item of selectedItems" cdkDrag>
+          {{ item.activity?.name ?? 'Default Name' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Available Experiences Section -->
+    <div class="planner-container">
+      <h2>Available Experiences</h2>
+      <div
+        cdkDropList
+        #availableExperiences="cdkDropList"
+        [cdkDropListData]="availableData"
+        [cdkDropListConnectedTo]="[selectedExperiences]"
+        id="AvailableExperiences"
+        class="experience-list"
+        (cdkDropListDropped)="drop($event)">
+        <div class="experience-box" *ngFor="let experience of availableData" cdkDrag>
+          {{ experience.name }}
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>
+
+<ng-template #noData>
+  <p>No experiences available.</p>
+</ng-template>
