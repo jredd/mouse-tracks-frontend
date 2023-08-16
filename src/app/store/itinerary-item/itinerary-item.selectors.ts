@@ -87,6 +87,28 @@ export const selectNonEmptyDaysWithItems = createSelector(
   }
 );
 
+export const selectItemsByDayDays = createSelector(
+  selectItineraryState,
+  (itineraryState: ItineraryState) => Object.keys(itineraryState.itemsByDay)
+);
+
+// export const selectDaysWithLabels = createSelector(
+//   selectItineraryState,
+//   (itineraryState: ItineraryState) => {
+//     const days = Object.keys(itineraryState.itemsByDay);
+//     return days.map((day, index) => getDayLabel(index, day));
+//   }
+// );
+
+export const selectDays = createSelector(
+  selectItineraryState,
+  selectItemsByDayDays
+);
+
 // export const selectNonEmptyDaysWithItems = createSelector(
 //   selectItineraryState
 // )
+
+function getDayLabel(index: number, day: string): string {
+  return `${index + 1} - ${day}`;
+}

@@ -3,7 +3,7 @@
 }
 
 #notes_travel_save button {
-  margin-left: 15px;
+  margin-left: 10px;
   margin-bottom: 20px;
   height: 56px;
 }
@@ -12,9 +12,37 @@
   margin-bottom: 20px;
 }
 #experience_types button {
-  margin-left: 15px;
+  margin-left: 10px;
   margin-bottom: 20px;
   height: 56px;
+}
+
+.icon-label-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  line-height: normal;
+}
+.icon-label-button .button-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.icon-label-button .button-label {
+  margin-top: 5px;
+  font-size: 10px;
+}
+.icon-label-button mat-icon {
+  font-size: 24px;
+}
+
+.mat-button-toggle-group-appearance-standard {
+  height: 56px;
+  line-height: 56px !important;
 }
 
 /*# sourceMappingURL=itinerary.component.css.map */

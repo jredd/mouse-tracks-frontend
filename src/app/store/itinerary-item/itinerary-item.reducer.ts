@@ -178,6 +178,10 @@ export const itineraryReducer = createReducer(
       itemsByDay: updatedItemsByDay
     };
   }),
+
+  on(ItineraryActions.setCurrentDay, (state, { day }) => {
+    return { ...state, currentDay: day };
+  })
 );
 
 export function generateEmptyDateRange(startDate: Date, endDate: Date): Record<string, ItineraryItem[]> {

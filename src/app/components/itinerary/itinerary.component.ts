@@ -22,6 +22,10 @@ import { ChangeDetectorRef } from '@angular/core';
 export class ItineraryComponent implements OnInit {
   // experienceTypes = ["Attraction", "Entertainment", "Event", "Restaurant"]
   experienceTypes: string[] = [];
+  days$: Observable<string[]> = this.store.pipe(
+    select(fromItineraryItemStore.selectDays)
+  );
+  currentDay$: Observable<string> = this.store.pipe(select(fromItineraryItemStore.selectTheCurrentDay));
   currentTypeExperiences$: Observable<string> = EMPTY;  // Declare locations array
   experiencesByType$: Observable<{
     attractions: Experience[];
@@ -32,6 +36,7 @@ export class ItineraryComponent implements OnInit {
   locations$: Observable<Location[]> = this.store.pipe(select(fromLocationStore.selectAllLocations));
   locId: string = "";
   defaultExperienceType: string = '';
+  selectedDay: string = '';
 
 
   // Define this mapping at the top-level of your component, outside any methods.
@@ -57,8 +62,22 @@ export class ItineraryComponent implements OnInit {
     });
     this.currentTypeExperiences$ = this.store.select(fromExperienceStore.selectCurrentExperienceType);
     this.experiencesByType$ = this.store.pipe(select(fromExperienceStore.selectCurrentExperiencesByType))
+    this.currentDay$.subscribe(currentDay => {
+      this.selectedDay = currentDay
+    })
+    this.locations$.subscribe(locations => {
+      console.log(locations)
+      if (locations && locations.length > 0) {
+        this.onLocationChange(locations[0].id)
+      }
+    })
     this.updateExperienceTypes()
   }
+
+  onDayChange(selectedDay: string) {
+    this.store.dispatch(fromItineraryItemStore.setCurrentDay({ day: selectedDay }));
+  }
+
 
   updateExperienceTypes() {
     this.experiencesByType$.subscribe(data => {
@@ -106,21 +125,13 @@ export class ItineraryComponent implements OnInit {
       // Logic to handle travel events goes here.
   }
 
+  onAddBreak() {
+    // Logic to handle breaks go here.
+  }
+
   onSave() {
     console.log("save dat shit")
     // Assuming you have an array of itinerary items named 'itineraryItems' and a tripId variable.
     this.store.dispatch(fromItineraryItemStore.saveAllNonEmptyDays());
   }
-
-  // onSave() {
-    // this.itemsByDay$.pipe(
-    //   take(1),
-    //   filter(itemsByDay => { // Optional: only save if there's something to save
-    //     return Object.values(itemsByDay).some(items => items && items.length);
-    //   })
-    // ).subscribe(itemsByDay => {
-    //   this.store.dispatch(fromItineraryStore.saveAllNonEmptyDays({ itemsByDay }));
-    // });
-  // }
-
 }

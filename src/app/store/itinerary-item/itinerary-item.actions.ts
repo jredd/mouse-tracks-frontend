@@ -125,3 +125,8 @@ export const replaceItem = createAction(
   '[Itinerary] Replace Item',
   props<{ tempId: string, newItem: ItineraryItem }>()
 );
+
+export const setCurrentDay = createAction(
+  '[Itinerary] Set Current Day',
+  props<{ day: string }>()
+);

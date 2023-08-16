@@ -4,7 +4,7 @@
 
 #notes_travel_save {
   button {
-    margin-left: 15px;
+    margin-left: 10px;
     margin-bottom: 20px;
     height: 56px
   }
@@ -15,8 +15,39 @@
     margin-bottom: 20px;
   }
   button {
-    margin-left: 15px;
+    margin-left: 10px;
     margin-bottom: 20px;
     height: 56px
   }
+}
+
+.icon-label-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px; // or whatever width fits your design best
+  height: 60px; // adjust as needed
+  padding: 0;
+  line-height: normal;
+
+  .button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .button-label {
+    margin-top: 5px;
+    font-size: 10px; // adjust as needed
+  }
+
+  mat-icon {
+    font-size: 24px; // adjust as needed
+  }
+}
+
+.mat-button-toggle-group-appearance-standard {
+  height: 56px;
+  line-height: 56px !important;
 }

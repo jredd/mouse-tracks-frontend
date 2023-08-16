@@ -1,41 +1,58 @@
-<mat-grid-list cols="6" rowHeight="80" gutterSize="10px">
+<mat-grid-list cols="24" rowHeight="80" gutterSize="10px">
   <!-- Locations Dropdown -->
-  <mat-grid-tile colspan="2">
+  <mat-grid-tile colspan="4">
+  <mat-form-field class="full-width">
+    <mat-label>Day</mat-label>
+    <mat-select [value]="selectedDay" (selectionChange)="onDayChange($event.value)">
+      <mat-option *ngFor="let day of days$ | async; let i = index" [value]="day">
+        {{i + 1}} - {{day}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-grid-tile>
+
+  <mat-grid-tile colspan="6">
     <mat-form-field class="full-width">
       <mat-label>Locations</mat-label>
-      <mat-select (selectionChange)="onLocationChange($event.value)">
+      <mat-select [value]="locId" (selectionChange)="onLocationChange($event.value)">
         <mat-option *ngFor="let location of locations$ | async" [value]="location.id">{{location.name}}</mat-option>
       </mat-select>
     </mat-form-field>
   </mat-grid-tile>
   <!-- Toggle Group -->
-  <mat-grid-tile colspan="2" *ngIf="locId" id="experience_types" @fadeIn>
+  <mat-grid-tile colspan="8" *ngIf="locId" id="experience_types" @fadeIn>
     <mat-button-toggle-group [(ngModel)]="defaultExperienceType" (change)="onExperienceTypeChange($event)">
       <mat-button-toggle *ngFor="let type of experienceTypes" [value]="type.toLowerCase()">
         {{ type }}
       </mat-button-toggle>
     </mat-button-toggle-group>
   </mat-grid-tile>
-
-  <mat-grid-tile colspan="2" *ngIf="locId" id="notes_travel_save" @fadeIn>
-    <!-- Add Notes Button -->
-    <button mat-stroked-button aria-label="Add Notes" (click)="onAddNotes()">
-      <mat-icon>note_add</mat-icon>
-      <div>Notes</div>
+  <mat-grid-tile colspan="6" *ngIf="locId" id="notes_travel_save" @fadeIn>
+    <button mat-stroked-button aria-label="Add Notes" (click)="onAddNotes()" class="icon-label-button">
+      <div class="button-content">
+        <mat-icon>note_add</mat-icon>
+        <div class="button-label">Notes</div>
+      </div>
     </button>
-
-    <button mat-stroked-button aria-label="Travel Events" (click)="onTravelEvents()">
-      <mat-icon>directions_car</mat-icon>
-      <div>Travel</div>
+    <button mat-stroked-button aria-label="Add Break" (click)="onAddBreak()" class="icon-label-button">
+      <div class="button-content">
+        <mat-icon>pause</mat-icon>
+        <div class="button-label">Break</div>
+      </div>
     </button>
-
-    <button mat-stroked-button aria-label="Save" (click)="onSave()">
-      <mat-icon>save</mat-icon>
-      <div>Save</div>
+    <button mat-stroked-button aria-label="Travel Events" (click)="onTravelEvents()" class="icon-label-button">
+      <div class="button-content">
+        <mat-icon>directions_car</mat-icon>
+        <div class="button-label">Travel</div>
+      </div>
+    </button>
+    <button mat-stroked-button aria-label="Save" (click)="onSave()" class="icon-label-button">
+      <div class="button-content">
+        <mat-icon>save</mat-icon>
+        <div class="button-label">Save</div>
+      </div>
     </button>
   </mat-grid-tile>
-
-
 </mat-grid-list>
 
 <app-day-planner *ngIf="locId"></app-day-planner>
