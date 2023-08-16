@@ -5,8 +5,9 @@ import * as ItineraryActions from './itinerary-item.actions';
 import {ItineraryItem, NewItineraryItem} from './itinerary-item.interfaces';
 import * as moment from 'moment';
 import { tripLoaded } from "../trip";
-import {addActivityToMyDay} from "./itinerary-item.actions";
+import {addActivityToMyDay, clearDeletedItems, deactivateItineraryItems} from "./itinerary-item.actions";
 import { Experience } from "../experience/experience.interfaces";
+import * as tripActions from "../trip/trip.actions";
 
 export const itineraryFeatureKey = 'itinerary_item';
 
@@ -15,6 +16,7 @@ export interface ItineraryState {
     [key: string]: ItineraryItem[];
   }; // key is the day in 'YYYY-MM-DD' format
   currentDay: string;
+  deletedItems: ItineraryItem[];
   loading: boolean;
   error: any;
 }
@@ -23,6 +25,7 @@ const initialItemsByDay: Record<string, ItineraryItem[]> = {}; // or however you
 
 export const initialState: ItineraryState = {
   itemsByDay: initialItemsByDay,
+  deletedItems: [],
   currentDay: Object.keys(initialItemsByDay)[0] || '',
   loading: false,
   error: null
@@ -30,28 +33,6 @@ export const initialState: ItineraryState = {
 
 export const itineraryReducer = createReducer(
   initialState,
-
-  // on(ItineraryActions.addItineraryItem, (state, { item }) => {
-  //   const dayKey = moment(item.day).format('YYYY-MM-DD');
-  //   const itemsForDay = state.itemsByDay[dayKey] || [];
-  //   return {
-  //     ...state,
-  //     itemsByDay: {
-  //       ...state.itemsByDay,
-  //       [dayKey]: [...itemsForDay, item]
-  //     }
-  //   };
-  // }),
-  // on(ItineraryActions.reorderItineraryItems, (state, { day, updatedItems }) => {
-  //   const dayKey = moment(day).format('YYYY-MM-DD');
-  //   return {
-  //     ...state,
-  //     itemsByDay: {
-  //       ...state.itemsByDay,
-  //       [dayKey]: updatedItems
-  //     }
-  //   };
-  // }),
 
   on(tripLoaded, (state, { trip }) => {
       const startDate = moment(trip.start_date);
@@ -104,29 +85,43 @@ export const itineraryReducer = createReducer(
   }),
 
   on(ItineraryActions.removeActivityFromMyDay, (state, { index }) => {
-    const currentDayItems = state.itemsByDay[state.currentDay] || [];
+      const currentDayItems = state.itemsByDay[state.currentDay] || [];
 
-    // Splice to remove the item at the specified index
-    const updatedItems = [...currentDayItems];
-    updatedItems.splice(index, 1);
+      // Splice to remove the item at the specified index
+      const updatedItems = [...currentDayItems];
+      const removedItem = updatedItems.splice(index, 1)[0];
 
-    return {
-        ...state,
-        itemsByDay: {
-            ...state.itemsByDay,
-            [state.currentDay]: reorderItems(updatedItems, 0, updatedItems.length - 1)
-        }
-    };
+      // New logic: Add the removed item to deletedItems if it has an id
+      const updatedDeletedItems = 'id' in removedItem && removedItem.id
+                                ? [...state.deletedItems, removedItem]
+                                : state.deletedItems;
+
+      return {
+          ...state,
+          deletedItems: updatedDeletedItems,
+          itemsByDay: {
+              ...state.itemsByDay,
+              [state.currentDay]: reorderItems(updatedItems, 0, updatedItems.length - 1)
+          }
+      };
   }),
+
 
   on(ItineraryActions.addActivityToMyDay, (state, { activity, activity_order, trip }) => {
     const currentDayItems = state.itemsByDay[state.currentDay] || [];
+    console.log('activity to add:', activity);
 
     const order = activity_order !== undefined ? activity_order : currentDayItems.length;
+
+    // Create a unique temporary ID.
+    // You could use other mechanisms as well, like a UUID library or a simple counter.
+    const tempId = `temp-${Date.now()}-${Math.round(Math.random() * 1000)}`;
+
     const newItem: NewItineraryItem = {
+        tempId: tempId,
         trip: trip.id,
         activity_order: order,
-        content_type: activity.experience_type,
+        content_type: 'experience',
         activity_id: activity.id,
         day: moment(state.currentDay).toDate(),
         activity: activity,
@@ -158,8 +153,31 @@ export const itineraryReducer = createReducer(
     };
   }),
 
+  on(ItineraryActions.deactivateItineraryItems, state => {
+    return { ...state, itemsByDay: initialItemsByDay, currentDay: '' };
+  }),
 
+  on(ItineraryActions.clearDeletedItems, state => {
+    return { ...state, deletedItems: [] };
+  }),
 
+  on(ItineraryActions.replaceItem, (state, { tempId, newItem }) => {
+    const updatedItemsByDay = {...state.itemsByDay};  // Shallow copy the dictionary
+
+    // Iterate over each key in the dictionary
+    for (const day in updatedItemsByDay) {
+      if (updatedItemsByDay.hasOwnProperty(day)) {
+        updatedItemsByDay[day] = updatedItemsByDay[day].map(item =>
+          isNewItem(item) && item.tempId === tempId ? newItem : item
+        );
+      }
+    }
+
+    return {
+      ...state,
+      itemsByDay: updatedItemsByDay
+    };
+  }),
 );
 
 export function generateEmptyDateRange(startDate: Date, endDate: Date): Record<string, ItineraryItem[]> {
@@ -187,4 +205,8 @@ function reorderItems(items: ItineraryItem[], fromIndex: number, toIndex: number
     return updatedItems.map((item, index) => {
         return { ...item, activity_order: index };
     });
+}
+
+function isNewItem(item: ItineraryItem): item is NewItineraryItem {
+  return 'tempId' in item;
 }

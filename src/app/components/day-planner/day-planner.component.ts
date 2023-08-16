@@ -10,13 +10,15 @@ import {tap, take, map} from "rxjs/operators";
 import * as moment from 'moment';
 import {addActivityToMyDay, selectAllCurrentDayItems} from "../../store/itinerary-item/";
 import {loadTrip, selectCurrentTrip, selectTrip} from "../../store/trip";
+import {fadeIn} from "../trip-dashboard/trip-dashboard.animation";
 
 type UnifiedDragDropEvent = CdkDragDrop<Experience[] | Partial<ItineraryItem>[] | null, any>;
 
 @Component({
   selector: 'app-day-planner',
   templateUrl: './day-planner.component.html',
-  styleUrls: ['./day-planner.component.scss']
+  styleUrls: ['./day-planner.component.scss'],
+  animations: [fadeIn]
 })
 export class DayPlannerComponent implements OnInit {
   available$: Observable<Experience[] | null> = EMPTY;
@@ -34,11 +36,23 @@ export class DayPlannerComponent implements OnInit {
   constructor(private store: Store<AppState>) { }
 
   ngOnInit() {
-    this.currentTrip$ = this.store.select(selectCurrentTrip)
+    // this.currentTrip$ = this.store.select(selectCurrentTrip).subscribe(trip => {
+    //   this.store.dispatch(fromItineraryItemStore.getItineraryItemsRequest(trip.id))
+    // })
+
     this.available$ = this.store.pipe(
       select(fromExperienceStore.selectExperiencesByType),
       tap(data => {
         // console.log('Selected Experiences:', data);
+      })
+    );
+
+    this.currentTrip$ = this.store.select(selectCurrentTrip).pipe(
+      tap(currentTrip => {
+
+        if (currentTrip) {
+          // this.store.dispatch(fromItineraryItemStore.getItineraryItemsRequest({ tripId: currentTrip.id }));
+        }
       })
     );
     this.itineraryItemsByDay$.subscribe(data => {
@@ -49,15 +63,13 @@ export class DayPlannerComponent implements OnInit {
   drop(event: CdkDragDrop<any>) {
     if (event.previousContainer.id == "AvailableExperiences") {
       console.log("add")
-      // Add the item to the "My Day Plan" list but don't remove it from "Available Experiences"
       const itemToAdd = event.previousContainer.data[event.previousIndex];
       this.currentTrip$.pipe(take(1)).subscribe(trip => {
-        console.log("trip:", trip)
         if (trip) {
           this.store.dispatch(fromItineraryItemStore.addActivityToMyDay({
             activity: itemToAdd,
             activity_order: event.currentIndex,
-            trip: trip
+            trip: trip,
           }));
         }
       });
@@ -70,29 +82,5 @@ export class DayPlannerComponent implements OnInit {
     }
 
   }
-
-
-
-// onSave() {
-//   this.store.select(state => state.pendingChanges).pipe(
-//     take(1),
-//     switchMap(pendingChanges => {
-//       const saveRequests = pendingChanges.map(change =>
-//         this.yourApiService.saveItineraryItem(change) // or update based on the nature of the change
-//       );
-//       return forkJoin(saveRequests);
-//     })
-//   ).subscribe(
-//     responses => {
-//       // Handle successful saves, dispatch action to clear pendingChanges, etc.
-//     },
-//     error => {
-//       // Handle errors
-//     }
-//   );
-// }
-
-
-
 
 }

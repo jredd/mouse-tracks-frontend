@@ -112,7 +112,7 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
     console.log("destination:", formData.destination)
     return {
       title: formData.title,
-      created_by: 'a56ea5a9-2101-4df9-8d39-9fd762c8e11f',
+      created_by: '928a9da6-fd89-4b1b-9f78-4d6fcfee3038',
       destination_id: formData.destination,
       start_date: formData.dateRange.start,
       end_date: formData.dateRange.end

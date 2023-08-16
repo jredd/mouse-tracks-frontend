@@ -1,7 +1,7 @@
 import {Experience} from "../experience/experience.interfaces";
 
 export interface NewItineraryItem {
-  tempId?: string; // Optional tempId for new items
+  tempId: string; // Optional tempId for new items
   trip: string;
   notes?: string;
   activity_order: number;
@@ -18,3 +18,8 @@ export interface ExistingItineraryItem extends Omit<NewItineraryItem, 'tempId'> 
 }
 
 export type ItineraryItem = NewItineraryItem | ExistingItineraryItem;
+
+export interface APIItineraryItem extends Omit<NewItineraryItem, 'tempId' | 'day' | 'content_type'> {
+  activity_content_type: string;
+  day: string;
+}

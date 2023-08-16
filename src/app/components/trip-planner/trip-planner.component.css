@@ -1,7 +1,6 @@
 .mat-button-disabled {
   color: gray !important;
   background-color: lightgray !important;
-  /* Add any other styles you want for the disabled state */
 }
 
 .full-width {
@@ -9,7 +8,7 @@
 }
 
 #itinerary_container {
-  height: calc(100% - 150px);
+  height: calc(100% - 106px);
 }
 
 /*# sourceMappingURL=trip-planner.component.css.map */

@@ -3,6 +3,7 @@ import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 
 import * as tripActions from '../store/trip/trip.actions';
+import * as itineraryItemActions from '../store/itinerary-item/itinerary-item.actions';
 
 
 export const currentTripGuard = (next: ActivatedRouteSnapshot) => {
@@ -21,5 +22,6 @@ export const deactivateCurrentTripGuard = () => {
     const store = inject(Store);
 
     store.dispatch(tripActions.deactivateCurrentTrip());
+    store.dispatch(itineraryItemActions.deactivateItineraryItems())
     return true;
 };

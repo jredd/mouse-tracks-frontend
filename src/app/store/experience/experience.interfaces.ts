@@ -2,6 +2,7 @@ import {BaseInterface} from "../base.interface";
 import {Location} from "../location/location.interfaces";
 
 export type ExperienceType = 'attraction' | 'entertainment' | 'event' | 'restaurant' | 'dining-event' | 'dinner-show';
+export type UIExperienceTypes = 'attractions' | 'entertainment' | 'events' | 'restaurants';
 
 export interface Experience extends BaseInterface {
   name: string;

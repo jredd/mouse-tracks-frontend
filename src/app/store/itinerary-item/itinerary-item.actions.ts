@@ -27,7 +27,7 @@ export const reorderItineraryItems = createAction(
 // New actions
 export const getItineraryItemsRequest = createAction(
   '[Itinerary Item] Get Items Request',
-  props<{ tripId: string }>()
+  props<{ trip_id: string }>()
 );
 
 export const getItineraryItemsSuccess = createAction(
@@ -78,4 +78,50 @@ export const reorderMyDayActivities = createAction(
 export const removeActivityFromMyDay = createAction(
     '[Itinerary] Remove Activity from My Day Plan',
     props<{ index: number }>() // Using index for removal
+);
+
+export const updateItineraryItemRequest = createAction(
+  '[Itinerary Item] Update Item Request',
+  props<{ itemId: string, item: ItineraryItem }>()
+);
+
+export const updateItineraryItemSuccess = createAction(
+  '[Itinerary Item] Update Item Success',
+  props<{ item: ItineraryItem }>()
+);
+
+export const updateItineraryItemFailure = createAction(
+  '[Itinerary Item] Update Item Failure',
+  props<{ error: any }>()
+);
+
+export const saveAllNonEmptyDays = createAction(
+  '[Itinerary] Save All Non Empty Days'
+);
+
+export const saveAllSuccess = createAction(
+  '[Itinerary] Save All Success'
+);
+
+export const clearDeletedItems = createAction(
+  '[Itinerary] Clear All Items to Delete'
+)
+
+export const saveAllFailure = createAction(
+  '[Itinerary] Save All Failure',
+  props<{ error: any }>()
+);
+
+export const deactivateItineraryItems = createAction(
+  '[Itinerary] Deactivate Itinerary Items',
+)
+
+export const stageItemForDeletion = createAction(
+  '[Itinerary Item] Stage Item for Deletion',
+  props<{ item: ItineraryItem }>()
+);
+
+export const replaceItem = createAction(
+  '[Itinerary] Replace Item',
+  props<{ tempId: string, newItem: ItineraryItem }>()
 );

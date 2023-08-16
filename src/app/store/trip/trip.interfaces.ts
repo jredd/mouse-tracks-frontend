@@ -1,6 +1,6 @@
 import {BaseInterface} from "../base.interface";
 import {Destination} from "../destination/destination.interfaces";
-
+// TODO: setup the interface to be similar to the itinerary interfaces
 export interface Trip extends BaseInterface {
   title: string;
   created_by: string;

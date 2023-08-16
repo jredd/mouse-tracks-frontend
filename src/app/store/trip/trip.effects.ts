@@ -46,12 +46,12 @@ export class TripEffects {
         this.store.select(selectTripNotFoundInStore).pipe(
           take(1),  // Only take one emission from the store
           map(tripNotFoundInStore => {
-            console.log(tripNotFoundInStore, action.trip_id)
+            // console.log(tripNotFoundInStore, action.trip_id)
               if (!tripNotFoundInStore) {
-                console.log("trip not found so fetch")
+                // console.log("trip not found so fetch")
                 return tripActions.loadTrip({ trip_id: action.trip_id });
               } else {
-                console.log("dummy action")
+                // console.log("dummy action")
                 return { type: '[Trip] No Operation' }; // Dispatch a dummy action
               }
           })

@@ -32,12 +32,6 @@ export const selectExperiencesType = createSelector(
         let key: keyof typeof state.experiencesByType;
 
         switch(state.currentExperienceTypeSelection) {
-          case 'dining-event':
-            key = 'event';
-            break;
-          case 'dinner-show':
-            key = 'event';
-            break
           default:
             key = state.currentExperienceTypeSelection;
             break;
@@ -52,6 +46,16 @@ export const selectExperiencesType = createSelector(
 
 export const selectExperiencesByType = createSelector(
   selectExperienceState, selectExperiencesType
+)
+
+export const selectCurrentExperiencesByTypeState = createSelector(
+  selectExperienceState,
+    (state: ExperienceState) => state.experiencesByType
+)
+
+export const selectCurrentExperiencesByType = createSelector(
+  selectExperienceState,
+  selectCurrentExperiencesByTypeState
 )
 
 export const selectAttractionExperiences = createSelector(

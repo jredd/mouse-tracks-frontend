@@ -1,7 +1,6 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 
-import { AppState } from "../app.state";
-import {itineraryFeatureKey, ItineraryState} from "./itinerary-item.reducer";
+import { itineraryFeatureKey, ItineraryState } from "./itinerary-item.reducer";
 import { ItineraryItem } from "./itinerary-item.interfaces";
 
 export const selectItineraryState = createFeatureSelector<ItineraryState>(itineraryFeatureKey);
@@ -16,7 +15,6 @@ export const SelectAllItemsByDay = createSelector(
   selectItineraryState, selectItemsByDay
 )
 
-
 // Selector for currentDay
 export const selectCurrentDay = createSelector(
   selectItineraryState,
@@ -27,7 +25,6 @@ export const selectTheCurrentDay = createSelector(
   selectItineraryState,
   selectCurrentDay
 );
-
 
 // Selector for items of the current day
 export const selectItemsForCurrentDay = createSelector(
@@ -48,15 +45,17 @@ export const selectError = createSelector(
   (itineraryState: ItineraryState) => itineraryState.error
 );
 
-// export const selectAllCurrentDayItems = createSelector(
-//     selectItemsByDay,
-//     selectCurrentDay,
-//     (itemsByDay, currentDay) => itemsByDay[currentDay] || []
-// );
+export const selectDeletedItems = createSelector(
+  selectItineraryState,
+  (itineraryState: ItineraryState) => itineraryState.deletedItems
+)
 
-// export const selectAllCurrentDayItems = createSelector(
-//   selectItemsByDay,selectCurrentDayItems
-// )
+export const selectAllDeletedItems = createSelector(
+  selectItineraryState,
+  selectDeletedItems
+)
+
+
 
 export const selectAllCurrentDayItems = createSelector(
     SelectAllItemsByDay,
@@ -75,3 +74,19 @@ export const selectAllCurrentDayItems = createSelector(
         }
     }
 );
+
+// export const selectItemsByDay = (state: AppState) => state.itemsByDay;
+
+// Then, create a selector to filter out days with no items.
+export const selectNonEmptyDaysWithItems = createSelector(
+  SelectAllItemsByDay,
+  (itemsByDay: { [key: string]: ItineraryItem[] }) => {
+    return Object.keys(itemsByDay)
+      .filter(day => itemsByDay[day] && itemsByDay[day].length > 0)
+      .map(day => ({ day, items: itemsByDay[day] }));
+  }
+);
+
+// export const selectNonEmptyDaysWithItems = createSelector(
+//   selectItineraryState
+// )

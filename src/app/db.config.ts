@@ -60,7 +60,7 @@ export const dbConfig: DBConfig = {
       ]
     },
     {
-      store: 'travelEvent',
+      store: 'travel_event',
       storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
         { name: 'from_location', keypath: 'from_location', options: { unique: false } },
@@ -79,7 +79,7 @@ export const dbConfig: DBConfig = {
       ]
     },
     {
-      store: 'itineraryItem',
+      store: 'itinerary_item',
       storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
         { name: 'trip', keypath: 'trip', options: { unique: false } },

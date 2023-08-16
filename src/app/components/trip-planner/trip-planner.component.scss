@@ -1,13 +1,6 @@
-//mat-grid-tile {
-//  display: flex;
-//  justify-content: center;
-//  align-items: center;
-//}
-
 .mat-button-disabled {
     color: gray !important;
     background-color: lightgray !important;
-    /* Add any other styles you want for the disabled state */
 }
 
 .full-width {
@@ -15,13 +8,5 @@
 }
 
 #itinerary_container {
-  height: calc(100% - 150px)
+  height: calc(100% - 106px);
 }
-
-//button[mat-raised-button][disabled] {
-//  opacity: 0 !important;
-//}
-
-//button[mat-raised-button] {
-//  opacity: 0 !important;
-//}

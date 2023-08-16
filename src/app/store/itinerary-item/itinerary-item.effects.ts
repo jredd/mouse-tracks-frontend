@@ -1,25 +1,33 @@
 // experience.effects.ts
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
-import {EMPTY, of} from 'rxjs';
-import { mergeMap, map, catchError, tap } from 'rxjs/operators';
+import {EMPTY, forkJoin, of, switchMap, withLatestFrom} from 'rxjs';
+import {mergeMap, map, catchError, tap} from 'rxjs/operators';
 
 import * as ItineraryActions from './itinerary-item.actions';
-import { AppService } from "../../app.service";
 import {TripService} from "../../components/trip-dashboard/trip-dashboard.service";
+import {ExistingItineraryItem, NewItineraryItem} from "./itinerary-item.interfaces";
+import * as fromItineraryItemStore from './';
+
+import {Store} from "@ngrx/store";
+// import {selectAllDeletedItems, selectNonEmptyDaysWithItems} from "./itinerary-item.selectors";
+import {AppState} from "../app.state";
+import {NgxIndexedDBService} from "ngx-indexed-db";
 
 @Injectable()
 export class ItineraryItemEffects {
 
   constructor(
+    private store: Store<AppState>,
     private actions$: Actions,
-    private tripService: TripService
+    private tripService: TripService,
+    private dbService: NgxIndexedDBService
   ) {}
 
   getItineraryItems$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ItineraryActions.getItineraryItemsRequest),
-      mergeMap(action => this.tripService.getItineraryItems(action.tripId).pipe(
+      mergeMap(action => this.tripService.getItineraryItems(action.trip_id).pipe(
         map(items => ItineraryActions.getItineraryItemsSuccess({ items })),
         catchError(() => EMPTY) // You could also dispatch a failure action here
       ))
@@ -36,5 +44,132 @@ export class ItineraryItemEffects {
     )
   );
 
+  saveAllItemsByDay$ = createEffect(() =>
+  this.actions$.pipe(
+    ofType(ItineraryActions.saveAllNonEmptyDays),
+    tap(() => console.log('Effect triggered!')),
+    withLatestFrom(
+      this.store.select(fromItineraryItemStore.selectNonEmptyDaysWithItems),
+      this.store.select(fromItineraryItemStore.selectAllDeletedItems)
+    ),
+    mergeMap(([action, daysWithItems, deletedItems]) => {
+      // Split the items into new and existing across all days
+      const allNewItems = daysWithItems
+        .flatMap(day => day.items)
+        .filter(item => 'tempId' in item) as NewItineraryItem[];
+
+      const allExistingItems = daysWithItems
+        .flatMap(day => day.items)
+        .filter(item => 'id' in item) as ExistingItineraryItem[];
+
+      // Create tasks based on new and existing items
+      const newTasks = allNewItems.length ? [this.tripService.bulkSaveItineraryItems(allNewItems)] : [];
+      const updateTasks = allExistingItems.length ? [this.tripService.bulkUpdateItineraryItems(allExistingItems)] : [];
+
+      // Delete tasks for the deleted items
+      const allDeletedItems = deletedItems.filter(isExistingItineraryItem);
+      const deleteTasks = allDeletedItems.length ? [this.tripService.bulkDeleteItineraryItems(allDeletedItems)] : [];
+
+      // Combine all tasks
+      return forkJoin([...newTasks, ...updateTasks, ...deleteTasks]).pipe(
+        map(results => ({ results, allNewItems }))
+      );
+    }),
+    mergeMap(({ results, allNewItems }) => {
+      // Here, results would contain the combined results of new, updated, and deleted tasks.
+      // And you have access to allNewItems as well.
+      // You can perform logic to update the local DB and state here.
+
+      if (results[0]) {  // Assuming the first result corresponds to new items
+  results[0].forEach((newItem, index) => {
+    const tempId = allNewItems[index].tempId;
+
+    // Delete the temporary item
+    this.dbService.delete('itinerary_item', tempId).pipe(
+          // Once the delete is successful, add the new item
+          switchMap(() => this.dbService.add('itinerary_item', newItem)),
+          // After adding the new item to the database, dispatch the REPLACE_ITEM action
+          tap(() => {
+            this.store.dispatch(ItineraryActions.replaceItem({ tempId, newItem }));
+          })
+        ).subscribe();
+      });
+    }
+
+      // Similarly, process results[1] for updates and results[2] for deletes.
+
+      return [
+        ItineraryActions.saveAllSuccess(),
+        ItineraryActions.clearDeletedItems() // Action to clear deleted items from the state after they've been deleted
+      ];
+    }),
+    catchError((error) => of(ItineraryActions.saveAllFailure({ error })))
+  )
+  );
+
+
+
+ // saveAllItemsByDay$ = createEffect(() =>
+ //    this.actions$.pipe(
+ //        ofType(ItineraryActions.saveAllNonEmptyDays),
+ //        tap(() => console.log('Effect triggered!')),
+ //        withLatestFrom(
+ //            this.store.select(fromItineraryItemStore.selectNonEmptyDaysWithItems),
+ //            this.store.select(fromItineraryItemStore.selectAllDeletedItems)
+ //        ),
+ //        mergeMap(([action, daysWithItems, deletedItems]) => {
+ //            // Split the items into new and existing across all days
+ //            const allNewItems = daysWithItems
+ //                .flatMap(day => day.items)
+ //                .filter(item => 'tempId' in item) as NewItineraryItem[];
+ //
+ //            const allExistingItems = daysWithItems
+ //                .flatMap(day => day.items)
+ //                .filter(item => 'id' in item) as ExistingItineraryItem[];
+ //
+ //            // Create tasks based on new and existing items
+ //            const newTasks = allNewItems.length ? [this.tripService.bulkSaveItineraryItems(allNewItems)] : [];
+ //            const updateTasks = allExistingItems.length ? [this.tripService.bulkUpdateItineraryItems(allExistingItems)] : [];
+ //
+ //            // Delete tasks for the deleted items
+ //            const allDeletedItems = deletedItems.filter(isExistingItineraryItem);
+ //            const deleteTasks = allDeletedItems.length ? [this.tripService.bulkDeleteItineraryItems(allDeletedItems)] : [];
+ //
+ //            // Combine all tasks
+ //            return forkJoin([...newTasks, ...updateTasks, ...deleteTasks]);
+ //        }),
+ //        mergeMap(() => [
+ //            ItineraryActions.saveAllSuccess(),
+ //            ItineraryActions.clearDeletedItems() // Action to clear deleted items from the state after they've been deleted
+ //        ]),
+ //        catchError((error) => of(ItineraryActions.saveAllFailure({ error })))
+ //    )
+ //  );
+
+
+  // saveAllItemsByDay$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(ItineraryActions.saveAllNonEmptyDays),
+  //     withLatestFrom(this.store.select(selectNonEmptyDaysWithItems)), // Use withLatestFrom to get the current state
+  //     mergeMap(([action, daysWithItems]) => {
+  //       const saveTasks = daysWithItems.map(dayWithItem =>
+  //         this.tripService.bulkSaveItineraryItems(dayWithItem.day, dayWithItem.items)
+  //       );
+  //       return forkJoin(saveTasks);  // This will wait for all saves to complete
+  //     }),
+  //     map(() => {
+  //       // Dispatch some success action, e.g., ItineraryActions.saveAllSuccess()
+  //       return ItineraryActions.saveAllSuccess();
+  //     }),
+  //     catchError((error) => {
+  //       // Handle any errors, perhaps by dispatching a failure action, e.g., ItineraryActions.saveAllFailure({ error })
+  //       return of(ItineraryActions.saveAllFailure({ error }));
+  //     })
+  //   )
+  // );
+
   // Add more effects here for other actions like update, delete, etc. if necessary.
+}
+function isExistingItineraryItem(item: any): item is ExistingItineraryItem {
+  return 'id' in item && item.id !== undefined;
 }

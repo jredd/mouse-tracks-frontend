@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -20,6 +20,7 @@ import { TripDashboardComponent } from "./trip-dashboard.component";
 import { TripPlannerComponent } from "../trip-planner/trip-planner.component";
 import {DayPlannerComponent} from "../day-planner/day-planner.component";
 import {DragDropModule} from "@angular/cdk/drag-drop";
+import {MatIconModule} from "@angular/material/icon";
 
 
 @NgModule({
@@ -46,8 +47,10 @@ import {DragDropModule} from "@angular/cdk/drag-drop";
     MatProgressSpinnerModule,
     MatDatepickerModule,
     MatButtonToggleModule,
+    MatIconModule,
     MatCardModule,
     DragDropModule,
+    FormsModule,
     RouterModule,
   ],
   exports: [TripDashboardComponent, DateRangePipe]

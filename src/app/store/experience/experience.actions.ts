@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 
-import { Experience, ExperienceType} from "./experience.interfaces";
+import {Experience, ExperienceType, UIExperienceTypes} from "./experience.interfaces";
 import { MoveExperiencePayload } from "./experience.reducer";
 
 export const loadExperiences = createAction(
@@ -31,7 +31,7 @@ export const setError = createAction(
 
 export const setCurrentExperienceType = createAction(
   '[Experience] Set Current Experience Type',
-  props<{ experienceType: ExperienceType }>()
+  props<{ experienceType: UIExperienceTypes }>()
 );
 
 export const moveExperience = createAction(
