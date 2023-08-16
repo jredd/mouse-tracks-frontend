@@ -1,0 +1,18 @@
+header {
+  width: 100%;
+  background-color: #bad9e8;
+  display: block;
+  height: 60px;
+}
+header a {
+  color: #424242;
+  text-decoration: none !important;
+  font-family: "hypatia-sans-pro", sans-serif !important;
+  font-size: 1.5em !important;
+  font-weight: 400;
+  margin-left: 15px;
+  margin-top: 18px;
+  display: inline-block;
+}
+
+/*# sourceMappingURL=header.component.css.map */
