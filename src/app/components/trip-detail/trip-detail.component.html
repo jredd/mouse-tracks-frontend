@@ -1,0 +1,33 @@
+<!-- Loading Spinner -->
+<mat-spinner *ngIf="isLoading$ | async"></mat-spinner>
+
+<ng-container *ngIf="!(isLoading$ | async)">
+  <div @fadeIn *ngIf="currentTrip$ | async as currentTrip">
+    <mat-grid-list cols="12" gutterSize="10px">
+      <!-- Destination Display -->
+      <mat-grid-tile colspan="3">
+        <div>
+          <h2>{{ currentTrip.destination.name }}</h2>
+        </div>
+      </mat-grid-tile>
+
+      <!-- Trip Title Display -->
+      <mat-grid-tile colspan="6">
+        <h3>{{ currentTrip.title }}</h3>
+      </mat-grid-tile>
+
+      <!-- Date Range Display -->
+      <mat-grid-tile colspan="3">
+        <p>{{ currentTrip.start_date | dateRange:currentTrip.end_date }}</p>
+      </mat-grid-tile>
+
+    </mat-grid-list>
+
+<!--    <div id="itinerary_container">-->
+<!--      <app-itinerary *ngIf="currentTrip$ | async"></app-itinerary>-->
+<!--    </div>-->
+  </div>
+</ng-container>
+<div>
+  <app-itinerary-detail></app-itinerary-detail>
+</div>

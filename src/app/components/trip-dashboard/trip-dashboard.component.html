@@ -18,10 +18,9 @@
         </div>
       </mat-grid-tile>
     </mat-grid-list>
-
     <div *ngIf="displayTrips" [@staggeredFadeIn]="trips.length">
       <div *ngFor="let trip of trips">
-        <mat-card id="trip-card" routerLink="/trip/planner/{{trip.id}}">
+        <mat-card id="trip-card" routerLink="/trip/detail/{{trip.id}}">
           <mat-card-header>
             <mat-card-title>{{ trip.title }}</mat-card-title>
           </mat-card-header>
@@ -30,6 +29,9 @@
             <p>{{ trip.start_date | dateRange:trip.end_date }}</p>
           </mat-card-content>
           <mat-card-actions>
+            <button mat-button routerLink="/trip/planner/{{trip.id}}">
+              <mat-icon>edit</mat-icon>
+            </button>
           </mat-card-actions>
         </mat-card>
       </div>
