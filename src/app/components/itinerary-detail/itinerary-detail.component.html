@@ -1,2 +1,7 @@
-<p>itinerary-detail works!</p>
-<app-day-detail></app-day-detail>
+<ng-container *ngIf="itemsByDay$ | async as itemsByDay">
+  <app-day-detail class="day_detail"
+      *ngFor="let item of itemsByDay | keyvalue; let i = index"
+      [day]="item.key"
+      [itineraryItems]="item.value">
+  </app-day-detail>
+</ng-container>

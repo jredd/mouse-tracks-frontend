@@ -23,7 +23,7 @@ export class TripDetailComponent implements OnInit {
     constructor(private store: Store<AppState>) {}
 
     ngOnInit(): void {
-      this.isLoading$ = this.store.select(fromTripStore.selectLoading); // Adjust as per your selectors
-      this.currentTrip$ = this.store.select(fromTripStore.selectCurrentTrip)
+      // this.isLoading$ = this.store.select(fromTripStore.selectLoading); // Adjust as per your selectors
+      // this.currentTrip$ = this.store.select(fromTripStore.selectCurrentTrip)
     }
 }

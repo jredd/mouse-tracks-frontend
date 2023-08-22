@@ -1,1 +1,31 @@
-<p>day-detail works!</p>
+<mat-spinner *ngIf="isLoading$ | async"></mat-spinner>
+
+<mat-card class="day_card" @fadeIn>
+  <mat-card-header class="card_header" *ngIf="currentTrip$ | async as currentTrip">
+    <mat-card-title class="card_title">
+      <div class="card_title_content">
+        <h2>{{ currentTrip.title }}</h2>
+        <span class="header_date"> {{ currentTrip.start_date | dateRange:currentTrip.end_date }}</span>
+          <span class="header_day_name">{{ day | dayName }}: </span>
+          <span class="header_location_name" *ngIf="locationGroups.length > 0"> {{ locationGroups[0].locationName }}</span>
+      </div>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="grid-container">
+    <ng-container *ngFor="let locationGroup of locationGroups">
+      <div class="grid-item">
+        <!-- Loop over lands within the location group -->
+        <ng-container *ngFor="let landGroup of locationGroup.lands">
+          <h4>{{ landGroup.landName }}:</h4>
+
+          <!-- List out the individual activities within the land -->
+          <ul>
+            <li *ngFor="let item of landGroup.activities">
+              {{ item.activity.name }}
+            </li>
+          </ul>
+        </ng-container>
+      </div>
+    </ng-container>
+  </mat-card-content>
+</mat-card>

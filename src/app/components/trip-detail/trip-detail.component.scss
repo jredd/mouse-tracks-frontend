@@ -1,0 +1,56 @@
+#trip_detail_header {
+  h2 {
+    margin-bottom: 0;
+    margin-top: 5px;
+  }
+
+  .header_date {
+    margin-bottom: 0 !important;
+  }
+
+  @media (max-width: 768px) {
+    h2 {
+      text-align: center;
+    }
+    .header_date {
+      text-align: center;
+    }
+  }
+
+
+}
+
+///* For screens larger than 768px */
+//@media (min-width: 769px) {
+//  .title-tile {
+//    width: 50%!important; /* 6 out of 12 columns */
+//  }
+//  .date-range-tile {
+//    width: 25%!important; /* 3 out of 12 columns */
+//  }
+//}
+//
+//#trip_detail_header {
+//  //background-color: #6ab7ff;
+//  height: 55px;
+//}
+//
+///* For screens 768px and smaller */
+//@media (max-width: 768px) {
+//  .title-tile, .date-range-tile {
+//    width: 100%!important; /* take up the full width */
+//  }
+//  .title-tile {
+//    //margin-top: 5px !important;
+//    height: 20px !important;
+//    margin-bottom: 5px !important;
+//    //background-color: #36454F;
+//  }
+//
+//  .date-range-tile {
+//    left: 0 !important;
+//    //background-color: orange;
+//    margin-top: 35px !important;
+//    //margin-bottom: 5px !important;
+//  }
+//}

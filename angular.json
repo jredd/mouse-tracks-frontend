@@ -18,6 +18,11 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/mouse-tracks-frontend",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles"
+              ]
+            },
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [

@@ -31,15 +31,15 @@ body { margin: 0; font-family: "specter", sans-serif; }
 p, span, div {
   font-family: "specter", sans-serif !important;
 }
-
-h1, {
+h1, h2, h3, h4, h5 {
   font-family: "hypatia-sans-pro", sans-serif !important;
+}
+h1, {
   font-size: 2em !important;
   font-weight: 900;
 }
 
 h2, {
-  font-family: "hypatia-sans-pro", sans-serif !important;
   font-size: 1.75em !important;
   font-weight: 700;
 }

@@ -11,17 +11,18 @@ import * as tripActions from "../trip/trip.actions";
 
 export const itineraryFeatureKey = 'itinerary_item';
 
-export interface ItineraryState {
-  itemsByDay: {
+export type ItemsByDay = {
     [key: string]: ItineraryItem[];
-  }; // key is the day in 'YYYY-MM-DD' format
+};
+export interface ItineraryState {
+  itemsByDay: ItemsByDay; // key is the day in 'YYYY-MM-DD' format
   currentDay: string;
   deletedItems: ItineraryItem[];
   loading: boolean;
   error: any;
 }
 
-const initialItemsByDay: Record<string, ItineraryItem[]> = {}; // or however you initialize it
+export const initialItemsByDay: Record<string, ItineraryItem[]> = {}; // or however you initialize it
 
 export const initialState: ItineraryState = {
   itemsByDay: initialItemsByDay,

@@ -22,8 +22,10 @@ import { DayPlannerComponent } from "../day-planner/day-planner.component";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { MatIconModule } from "@angular/material/icon";
 import { TripDetailComponent } from "../trip-detail/trip-detail.component";
-import {DayDetailComponent} from "../day-detail/day-detail.component";
-import {ItineraryDetailComponent} from "../itinerary-detail/itinerary-detail.component";
+import { DayDetailComponent } from "../day-detail/day-detail.component";
+import { ItineraryDetailComponent } from "../itinerary-detail/itinerary-detail.component";
+import { MatDividerModule } from "@angular/material/divider";
+import {DayNamePipe} from "../../pipes/day-name.pipe";
 
 
 @NgModule({
@@ -33,6 +35,7 @@ import {ItineraryDetailComponent} from "../itinerary-detail/itinerary-detail.com
     TripDetailComponent,
     ItineraryComponent,
     DateRangePipe,
+    DayNamePipe,
     DayPlannerComponent,
     DayDetailComponent,
     ItineraryDetailComponent,
@@ -42,6 +45,7 @@ import {ItineraryDetailComponent} from "../itinerary-detail/itinerary-detail.com
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatFormFieldModule,
+    MatDividerModule,
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
