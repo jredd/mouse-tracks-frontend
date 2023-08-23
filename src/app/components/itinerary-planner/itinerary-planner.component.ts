@@ -9,17 +9,20 @@ import * as fromLocationStore from '../../store/location/';
 import * as fromTripStore from '../../store/trip/';
 import * as fromExperienceStore from '../../store/experience/';
 import * as fromItineraryItemStore from '../../store/itinerary-item/';
-import {fadeIn} from "../trip-dashboard/trip-dashboard.animation";
+import { fadeIn } from "../trip-dashboard/trip-dashboard.animation";
 import { ChangeDetectorRef } from '@angular/core';
+import { MatDialog } from "@angular/material/dialog";
+import { DialoguePlannerContentComponent } from "../dialogue-planner-content/dialogue-planner-content.component";
+import {FormType} from "../dialogue-planner-content/dialogue-planner-content.interface";
 
 
 @Component({
-  selector: 'app-itinerary',
-  templateUrl: './itinerary.component.html',
-  styleUrls: ['./itinerary.component.scss'],
+  selector: 'app-itinerary-planner',
+  templateUrl: './itinerary-planner.component.html',
+  styleUrls: ['./itinerary-planner.component.scss'],
   animations: [fadeIn],
 })
-export class ItineraryComponent implements OnInit {
+export class ItineraryPlannerComponent implements OnInit {
   // experienceTypes = ["Attraction", "Entertainment", "Event", "Restaurant"]
   experienceTypes: string[] = [];
   days$: Observable<string[]> = this.store.pipe(
@@ -47,7 +50,7 @@ export class ItineraryComponent implements OnInit {
     'Restaurants': 'restaurants'
   };
 
-  constructor(private store: Store<AppState>, private cdr: ChangeDetectorRef) {}
+  constructor(public dialogue: MatDialog, private store: Store<AppState>, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     // this.currentTypeExperiences$.subscribe(type => this.currentExperienceType = type);
@@ -74,10 +77,16 @@ export class ItineraryComponent implements OnInit {
     this.updateExperienceTypes()
   }
 
+  openDialog(formType: FormType) {
+    this.dialogue.open(DialoguePlannerContentComponent, {
+      width: '500px',
+      data: { type: formType }
+    });
+  }
+
   onDayChange(selectedDay: string) {
     this.store.dispatch(fromItineraryItemStore.setCurrentDay({ day: selectedDay }));
   }
-
 
   updateExperienceTypes() {
     this.experiencesByType$.subscribe(data => {
@@ -118,15 +127,15 @@ export class ItineraryComponent implements OnInit {
   }
 
   onAddNotes() {
-    // Logic to handle adding notes goes here.
+    this.openDialog(FormType.NOTES);
   }
 
   onTravelEvents() {
-      // Logic to handle travel events goes here.
+    this.openDialog(FormType.TRAVEL_EVENT);
   }
 
   onAddBreak() {
-    // Logic to handle breaks go here.
+    this.openDialog(FormType.BREAK);
   }
 
   onSave() {

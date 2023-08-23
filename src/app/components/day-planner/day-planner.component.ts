@@ -11,6 +11,9 @@ import * as moment from 'moment';
 import {addActivityToMyDay, selectAllCurrentDayItems} from "../../store/itinerary-item/";
 import {loadTrip, selectCurrentTrip, selectTrip} from "../../store/trip";
 import {fadeIn} from "../trip-dashboard/trip-dashboard.animation";
+import {DialoguePlannerContentComponent} from "../dialogue-planner-content/dialogue-planner-content.component";
+import {MatDialog} from "@angular/material/dialog";
+import {FormType} from "../dialogue-planner-content/dialogue-planner-content.interface";
 
 type UnifiedDragDropEvent = CdkDragDrop<Experience[] | Partial<ItineraryItem>[] | null, any>;
 
@@ -33,7 +36,15 @@ export class DayPlannerComponent implements OnInit {
 
 
 
-  constructor(private store: Store<AppState>) { }
+  constructor(public dialogue: MatDialog, private store: Store<AppState>) { }
+
+  openDialog() {
+    this.dialogue.open(DialoguePlannerContentComponent, {
+      width: '500px',
+      data: { type: 'MEAL' }
+    });
+  }
+
 
   ngOnInit() {
     // this.currentTrip$ = this.store.select(selectCurrentTrip).subscribe(trip => {
@@ -64,6 +75,11 @@ export class DayPlannerComponent implements OnInit {
     if (event.previousContainer.id == "AvailableExperiences") {
       console.log("add")
       const itemToAdd = event.previousContainer.data[event.previousIndex];
+      console.log(itemToAdd)
+      if (itemToAdd.experience_type == 'restaurant') {
+        this.openDialog()
+        return
+      }
       this.currentTrip$.pipe(take(1)).subscribe(trip => {
         if (trip) {
           this.store.dispatch(fromItineraryItemStore.addActivityToMyDay({

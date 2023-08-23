@@ -1,0 +1,65 @@
+<h2 mat-dialog-title>Details</h2>
+
+<mat-dialog-content>
+  <ng-container *ngIf="currentFormType === FormType.RESTAURANT">
+  <!-- Restaurant Form -->
+  <form [formGroup]="form">
+    <!-- Reservation time -->
+    <mat-form-field>
+      <input matInput placeholder="Reservation Time" formControlName="reservation_time">
+    </mat-form-field>
+
+    <!-- Meal type Toggle button group -->
+    <label>Meal Type:</label>
+    <mat-button-toggle-group name="meal_type" aria-label="Meal Type" formControlName="meal_type">
+      <mat-button-toggle value="breakfast">Breakfast</mat-button-toggle>
+      <mat-button-toggle value="lunch">Lunch</mat-button-toggle>
+      <mat-button-toggle value="dinner">Dinner</mat-button-toggle>
+      <mat-button-toggle value="snack">Snack</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <!-- Notes -->
+    <mat-form-field>
+      <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+    </mat-form-field>
+  </form>
+</ng-container>
+
+  <ng-container *ngIf="currentFormType === FormType.TRAVEL_EVENT">
+    <!-- Travel Event Form -->
+    <form [formGroup]="form">
+      <mat-form-field>
+        <input matInput placeholder="From Location" formControlName="from_location">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="To Location" formControlName="to_location">
+      </mat-form-field>
+      <!-- Add other required fields as well -->
+    </form>
+  </ng-container>
+
+  <ng-container *ngIf="currentFormType === FormType.NOTES">
+    <!-- Notes Form -->
+    <form [formGroup]="form">
+      <mat-form-field>
+        <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+      </mat-form-field>
+      <!-- Add the optional start and end times as well -->
+    </form>
+  </ng-container>
+
+  <ng-container *ngIf="currentFormType === FormType.BREAK">
+    <!-- Break Form -->
+    <form [formGroup]="form">
+      <mat-form-field>
+        <input matInput placeholder="Location" formControlName="location">
+      </mat-form-field>
+    </form>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Close</button>
+  <button mat-raised-button color="primary" [disabled]="form.invalid">Save</button>
+<!--  <button mat-raised-button color="primary" *ngIf="form" [disabled]="form.invalid" (click)="onSave()">Save</button>-->
+</mat-dialog-actions>

@@ -15,7 +15,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 import { DateRangePipe } from "../../pipes/date-range.pipe";
-import { ItineraryComponent } from "../itinerary/itinerary.component";
+import { ItineraryPlannerComponent } from "../itinerary-planner/itinerary-planner.component";
 import { TripDashboardComponent } from "./trip-dashboard.component";
 import { TripPlannerComponent } from "../trip-planner/trip-planner.component";
 import { DayPlannerComponent } from "../day-planner/day-planner.component";
@@ -25,7 +25,9 @@ import { TripDetailComponent } from "../trip-detail/trip-detail.component";
 import { DayDetailComponent } from "../day-detail/day-detail.component";
 import { ItineraryDetailComponent } from "../itinerary-detail/itinerary-detail.component";
 import { MatDividerModule } from "@angular/material/divider";
-import {DayNamePipe} from "../../pipes/day-name.pipe";
+import { DayNamePipe} from "../../pipes/day-name.pipe";
+import { MatDialogModule} from "@angular/material/dialog";
+import { DialoguePlannerContentComponent } from "../dialogue-planner-content/dialogue-planner-content.component";
 
 
 @NgModule({
@@ -33,12 +35,13 @@ import {DayNamePipe} from "../../pipes/day-name.pipe";
     TripDashboardComponent,
     TripPlannerComponent,
     TripDetailComponent,
-    ItineraryComponent,
+    ItineraryPlannerComponent,
     DateRangePipe,
     DayNamePipe,
     DayPlannerComponent,
     DayDetailComponent,
     ItineraryDetailComponent,
+    DialoguePlannerContentComponent,
   ],
   imports: [
     CommonModule,
@@ -54,6 +57,7 @@ import {DayNamePipe} from "../../pipes/day-name.pipe";
     MatGridListModule,
     MatFormFieldModule,
     MatInputModule,
+    MatDialogModule,
     MatProgressSpinnerModule,
     MatDatepickerModule,
     MatButtonToggleModule,
