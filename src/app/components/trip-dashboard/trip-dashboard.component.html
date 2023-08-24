@@ -28,7 +28,7 @@
             <p>{{ trip.destination.name }}</p>
             <p>{{ trip.start_date | dateRange:trip.end_date }}</p>
           </mat-card-content>
-          <mat-card-actions>
+          <mat-card-actions align="end">
             <button mat-button routerLink="/trip/planner/{{trip.id}}">
               <mat-icon>edit</mat-icon>
             </button>
@@ -41,5 +41,5 @@
 
 <ng-template #noTrips>
   <h1>You don't have any trips yet</h1>
-  <button mat-raised-button color="primary" routerLink="/trip/planner">Start planning your new trip</button>
+  <button mat-raised-button color="" routerLink="/trip/planner">Start planning your new trip</button>
 </ng-template>

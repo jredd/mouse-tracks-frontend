@@ -1,3 +1,6 @@
+@use '@angular/material' as mat;
+@include mat.core();
+
 $white: #FCFCFC;
 $black: #424242;
 $charcoal: #515051;
@@ -12,3 +15,146 @@ $secondary_shade2: #fce7e0;
 
 $plain_background: #fcfbfb;
 $plain_hover: #f5f4f4;
+
+$custom-primary: mat.define-palette((
+  50: lighten($primary, 25%),
+  100: lighten($primary, 20%),
+  200: lighten($primary, 15%),
+  300: $primary_shade2,
+  400: $primary_shade1,
+  500: $primary,
+  600: darken($primary, 5%),
+  700: darken($primary, 10%),
+  800: darken($primary, 15%),
+  900: darken($primary, 20%),
+  A100: $secondary_shade2,
+  A200: $secondary_shade1,
+  A400: $secondary,
+  A700: darken($secondary, 10%),
+  contrast: (
+    50: $charcoal,
+    100: $charcoal,
+    200: $black,
+    300: $black,
+    400: $black,
+    500: $white,
+    600: $white,
+    700: $white,
+    800: $white,
+    900: $white,
+    A100: $charcoal,
+    A200: $black,
+    A400: $white,
+    A700: $white
+  )
+));
+
+$custom-accent: mat.define-palette((
+  50: lighten($secondary, 25%),
+  100: lighten($secondary, 20%),
+  200: lighten($secondary, 15%),
+  300: $secondary_shade2,
+  400: $secondary_shade1,
+  500: $secondary,
+  600: darken($secondary, 5%),
+  700: darken($secondary, 10%),
+  800: darken($secondary, 15%),
+  900: darken($secondary, 20%),
+  A100: lighten($primary, 10%),
+  A200: $primary,
+  A400: darken($primary, 10%),
+  A700: darken($primary, 20%),
+  contrast: (
+    50: $charcoal,
+    100: $charcoal,
+    200: $black,
+    300: $black,
+    400: $black,
+    500: $white,
+    600: $white,
+    700: $white,
+    800: $white,
+    900: $white,
+    A100: $charcoal,
+    A200: $white,
+    A400: $white,
+    A700: $white
+  )
+));
+
+//// Define the theme
+//$custom-theme: mat.define-light-theme((
+//  color: (
+//    primary: $custom-primary,
+//    accent: $custom-accent,
+//  )
+//));
+//
+//// Apply the theme to Angular Material components
+//@include mat.all-component-themes($custom-theme);
+
+
+
+//@use '@angular/material' as mat;
+//@include mat.core();
+//
+//$white: #FCFCFC;
+//$black: #424242;
+//$charcoal: #515051;
+//
+//$primary: #bad9e8;
+//$primary_shade1: #a3cce0;
+//$primary_shade2: #6ab7ff;
+//
+//$secondary: #efcebf;
+//$secondary_shade1: #f7d8cb;
+//$secondary_shade2: #fce7e0;
+//
+//$plain_background: #fcfbfb;
+//$plain_hover: #f5f4f4;
+//
+//
+//// Your main colors
+////$dominant: #EDEDED;  // 60%
+////$secondary: #BAD9E8; // 30%
+////$accent-color: #EFCEC0;  // 10%
+////
+////
+////// Define custom palettes based on your colors
+////$custom-primary: mat.define-palette((
+////  50: lighten(#EDEDED, 15%),
+////  100: lighten(#EDEDED, 10%),
+////  200: lighten(#EDEDED, 5%),
+////  300: #EDEDED,
+////  400: darken(#EDEDED, 5%),
+////  500: darken(#EDEDED, 10%),
+////  600: darken(#EDEDED, 15%),
+////  700: darken(#EDEDED, 20%),
+////  800: darken(#EDEDED, 25%),
+////  900: darken(#EDEDED, 30%),
+////  A100: #EFCEC0,
+////  A200: darken(#EFCEC0, 5%),
+////  A400: darken(#EFCEC0, 15%),
+////  A700: darken(#EFCEC0, 25%),
+////  contrast: (...)
+////));
+////
+////$custom-accent: mat.define-palette((
+////  50: lighten(#BAD9E8, 15%),
+////  100: lighten(#BAD9E8, 10%),
+////  200: lighten(#BAD9E8, 5%),
+////  300: #BAD9E8,
+////  400: darken(#BAD9E8, 5%),
+////  500: darken(#BAD9E8, 10%),
+////  600: darken(#BAD9E8, 15%),
+////  700: darken(#BAD9E8, 20%),
+////  800: darken(#BAD9E8, 25%),
+////  900: darken(#BAD9E8, 30%),
+////  A100: lighten(#EFCEC0, 10%),
+////  A200: #EFCEC0,
+////  A400: darken(#EFCEC0, 10%),
+////  A700: darken(#EFCEC0, 20%),
+////  contrast: (...)
+////));
+//
+//
