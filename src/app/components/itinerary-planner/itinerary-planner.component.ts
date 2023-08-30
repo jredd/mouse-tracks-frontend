@@ -69,7 +69,6 @@ export class ItineraryPlannerComponent implements OnInit {
       this.selectedDay = currentDay
     })
     this.locations$.subscribe(locations => {
-      console.log(locations)
       if (locations && locations.length > 0) {
         this.onLocationChange(locations[0].id)
       }
@@ -77,10 +76,12 @@ export class ItineraryPlannerComponent implements OnInit {
     this.updateExperienceTypes()
   }
 
-  openDialog(formType: FormType) {
+  openDialog(formType: FormType, dialogTitle: string, height: string, autofocus = true) {
     this.dialogue.open(DialoguePlannerContentComponent, {
-      width: '500px',
-      data: { type: formType }
+      width: '600px',
+      height: height,
+      data: { type: formType, title: dialogTitle },
+      autoFocus: autofocus
     });
   }
 
@@ -116,30 +117,26 @@ export class ItineraryPlannerComponent implements OnInit {
   }
 
   onLocationChange(locId: string) {
-    console.log('Location:', locId)
     this.locId = locId
     this.store.dispatch(fromExperienceStore.loadExperiences({ loc_id: locId }));
   }
   onExperienceTypeChange(event: MatButtonToggleChange) {
-    console.log(event)
-    // if event
     this.store.dispatch(fromExperienceStore.setCurrentExperienceType({ experienceType: event.value.toLowerCase() }));
   }
 
   onAddNotes() {
-    this.openDialog(FormType.NOTES);
+    this.openDialog(FormType.NOTES, "Add Note", '350px');
   }
 
   onTravelEvents() {
-    this.openDialog(FormType.TRAVEL_EVENT);
+    this.openDialog(FormType.TRAVEL_EVENT, "Add Travel", '600px', false);
   }
 
   onAddBreak() {
-    this.openDialog(FormType.BREAK);
+    this.openDialog(FormType.BREAK, "Add Break", '350px');
   }
 
   onSave() {
-    console.log("save dat shit")
     // Assuming you have an array of itinerary items named 'itineraryItems' and a tripId variable.
     this.store.dispatch(fromItineraryItemStore.saveAllNonEmptyDays());
   }

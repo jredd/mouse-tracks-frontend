@@ -40,8 +40,9 @@ export class DayPlannerComponent implements OnInit {
 
   openDialog() {
     this.dialogue.open(DialoguePlannerContentComponent, {
-      width: '500px',
-      data: { type: 'MEAL' }
+      width: '400px',
+      height: '400px',
+      data: { type: 'MEAL', title: 'Add Meal' }
     });
   }
 

@@ -1,65 +1,127 @@
-<h2 mat-dialog-title>Details</h2>
-
-<mat-dialog-content>
-  <ng-container *ngIf="currentFormType === FormType.RESTAURANT">
-  <!-- Restaurant Form -->
-  <form [formGroup]="form">
-    <!-- Reservation time -->
-    <mat-form-field>
-      <input matInput placeholder="Reservation Time" formControlName="reservation_time">
-    </mat-form-field>
-
-    <!-- Meal type Toggle button group -->
-    <label>Meal Type:</label>
-    <mat-button-toggle-group name="meal_type" aria-label="Meal Type" formControlName="meal_type">
-      <mat-button-toggle value="breakfast">Breakfast</mat-button-toggle>
-      <mat-button-toggle value="lunch">Lunch</mat-button-toggle>
-      <mat-button-toggle value="dinner">Dinner</mat-button-toggle>
-      <mat-button-toggle value="snack">Snack</mat-button-toggle>
-    </mat-button-toggle-group>
-
-    <!-- Notes -->
-    <mat-form-field>
-      <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
-    </mat-form-field>
-  </form>
-</ng-container>
-
-  <ng-container *ngIf="currentFormType === FormType.TRAVEL_EVENT">
-    <!-- Travel Event Form -->
+<div id="dialogue_content_container">
+  <h2 mat-dialog-title>{{ data.title ? data.title : 'Default Title' }}</h2>
+  <mat-dialog-content *ngIf="form && isFormReady">
     <form [formGroup]="form">
-      <mat-form-field>
-        <input matInput placeholder="From Location" formControlName="from_location">
-      </mat-form-field>
-      <mat-form-field>
-        <input matInput placeholder="To Location" formControlName="to_location">
-      </mat-form-field>
-      <!-- Add other required fields as well -->
-    </form>
-  </ng-container>
+      <div id="meal_container" *ngIf="currentFormType === FormType.MEAL">
+        <ng-container>
+        <!-- Meal Type Toggle Buttons -->
+        <div class="meal-toggle-row">
+          <mat-button-toggle-group name="meal_type" aria-label="Meal Type" formControlName="meal_type">
+            <mat-button-toggle value="breakfast">Breakfast</mat-button-toggle>
+            <mat-button-toggle value="lunch">Lunch</mat-button-toggle>
+            <mat-button-toggle value="dinner">Dinner</mat-button-toggle>
+            <mat-button-toggle value="snack">Snack</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+        <!-- Meal Time -->
+        <mat-form-field class="full_width">
+          <mat-label>Reservation Time</mat-label>
+          <input matInput type="time" placeholder="Meal Time" formControlName="reservation_time">
+        </mat-form-field>
+        <!-- Notes -->
+          <div id="meal_notes">
+            <mat-form-field class="full_width">
+          <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+        </mat-form-field>
+          </div>
+      </ng-container>
+      </div>
+      <div id="travel_event_container" *ngIf="currentFormType === FormType.TRAVEL_EVENT">
+        <ng-container>
+          <!--Row 1-->
+          <div class="locations-container">
+            <!-- From Location -->
+            <mat-form-field class="location_field">
+              <mat-label>From Location</mat-label>
+              <mat-select formControlName="from_location">
+                <mat-option></mat-option> <!-- Allow empty selection -->
+                <mat-option *ngFor="let location of locations$ | async" [value]="location.id">
+                  {{location.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
 
-  <ng-container *ngIf="currentFormType === FormType.NOTES">
-    <!-- Notes Form -->
-    <form [formGroup]="form">
-      <mat-form-field>
-        <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
-      </mat-form-field>
-      <!-- Add the optional start and end times as well -->
-    </form>
-  </ng-container>
+            <!-- Shuffle Icon -->
+            <mat-icon class="shuffle-icon">shuffle</mat-icon>
 
-  <ng-container *ngIf="currentFormType === FormType.BREAK">
-    <!-- Break Form -->
-    <form [formGroup]="form">
-      <mat-form-field>
-        <input matInput placeholder="Location" formControlName="location">
-      </mat-form-field>
-    </form>
-  </ng-container>
-</mat-dialog-content>
+            <!-- To Location -->
+            <mat-form-field class="location_field">
+              <mat-label>To Location</mat-label>
+              <mat-select formControlName="to_location">
+                <mat-option></mat-option> <!-- Allow empty selection -->
+                <mat-option *ngFor="let location of locations$ | async" [value]="location.id">
+                  {{location.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <!--Row 2-->
+          <div class="custom-locations-container">
+            <!-- Custom From Location -->
+            <mat-form-field class="location_field">
+              <input matInput placeholder="Custom From Location" formControlName="custom_from_location">
+            </mat-form-field>
 
-<mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">Close</button>
-  <button mat-raised-button color="primary" [disabled]="form.invalid">Save</button>
-<!--  <button mat-raised-button color="primary" *ngIf="form" [disabled]="form.invalid" (click)="onSave()">Save</button>-->
-</mat-dialog-actions>
+            <!-- Custom To Location -->
+            <mat-form-field class="location_field">
+              <input matInput placeholder="Custom To Location" formControlName="custom_to_location">
+            </mat-form-field>
+          </div>
+          <!--Row 3-->
+          <div class="flex-row">
+            <!-- Travel Type Dropdown -->
+            <mat-form-field class="flex-item">
+              <mat-label>Travel Type</mat-label>
+              <mat-select formControlName="travel_type">
+                <mat-option value="check-in">Check In</mat-option>
+                <mat-option value="check-out">Check Out</mat-option>
+                <mat-option value="park-hop">Park Hop</mat-option>
+                <mat-option value="other-travel">Other Travel</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!-- Event Time -->
+            <mat-form-field class="flex-item">
+              <mat-label>Departure Time</mat-label>
+              <input matInput type="time" placeholder="Event Time" formControlName="event_time">
+            </mat-form-field>
+          </div>
+          <!--Row 4-->
+          <div id="travel_event_notes">
+            <mat-form-field class="full_width notes">
+              <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+            </mat-form-field>
+          </div>
+        </ng-container>
+      </div>
+      <div id="notes_container" *ngIf="currentFormType === FormType.NOTES">
+        <ng-container>
+          <mat-form-field class="full_width notes">
+            <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+          </mat-form-field>
+        </ng-container>
+      </div>
+      <div id="break_container" *ngIf="currentFormType === FormType.BREAK">
+        <ng-container>
+          <!-- Location -->
+          <mat-form-field class="full_width">
+            <mat-select placeholder="Location" formControlName="location">
+              <mat-option *ngFor="let loc of locations$ | async" [value]="loc.id">{{ loc.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!-- Notes -->
+          <div id="break_notes">
+            <mat-form-field class="full_width notes">
+              <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+            </mat-form-field>
+          </div>
+        </ng-container>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions *ngIf="form">
+    <button mat-stroked-button (click)="onNoClick()">Close</button>
+    <button mat-stroked-button [disabled]="form.invalid" (click)="onSave()">Add</button>
+  </mat-dialog-actions>
+</div>

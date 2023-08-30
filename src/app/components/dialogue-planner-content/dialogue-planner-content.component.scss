@@ -1,1 +1,112 @@
-
+#dialogue_content_container {
+  height: 100%;
+  .mat-mdc-dialog-content {
+    height: calc(100% - 124px);
+    //background-color: #a3cce0;
+    padding-bottom: 0 !important;
+    form {
+      height: 100%;
+      #notes_container {
+        display: block;
+        height: 100% !important;
+        .mat-mdc-form-field {
+          height: 100%;
+          textarea {
+            height: 100%;
+          }
+        }
+      }
+      #break_container {
+        display: block;
+        height: 100% !important;
+        #break_notes{
+          height: calc(100% - 79px);
+          .mat-mdc-form-field {
+            height: 100%;
+            textarea {
+              height: 100%;
+            }
+          }
+        }
+      }
+      #travel_event_container {
+        height: 100%;
+        .locations-container, .custom-locations-container {
+          display: flex;
+          align-items: center;
+          position: relative;
+          margin-bottom: 16px;
+          mat-form-field:first-child {
+            padding-right: 10px;
+          }
+          mat-form-field:last-child {
+            padding-left: 10px;
+          }
+        }
+        .location_field {
+          flex: 1;
+        }
+        .shuffle-icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          margin-top: 36px;
+          transform: translate(-50%, -50%);
+          font-size: 24px;
+          z-index: 1;
+        }
+        .flex-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+        .flex-item {
+          flex: 1;
+          margin-right: 8px;
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+        #travel_event_notes{
+          height: calc(100% - 79px);
+          .mat-mdc-form-field {
+            height: 100%;
+            textarea {
+              height: 100%;
+            }
+          }
+        }
+      }
+      #meal_container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        .meal-toggle-row, .meal-time-row, .notes-row {
+          display: flex;
+          justify-content: center; /* Center content horizontally */
+          align-items: center; /* Center content vertically */
+        }
+        .meal-toggle-row {
+          margin-bottom: 20px;
+        }
+        #meal_notes{
+          height: 100%;
+          .mat-mdc-form-field {
+            height: 100%;
+            textarea {
+              height: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+  .mat-mdc-dialog-actions {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+  }
+}
