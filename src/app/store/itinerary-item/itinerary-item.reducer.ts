@@ -5,9 +5,7 @@ import * as ItineraryActions from './itinerary-item.actions';
 import {ItineraryItem, NewItineraryItem} from './itinerary-item.interfaces';
 import * as moment from 'moment';
 import { tripLoaded } from "../trip";
-import {addActivityToMyDay, clearDeletedItems, deactivateItineraryItems} from "./itinerary-item.actions";
-import { Experience } from "../experience/experience.interfaces";
-import * as tripActions from "../trip/trip.actions";
+
 
 export const itineraryFeatureKey = 'itinerary_item';
 
@@ -107,28 +105,31 @@ export const itineraryReducer = createReducer(
       };
   }),
 
-
-  on(ItineraryActions.addActivityToMyDay, (state, { activity, activity_order, trip }) => {
+  on(ItineraryActions.addActivityToMyDay, (state, { itineraryItem }) => {
     const currentDayItems = state.itemsByDay[state.currentDay] || [];
-    console.log('activity to add:', activity);
+    console.log('activity to add:', itineraryItem.activity);
 
-    const order = activity_order !== undefined ? activity_order : currentDayItems.length;
+    const order = itineraryItem.activity_order !== undefined ? itineraryItem.activity_order : currentDayItems.length;
 
     // Create a unique temporary ID.
-    // You could use other mechanisms as well, like a UUID library or a simple counter.
     const tempId = `temp-${Date.now()}-${Math.round(Math.random() * 1000)}`;
 
-    const newItem: NewItineraryItem = {
-        tempId: tempId,
-        trip: trip.id,
-        activity_order: order,
-        content_type: 'experience',
-        activity_id: activity.id,
-        day: moment(state.currentDay).toDate(),
-        activity: activity,
-    };
+    if (!itineraryItem.trip) {
+      // handle error - a trip must be defined
+      return state;
+    }
 
-    // Add the new item to the end of the currentDayItems, then use reorderItems to move it to the correct position.
+
+    const newItem: NewItineraryItem = {
+      tempId: tempId,
+      trip: itineraryItem.trip!, // assuming you've checked this is non-null
+      activity_order: itineraryItem.activity_order ?? 0, // provide a default value
+      day: moment(state.currentDay).toDate(),
+      content_type: itineraryItem.content_type!,
+      ...itineraryItem,
+    }
+    console.log("new item in reducer:", newItem)
+
     const itemsWithNewItem = [...currentDayItems, newItem];
     const updatedItems = reorderItems(itemsWithNewItem, itemsWithNewItem.length - 1, order);
 

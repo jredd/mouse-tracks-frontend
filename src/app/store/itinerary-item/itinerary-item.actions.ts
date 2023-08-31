@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ItineraryItem } from "./itinerary-item.interfaces";
+import {Break, ItineraryItem, Meal, NewItineraryItem, TravelEvent} from "./itinerary-item.interfaces";
 import {Experience} from "../experience/experience.interfaces";
 import {Trip} from "../trip/trip.interfaces";
 
@@ -65,9 +65,15 @@ export const reorderItem = createAction(
   props<{ previousIndex: number, currentIndex: number }>()
 );
 
+// export const addActivityToMyDay = createAction(
+//   '[Itinerary] Update My Day Plan',
+//   props<{ activity: Experience, activity_order?: number, trip: Trip }>()
+// );
+
+
 export const addActivityToMyDay = createAction(
-  '[Itinerary] Update My Day Plan',
-  props<{ activity: Experience, activity_order?: number, trip: Trip }>()
+  '[Itinerary] Add Activity To My Day',
+  props<{ itineraryItem: Partial<NewItineraryItem> }>()
 );
 
 export const reorderMyDayActivities = createAction(

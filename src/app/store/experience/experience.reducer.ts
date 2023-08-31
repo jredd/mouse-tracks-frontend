@@ -49,11 +49,13 @@ export const experienceReducer = createReducer(
     error: null
   })),
   on(ExperienceActions.loadExperiencesSuccess, (state, { experiences }) => {
+    const sortedExperiences = [...experiences].sort((a, b) => a.name.localeCompare(b.name));
+
     const experiencesByType = {
-      attractions: experiences.filter(exp => exp.experience_type === 'attraction'),
-      restaurants: experiences.filter(exp => exp.experience_type === 'restaurant'),
-      entertainment: experiences.filter(exp => exp.experience_type === 'entertainment'),
-      events: experiences.filter(exp =>
+      attractions: sortedExperiences.filter(exp => exp.experience_type === 'attraction'),
+      restaurants: sortedExperiences.filter(exp => exp.experience_type === 'restaurant'),
+      entertainment: sortedExperiences.filter(exp => exp.experience_type === 'entertainment'),
+      events: sortedExperiences.filter(exp =>
         exp.experience_type === 'event' ||
         exp.experience_type === 'dining-event' ||
         exp.experience_type === 'dinner-show'
@@ -61,7 +63,7 @@ export const experienceReducer = createReducer(
     };
     return {
       ...state,
-      experiences,
+      sortedExperiences,
       experiencesByType,
       loading: false,
       error: null

@@ -16,7 +16,7 @@
             class="experience-list"
             (cdkDropListDropped)="drop($event)">
             <div class="experience-box" *ngFor="let item of selectedItems" cdkDrag>
-              {{ item.activity?.name ?? 'Default Name' }}
+              {{ getDisplayName(item) }}
             </div>
           </div>
           </div>

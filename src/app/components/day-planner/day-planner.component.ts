@@ -38,11 +38,11 @@ export class DayPlannerComponent implements OnInit {
 
   constructor(public dialogue: MatDialog, private store: Store<AppState>) { }
 
-  openDialog() {
+  openDialog(experience: Experience) {
     this.dialogue.open(DialoguePlannerContentComponent, {
       width: '400px',
       height: '400px',
-      data: { type: 'MEAL', title: 'Add Meal' }
+      data: { type: 'MEAL', title: 'Add Meal', experience }
     });
   }
 
@@ -78,26 +78,55 @@ export class DayPlannerComponent implements OnInit {
       const itemToAdd = event.previousContainer.data[event.previousIndex];
       console.log(itemToAdd)
       if (itemToAdd.experience_type == 'restaurant') {
-        this.openDialog()
+        this.openDialog(itemToAdd)
         return
       }
       this.currentTrip$.pipe(take(1)).subscribe(trip => {
         if (trip) {
           this.store.dispatch(fromItineraryItemStore.addActivityToMyDay({
-            activity: itemToAdd,
-            activity_order: event.currentIndex,
-            trip: trip,
+            itineraryItem: {
+              activity: itemToAdd,
+              activity_id: itemToAdd.id,
+              activity_order: event.currentIndex,
+              trip: trip,
+              content_type: 'experience',
+              notes: ''
+            }
           }));
         }
       });
     } else if (event.previousContainer == event.container) {
-      console.log("reorder")
+      // console.log("reorder")
       this.store.dispatch(fromItineraryItemStore.reorderMyDayActivities({fromIndex: event.previousIndex, toIndex: event.currentIndex}))
     } else if (event.previousContainer.id == "MyDayPlan") {
-      console.log("delete")
+      // console.log("delete")
       this.store.dispatch(fromItineraryItemStore.removeActivityFromMyDay({index: event.currentIndex}))
     }
 
   }
+
+  getFallbackName(item: any): string { // Replace 'any' with the actual type, if you can
+    switch (item.content_type) {
+      case 'meal':
+        return 'Meal';
+      case null:
+        return 'Notes';
+      case 'travelevent':
+        return 'Travel Event';
+      case 'break':
+        return 'Break';
+      default:
+        return 'Default Name';
+    }
+  }
+
+  getDisplayName(item: any): string { // Replace 'any' with the actual type, if you can
+    if (item.activity && 'name' in item.activity) {
+      return item.activity.name;
+    }
+
+    return this.getFallbackName(item);
+  }
+
 
 }

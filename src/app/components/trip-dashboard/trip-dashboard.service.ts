@@ -87,14 +87,14 @@ export class TripService {
   }
   private transformToAPIFormat(item: ItineraryItem): APIItineraryItem {
       const apiItem: APIItineraryItem = {
-          trip: item.trip,
+          trip: item.trip.id,
           notes: item.notes,
           activity_order: item.activity_order,
           start_time: item.start_time,
           end_time: item.end_time,
           activity_id: item.activity_id,
           activity: item.activity,
-          activity_content_type: 'experience',
+          content_type: item.content_type,
           day: moment(item.day).format('YYYY-MM-DD')
       };
 
@@ -119,7 +119,7 @@ export class TripService {
 
   bulkSaveItineraryItems(items: ItineraryItem[]): Observable<ItineraryItem[]> {
     const transformedItems = items.map(item => this.transformToAPIFormat(item));
-    const tripId = items[0]?.trip; // Assuming all items belong to the same trip; adjust if this isn't the case.
+    const tripId = items[0]?.trip.id; // Assuming all items belong to the same trip; adjust if this isn't the case.
 
     return this.http.post<ItineraryItem[]>(`${this.BASE_URL}/trips/${tripId}/itinerary-items-bulk/`, transformedItems).pipe(
         tap(results => results.forEach(result => this.dbService.add('itinerary_item', result))),
