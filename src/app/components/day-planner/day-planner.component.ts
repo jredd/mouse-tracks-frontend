@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {CdkDragDrop, CdkDragMove, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {Experience, ItineraryItem, Meal, Trip} from "../../store";
 import {combineLatest, EMPTY, Observable, switchMap} from "rxjs";
 import { select, Store } from "@ngrx/store";
@@ -14,6 +14,9 @@ import {fadeIn} from "../trip-dashboard/trip-dashboard.animation";
 import {DialoguePlannerContentComponent} from "../dialogue-planner-content/dialogue-planner-content.component";
 import {MatDialog} from "@angular/material/dialog";
 import {FormType} from "../dialogue-planner-content/dialogue-planner-content.interface";
+import { ElementRef, ViewChild } from '@angular/core';
+import { DragRef, CdkDrag} from '@angular/cdk/drag-drop';
+import { HostListener } from '@angular/core';
 
 type UnifiedDragDropEvent = CdkDragDrop<Experience[] | Partial<ItineraryItem>[] | null, any>;
 
@@ -25,13 +28,16 @@ type UnifiedDragDropEvent = CdkDragDrop<Experience[] | Partial<ItineraryItem>[] 
 })
 export class DayPlannerComponent implements OnInit {
   available$: Observable<Experience[] | null> = EMPTY;
+  @ViewChild('dragScrollingContainer') dragScrollingContainer: ElementRef;
   availableActivities: Experience[] = []; // Populate this based on your API or logic
   currentTrip$: Observable<Trip | null> = EMPTY;
+  autoScrolling: any;
   currentDay$: Observable<string> = this.store.pipe(
     select(fromItineraryItemStore.selectCurrentDay)
   );
   itineraryItemsByDay$: Observable<Partial<ItineraryItem>[]> = this.store.pipe(
-    select(fromItineraryItemStore.selectAllCurrentDayItems)
+    select(fromItineraryItemStore.selectAllCurrentDayItems),
+    map(items => [...items].sort((a, b) => a.activity_order - b.activity_order))
   );
 
 
@@ -46,6 +52,49 @@ export class DayPlannerComponent implements OnInit {
     });
   }
 
+  // startAutoScroll(direction: 'up' | 'down') {
+  //   this.stopAutoScroll();
+  //   const container = this.dragScrollingContainer.nativeElement;
+  //   this.autoScrolling = setInterval(() => {
+  //     container.scrollTop += direction === 'up' ? -5 : 5;
+  //   }, 16);
+  // }
+
+  // stopAutoScroll() {
+  //   if (this.autoScrolling) {
+  //     clearInterval(this.autoScrolling);
+  //     this.autoScrolling = null;
+  //   }
+  // }
+
+  // onDragMove(event: CdkDragMove<any>) {
+  //   // Access the native event from the CdkDragMove event object
+  //   const nativeEvent = event.event;
+  //
+  //   // Initialize clientY variable
+  //   let clientY: number;
+  //
+  //   // Check whether the native event is a MouseEvent or a TouchEvent
+  //   if (nativeEvent instanceof MouseEvent) {
+  //     clientY = nativeEvent.clientY;
+  //   } else if (nativeEvent instanceof TouchEvent && nativeEvent.touches.length > 0) {
+  //     clientY = nativeEvent.touches[0].clientY;
+  //   } else {
+  //     // Unrecognized event type, return or handle accordingly
+  //     return;
+  //   }
+  //
+  //   const containerRect = this.dragScrollingContainer.nativeElement.getBoundingClientRect();
+  //   const threshold = 50;
+  //
+  //   if (clientY - containerRect.top < threshold) {
+  //     this.startAutoScroll('up');
+  //   } else if (containerRect.bottom - clientY < threshold) {
+  //     this.startAutoScroll('down');
+  //   } else {
+  //     this.stopAutoScroll();
+  //   }
+  // }
 
   ngOnInit() {
     // this.currentTrip$ = this.store.select(selectCurrentTrip).subscribe(trip => {
@@ -72,11 +121,13 @@ export class DayPlannerComponent implements OnInit {
     });
   }
 
+
   drop(event: CdkDragDrop<any>) {
+    // console.log(event.previousContainer.id)
     if (event.previousContainer.id == "AvailableExperiences") {
       // console.log("add")
       const itemToAdd = event.previousContainer.data[event.previousIndex];
-      // console.log(itemToAdd)
+      console.log(itemToAdd)
       if (itemToAdd.experience_type == 'restaurant') {
         this.openDialog(itemToAdd)
         return
@@ -96,10 +147,8 @@ export class DayPlannerComponent implements OnInit {
         }
       });
     } else if (event.previousContainer == event.container) {
-      // console.log("reorder")
       this.store.dispatch(fromItineraryItemStore.reorderMyDayActivities({fromIndex: event.previousIndex, toIndex: event.currentIndex}))
     } else if (event.previousContainer.id == "MyDayPlan") {
-      console.log("delete", event.previousIndex)
       this.store.dispatch(fromItineraryItemStore.removeActivityFromMyDay({index: event.previousIndex}))
     }
 
@@ -109,7 +158,6 @@ export class DayPlannerComponent implements OnInit {
     switch (item.content_type) {
       case 'meal':
         const meal = item.activity as Meal;
-        console.log("in case switch", item)
         const mealType = this.capitalizeFirstLetter(meal.meal_type) ?? 'Unknown Meal Type';
         const name = meal.meal_experience?.name ?? 'Unknown Experience';
         return `${mealType}: ${name}`;

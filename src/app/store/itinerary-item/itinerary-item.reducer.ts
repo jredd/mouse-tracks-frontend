@@ -47,19 +47,29 @@ export const itineraryReducer = createReducer(
       };
   }),
 
+on(ItineraryActions.getItineraryItemsSuccess, (state, { items }) => {
+  const newItemsByDay = { ...state.itemsByDay };
 
-  on(ItineraryActions.getItineraryItemsSuccess, (state, { items }) => {
-    const newItemsByDay = { ...state.itemsByDay };
-    for (let item of items) {
-      const dayKey = moment(item.day).format('YYYY-MM-DD');
-      newItemsByDay[dayKey] = [...(newItemsByDay[dayKey] || []), item];
+  for (let item of items) {
+    const dayKey = moment(item.day).format('YYYY-MM-DD');
+    if (newItemsByDay[dayKey]) {
+      newItemsByDay[dayKey] = [...newItemsByDay[dayKey], item];
+    } else {
+      newItemsByDay[dayKey] = [item];
     }
-    return {
-      ...state,
-      itemsByDay: newItemsByDay,
-      loading: false
-    };
-  }),
+  }
+
+  // Sort each day's items by activity_order
+  Object.keys(newItemsByDay).forEach(dayKey => {
+    newItemsByDay[dayKey].sort((a, b) => a.activity_order - b.activity_order);
+  });
+
+  return {
+    ...state,
+    itemsByDay: newItemsByDay,
+    loading: false
+  };
+}),
 
   on(ItineraryActions.createItineraryItemSuccess, (state, { item }) => {
     const dayKey = moment(item.day).format('YYYY-MM-DD');
@@ -83,35 +93,11 @@ export const itineraryReducer = createReducer(
     return { ...state, itemsByDay: updatedItemsByDay };
   }),
 
-  // on(ItineraryActions.removeActivityFromMyDay, (state, { index }) => {
-  //   const currentDayItems = state.itemsByDay[state.currentDay] || [];
-  //
-  //   // Splice to remove the item at the specified index
-  //   const updatedItems = [...currentDayItems];
-  //   const removedItem = updatedItems.splice(index, 1)[0];
-  //   console.log(index)
-  //   console.log(removedItem)
-  //   console.log(updatedItems)
-  //     // New logic: Add the removed item to deletedItems if it has an id
-  //     const updatedDeletedItems = 'id' in removedItem && removedItem.id
-  //                               ? [...state.deletedItems, removedItem]
-  //                               : state.deletedItems;
-  //   console.log('updatedDeletedItems', updatedDeletedItems)
-  //   return {
-  //     ...state,
-  //     deletedItems: updatedDeletedItems,
-  //     itemsByDay: {
-  //       ...state.itemsByDay,
-  //       [state.currentDay]: reorderItems(updatedItems, 0, updatedItems.length - 1)
-  //     }
-  //   };
-  // }),
-
   on(ItineraryActions.removeActivityFromMyDay, (state, { index }) => {
     const currentDayItems = state.itemsByDay[state.currentDay] || [];
     // console.log("index:",index)
     if(index < 0 || index >= currentDayItems.length) {
-      console.log("out of bounds")
+      // console.log("out of bounds")
       // Index out of bounds. Return the state as is.
       return state;
     }
@@ -120,7 +106,7 @@ export const itineraryReducer = createReducer(
     const removedItem = updatedItems.splice(index, 1)[0];
 
     if (!removedItem) {
-      console.log("no item actually removed")
+      // console.log("no item actually removed")
       // If no item was actually removed, return the state as is.
       return state;
     }
@@ -129,7 +115,7 @@ export const itineraryReducer = createReducer(
                                 ? [...state.deletedItems, removedItem]
                                 : state.deletedItems;
 
-    console.log("updated items:", updatedItems)
+    // console.log("updated items:", updatedItems)
     if (updatedItems.length > 0) {
       return {
         ...state,
@@ -190,8 +176,9 @@ export const itineraryReducer = createReducer(
 
   on(ItineraryActions.reorderMyDayActivities, (state, { fromIndex, toIndex }) => {
     const currentDayItems = state.itemsByDay[state.currentDay] || [];
-    const updatedItems = reorderItems(currentDayItems, fromIndex, toIndex);
+    // console.log("currentDayItems:", currentDayItems)
 
+    const updatedItems = reorderItems(currentDayItems, fromIndex, toIndex);
     return {
         ...state,
         itemsByDay: {
@@ -247,12 +234,14 @@ export function generateEmptyDateRange(startDate: Date, endDate: Date): Record<s
 }
 
 function reorderItems(items: ItineraryItem[], fromIndex: number, toIndex: number): ItineraryItem[] {
-    if (fromIndex === toIndex) return items;
+    // No need to reorder if indexes are the same
+    if (fromIndex === toIndex) return [...items]; // return a new array instance to ensure immutability
 
-    const itemToMove = items[fromIndex];
-    const updatedItems = items.filter((_, index) => index !== fromIndex);
+    // Create a new copy of items array to ensure immutability
+    const updatedItems = [...items];
+    // Remove item from the original position and insert it to the new position
+    const [itemToMove] = updatedItems.splice(fromIndex, 1);
     updatedItems.splice(toIndex, 0, itemToMove);
-
     // Recalculate activity_order for the reordered items
     return updatedItems.map((item, index) => {
         return { ...item, activity_order: index };

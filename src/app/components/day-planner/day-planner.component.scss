@@ -5,7 +5,6 @@
   border-radius: 4px;
   overflow: hidden;
   display: block;
-  padding-bottom: 15px;
   .experience_box {
     padding: 20px 10px;
     border-bottom: solid 1px #ccc;
@@ -18,10 +17,6 @@
     cursor: move;
     background: white;
     font-size: 14px;
-    &:last-child {
-      //background-color: orange;
-      //padding-bottom: 50px;
-    }
   }
 }
 
@@ -42,16 +37,16 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.experience-box:last-child {
+.experience_box:last-child {
   border: none;
 }
 
-.experience-list.cdk-drop-list-dragging .experience-box:not(.cdk-drag-placeholder) {
+.experience_list.cdk-drop-list-dragging .experience_box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 
-.experience-viewport {
+.experience_viewport {
   height: calc(100%); /* Adjust this value based on your requirements */
   overflow: auto;
 }
@@ -78,9 +73,8 @@
       max-width: 100%;
       vertical-align: top;
     }
-    .icon-container {
+    .icon_container {
       display: inline-block !important;
-      background-color: orange !important;
       justify-content: center;
       align-items: center;
       width: 0px;
@@ -102,11 +96,16 @@
     }
     .planner_content_wrapper {
       display: block;
-      height: calc(100% - 60px);
+      height: calc(100% - 75px);
       border: solid 1px #ccc;
-      .drag_scrolling_container {
-        overflow: auto;
+      background-color: #efcebf;
+      .experience_list {
         height: 100%;
+        overflow: auto;
+        .experience_box {
+          width: 100%;
+          display: flex;
+        }
       }
     }
   }
@@ -123,4 +122,23 @@
 
 .cdk-drag {
   font-family: "specter", sans-serif;
+}
+
+.cdk-drag-preview {
+  padding: 20px 10px;
+  box-sizing: border-box;
+  border: solid 1px #ccc;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+              0 8px 10px 1px rgba(0, 0, 0, 0.14),
+              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  //padding: 20px 10px;
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }

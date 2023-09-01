@@ -6,23 +6,24 @@
       <div class="planner_container">
         <h2>My Day Plan</h2>
         <div class="planner_content_wrapper">
-          <div class="drag_scrolling_container">
+<!--          <div class="drag_scrolling_container" #dragScrollingContainer>-->
             <div
-            cdkDropList
-            #selectedExperiences="cdkDropList"
-            [cdkDropListData]="selectedItems"
-            [cdkDropListConnectedTo]="[availableExperiences]"
-            id="MyDayPlan"
-            class="experience_list"
-            (cdkDropListDropped)="drop($event)">
-            <div class="experience_box" *ngFor="let item of selectedItems" cdkDrag>
-              {{ getDisplayName(item) }}
+              cdkDropList
+              #selectedExperiences="cdkDropList"
+              [cdkDropListData]="selectedItems"
+              [cdkDropListConnectedTo]="[availableExperiences]"
+              id="MyDayPlan"
+              class="experience_list"
+              (cdkDropListDropped)="drop($event)"
+            >
+              <div class="experience_box" *ngFor="let item of selectedItems" cdkDrag>
+                {{ getDisplayName(item) }}
+              </div>
             </div>
-          </div>
-          </div>
+<!--          </div>-->
         </div>
       </div>
-      <div class="icon-container">
+      <div class="icon_container">
         <span>
           <mat-icon>swap_horiz</mat-icon>
         </span>
@@ -31,7 +32,6 @@
       <div class="planner_container move_container">
         <h2>Available Experiences</h2>
         <div class="planner_content_wrapper">
-          <div class="drag_scrolling_container">
             <div
               cdkDropList
               #availableExperiences="cdkDropList"
@@ -46,7 +46,6 @@
               </div>
 
             </div>
-          </div>
         </div>
       </div>
     </ng-container>
