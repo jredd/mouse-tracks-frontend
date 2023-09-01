@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import {Experience, ItineraryItem, Trip} from "../../store";
+import {Experience, ItineraryItem, Meal, Trip} from "../../store";
 import {combineLatest, EMPTY, Observable, switchMap} from "rxjs";
 import { select, Store } from "@ngrx/store";
 import { AppState } from "../../store/app.state";
@@ -42,7 +42,7 @@ export class DayPlannerComponent implements OnInit {
     this.dialogue.open(DialoguePlannerContentComponent, {
       width: '400px',
       height: '400px',
-      data: { type: 'MEAL', title: 'Add Meal', experience }
+      data: { type: FormType.MEAL, title: 'Add Meal', experience }
     });
   }
 
@@ -74,9 +74,9 @@ export class DayPlannerComponent implements OnInit {
 
   drop(event: CdkDragDrop<any>) {
     if (event.previousContainer.id == "AvailableExperiences") {
-      console.log("add")
+      // console.log("add")
       const itemToAdd = event.previousContainer.data[event.previousIndex];
-      console.log(itemToAdd)
+      // console.log(itemToAdd)
       if (itemToAdd.experience_type == 'restaurant') {
         this.openDialog(itemToAdd)
         return
@@ -99,16 +99,20 @@ export class DayPlannerComponent implements OnInit {
       // console.log("reorder")
       this.store.dispatch(fromItineraryItemStore.reorderMyDayActivities({fromIndex: event.previousIndex, toIndex: event.currentIndex}))
     } else if (event.previousContainer.id == "MyDayPlan") {
-      // console.log("delete")
-      this.store.dispatch(fromItineraryItemStore.removeActivityFromMyDay({index: event.currentIndex}))
+      console.log("delete", event.previousIndex)
+      this.store.dispatch(fromItineraryItemStore.removeActivityFromMyDay({index: event.previousIndex}))
     }
 
   }
 
-  getFallbackName(item: any): string { // Replace 'any' with the actual type, if you can
+  getFallbackName(item: ItineraryItem): string { // Replace 'any' with the actual type, if you can
     switch (item.content_type) {
       case 'meal':
-        return 'Meal';
+        const meal = item.activity as Meal;
+        console.log("in case switch", item)
+        const mealType = this.capitalizeFirstLetter(meal.meal_type) ?? 'Unknown Meal Type';
+        const name = meal.meal_experience?.name ?? 'Unknown Experience';
+        return `${mealType}: ${name}`;
       case null:
         return 'Notes';
       case 'travelevent':
@@ -118,6 +122,10 @@ export class DayPlannerComponent implements OnInit {
       default:
         return 'Default Name';
     }
+  }
+
+  capitalizeFirstLetter(value: string) {
+    return value.charAt(0).toUpperCase() + value.slice(1);
   }
 
   getDisplayName(item: any): string { // Replace 'any' with the actual type, if you can

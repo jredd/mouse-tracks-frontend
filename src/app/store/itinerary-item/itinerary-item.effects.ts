@@ -43,14 +43,14 @@ export class ItineraryItemEffects {
   );
 
   saveAllItemsByDay$ = createEffect(() =>
-  this.actions$.pipe(
-    ofType(ItineraryActions.saveAllNonEmptyDays),
-    tap(() => console.log('Effect triggered!')),
-    withLatestFrom(
-      this.store.select(fromItineraryItemStore.selectNonEmptyDaysWithItems),
-      this.store.select(fromItineraryItemStore.selectAllDeletedItems)
-    ),
-    mergeMap(([action, daysWithItems, deletedItems]) => {
+    this.actions$.pipe(
+      ofType(ItineraryActions.saveAllNonEmptyDays),
+      tap(() => console.log('Effect triggered!')),
+      withLatestFrom(
+        this.store.select(fromItineraryItemStore.selectNonEmptyDaysWithItems),
+        this.store.select(fromItineraryItemStore.selectAllDeletedItems)
+      ),
+      mergeMap(([action, daysWithItems, deletedItems]) => {
       // Split the items into new and existing across all days
       const allNewItems = daysWithItems
         .flatMap(day => day.items)
@@ -62,26 +62,26 @@ export class ItineraryItemEffects {
 
       // Create tasks based on new and existing items
       const newTasks = allNewItems.length ? [this.tripService.bulkSaveItineraryItems(allNewItems)] : [];
-      // const updateTasks = allExistingItems.length ? [this.tripService.bulkUpdateItineraryItems(allExistingItems)] : [];
+      const updateTasks = allExistingItems.length ? [this.tripService.bulkUpdateItineraryItems(allExistingItems)] : [];
 
       // Delete tasks for the deleted items
       const allDeletedItems = deletedItems.filter(isExistingItineraryItem);
       const deleteTasks = allDeletedItems.length ? [this.tripService.bulkDeleteItineraryItems(allDeletedItems)] : [];
 
       // Combine all tasks
-      // return forkJoin([...newTasks, ...updateTasks, ...deleteTasks]).pipe(
-      return forkJoin([...newTasks, ...deleteTasks]).pipe(
+      return forkJoin([...newTasks, ...updateTasks, ...deleteTasks]).pipe(
+      // return forkJoin([...newTasks, ...deleteTasks]).pipe(
         map(results => ({ results, allNewItems }))
       );
     }),
-    mergeMap(({ results, allNewItems }) => {
+      mergeMap(({ results, allNewItems }) => {
       // Here, results would contain the combined results of new, updated, and deleted tasks.
       // And you have access to allNewItems as well.
       // You can perform logic to update the local DB and state here.
 
       if (results[0]) {  // Assuming the first result corresponds to new items
-  results[0].forEach((newItem, index) => {
-    const tempId = allNewItems[index].tempId;
+        results[0].forEach((newItem, index) => {
+        const tempId = allNewItems[index].tempId;
 
     // Delete the temporary item
     this.dbService.delete('itinerary_item', tempId).pipe(
@@ -100,8 +100,8 @@ export class ItineraryItemEffects {
         ItineraryActions.clearDeletedItems() // Action to clear deleted items from the state after they've been deleted
       ];
     }),
-    catchError((error) => of(ItineraryActions.saveAllFailure({ error })))
-  )
+      catchError((error) => of(ItineraryActions.saveAllFailure({ error })))
+    )
   );
 }
 function isExistingItineraryItem(item: any): item is ExistingItineraryItem {

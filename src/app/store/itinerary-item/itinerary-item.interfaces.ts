@@ -15,7 +15,14 @@ export interface Break extends BaseInterface {
 }
 
 export interface Meal extends BaseInterface {
+  // meal_experience_id: string;
   meal_experience: Experience;
+  meal_type: string;
+}
+
+export interface MealAPI extends BaseInterface {
+  meal_experience_id: string;
+  meal_experience: string;
   meal_type: string;
 }
 

@@ -51,7 +51,7 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
     switch (this.currentFormType) {
       case FormType.MEAL:
         this.form = this.fb.group({
-            start_time: ['', Validators.required],
+            start_time: [''],
             meal_type: ['breakfast', Validators.required],
             notes: ['']
         });
@@ -134,6 +134,7 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
           // reservation_time: this.form.get('reservation_time')?.value,
           meal_type: this.form.get('meal_type')?.value,
           meal_experience_id: this.data.experience.id,
+          meal_experience: this.data.experience,
           // meal_experience_id
           // meal_experience: this.form.get()
           // notes: this.form.get('notes')?.value,

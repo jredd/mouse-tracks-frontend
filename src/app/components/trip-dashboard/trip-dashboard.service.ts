@@ -14,7 +14,7 @@ import {
   ApiTrip,
   APIItineraryItem,
   Experience,
-  ExistingItineraryItem
+  ExistingItineraryItem, MealAPI
 } from '../../store/';
 import { environment } from "../../../environments/environment";
 
@@ -86,23 +86,32 @@ export class TripService {
     );
   }
   private transformToAPIFormat(item: ItineraryItem): APIItineraryItem {
-      const apiItem: APIItineraryItem = {
-          trip: item.trip.id,
-          notes: item.notes,
-          activity_order: item.activity_order,
-          start_time: item.start_time,
-          end_time: item.end_time,
-          activity_id: item.activity_id,
-          activity: item.activity,
-          content_type: item.content_type,
-          day: moment(item.day).format('YYYY-MM-DD')
-      };
+    let activity: any = { ...item.activity };
 
-      if ('id' in item) {
-        (apiItem as any).id = item.id; // Adding the id if it exists in the item.
+    if (item.content_type === 'meal' && activity) {
+      const mealActivity = activity as MealAPI;
+      if ('meal_experience' in mealActivity) {
+        // mealActivity.meal_experience = mealActivity.meal_experience_id;
+        delete (mealActivity as any).meal_experience;
       }
+    }
+    const apiItem: APIItineraryItem = {
+      trip: item.trip.id,
+      notes: item.notes,
+      activity_order: item.activity_order,
+      start_time: item.start_time,
+      end_time: item.end_time,
+      activity_id: item.activity_id,
+      activity: activity, // Use the modified activity
+      content_type: item.content_type,
+      day: moment(item.day).format('YYYY-MM-DD')
+    };
 
-      return apiItem
+    if ('id' in item) {
+      (apiItem as any).id = item.id; // Adding the id if it exists in the item.
+    }
+
+    return apiItem
   }
 
   // Function to create a new itinerary item for a specific trip

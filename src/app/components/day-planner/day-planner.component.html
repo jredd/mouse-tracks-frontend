@@ -13,9 +13,9 @@
             [cdkDropListData]="selectedItems"
             [cdkDropListConnectedTo]="[availableExperiences]"
             id="MyDayPlan"
-            class="experience-list"
+            class="experience_list"
             (cdkDropListDropped)="drop($event)">
-            <div class="experience-box" *ngFor="let item of selectedItems" cdkDrag>
+            <div class="experience_box" *ngFor="let item of selectedItems" cdkDrag>
               {{ getDisplayName(item) }}
             </div>
           </div>
@@ -38,10 +38,10 @@
               [cdkDropListData]="availableData"
               [cdkDropListConnectedTo]="[selectedExperiences]"
               id="AvailableExperiences"
-              class="experience-list"
+              class="experience_list"
               (cdkDropListDropped)="drop($event)">
 
-              <div class="experience-box" *ngFor="let experience of availableData" cdkDrag>
+              <div class="experience_box" *ngFor="let experience of availableData" cdkDrag>
                 {{ experience.name }}
               </div>
 

@@ -6,22 +6,20 @@
       <div class="card_title_content">
         <h2>{{ currentTrip.title }}</h2>
         <span class="header_date"> {{ currentTrip.start_date | dateRange:currentTrip.end_date }}</span>
-          <span class="header_day_name">{{ day | dayName }}: </span>
-          <span class="header_location_name" *ngIf="locationGroups.length > 0"> {{ locationGroups[0].locationName }}</span>
+        <span class="header_day_name">{{ day | dayName }}: </span>
+        <span class="header_location_name" *ngIf="locationGroups.length > 0"> {{ locationGroups[0].locationName }}</span>
       </div>
     </mat-card-title>
   </mat-card-header>
+
   <mat-card-content class="grid-container">
     <ng-container *ngFor="let locationGroup of locationGroups">
       <div class="grid-item">
-        <!-- Loop over lands within the location group -->
         <ng-container *ngFor="let landGroup of locationGroup.lands">
           <h4>{{ landGroup.landName }}:</h4>
-
-          <!-- List out the individual activities within the land -->
           <ul>
             <li *ngFor="let item of landGroup.activities">
-              {{ item.activity.name }}
+              {{ getActivityName(item) }}
             </li>
           </ul>
         </ng-container>

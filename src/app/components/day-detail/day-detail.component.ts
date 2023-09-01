@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {ItineraryItem, Trip} from "../../store";
+import {ItineraryItem, Meal, Trip, TravelEvent, Break, Experience} from "../../store";
 import * as fromTripStore from "../../store/trip";
 import {Store} from "@ngrx/store";
 import {AppState} from "../../store/app.state";
@@ -47,6 +47,7 @@ export class DayDetailComponent implements OnInit {
       };
       lands.push(landGroup);
     }
+    console.log('herp', landGroup)
     return landGroup;
   }
 
@@ -59,26 +60,68 @@ export class DayDetailComponent implements OnInit {
       };
       this.locationGroups.push(locationGroup);
     }
+    console.log(locationGroup)
     return locationGroup;
   }
 
   groupItineraryByLocationAndLand(itineraryItems: ItineraryItem[]): void {
     for (const item of itineraryItems) {
-      const locationName = item.activity.locations[0]?.name || 'Unknown Location';
+      let locationName = 'Unknown Location';
+
+      switch (item.content_type) {
+        case 'meal':
+          locationName = (item.activity as Meal).meal_experience.locations[0]?.name || 'Unknown Location';
+          break;
+        case 'travelevent':
+          locationName = (item.activity as TravelEvent).from_location || 'Unknown Location';
+          break;
+        case 'break':
+          locationName = (item.activity as Break).location || 'Unknown Location';
+          break;
+        case 'experience':
+          locationName = (item.activity as Experience).locations[0]?.name || 'Unknown Location';
+          break;
+        case 'note':
+          locationName = 'Notes';
+          break;
+        default:
+          locationName = 'Unknown Location';
+      }
 
       // Find or create the location group
       const locationGroup = this.createOrFindLocationGroup(locationName);
 
-      if (item.activity.land) {
-        const landName = item.activity.land.name || 'Unknown Land';
-        const landGroup = this.createOrFindLandGroup(locationGroup.lands, landName);
-
-        landGroup.activities.push(item);
+      // Create land group
+      let landName = 'Unknown Land';
+      if (item.content_type !== 'note') {
+        if (item.activity && 'land' in item.activity) {
+          landName = item.activity.land?.name || 'Unknown Land';
+        }
       } else {
-        // If no land, just add to the location (you might want to handle this differently)
-        const defaultGroup = this.createOrFindLandGroup(locationGroup.lands, 'Default');
-        defaultGroup.activities.push(item);
+        landName = 'Notes';
       }
+
+      const landGroup = this.createOrFindLandGroup(locationGroup.lands, landName);
+      landGroup.activities.push(item);
+    }
+}
+
+  getActivityName(item: ItineraryItem): string {
+    console.log(item.content_type)
+    if (item.content_type === 'meal') {
+      return (item.activity as Meal).meal_experience.name;
+    } else if (item.content_type === 'travelevent') {
+      return `Travel: From ${ (item.activity as TravelEvent).from_location } to ${ (item.activity as TravelEvent).to_location }`;
+    } else if (item.content_type === 'break') {
+      return `Break: At ${ (item.activity as Break).location }`;
+    } else if (item.content_type === 'experience') {
+      return `Experience: ${(item.activity as Experience).name}`;
+    } else if (item.content_type === 'note') {
+      return `Note: ${ item.notes }`;
+    } else {
+      return 'Unknown Activity';
     }
   }
+
+
 }

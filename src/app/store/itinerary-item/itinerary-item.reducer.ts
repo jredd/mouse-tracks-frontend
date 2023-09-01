@@ -83,31 +83,78 @@ export const itineraryReducer = createReducer(
     return { ...state, itemsByDay: updatedItemsByDay };
   }),
 
+  // on(ItineraryActions.removeActivityFromMyDay, (state, { index }) => {
+  //   const currentDayItems = state.itemsByDay[state.currentDay] || [];
+  //
+  //   // Splice to remove the item at the specified index
+  //   const updatedItems = [...currentDayItems];
+  //   const removedItem = updatedItems.splice(index, 1)[0];
+  //   console.log(index)
+  //   console.log(removedItem)
+  //   console.log(updatedItems)
+  //     // New logic: Add the removed item to deletedItems if it has an id
+  //     const updatedDeletedItems = 'id' in removedItem && removedItem.id
+  //                               ? [...state.deletedItems, removedItem]
+  //                               : state.deletedItems;
+  //   console.log('updatedDeletedItems', updatedDeletedItems)
+  //   return {
+  //     ...state,
+  //     deletedItems: updatedDeletedItems,
+  //     itemsByDay: {
+  //       ...state.itemsByDay,
+  //       [state.currentDay]: reorderItems(updatedItems, 0, updatedItems.length - 1)
+  //     }
+  //   };
+  // }),
+
   on(ItineraryActions.removeActivityFromMyDay, (state, { index }) => {
-      const currentDayItems = state.itemsByDay[state.currentDay] || [];
+    const currentDayItems = state.itemsByDay[state.currentDay] || [];
+    // console.log("index:",index)
+    if(index < 0 || index >= currentDayItems.length) {
+      console.log("out of bounds")
+      // Index out of bounds. Return the state as is.
+      return state;
+    }
 
-      // Splice to remove the item at the specified index
-      const updatedItems = [...currentDayItems];
-      const removedItem = updatedItems.splice(index, 1)[0];
+    const updatedItems = [...currentDayItems];
+    const removedItem = updatedItems.splice(index, 1)[0];
 
-      // New logic: Add the removed item to deletedItems if it has an id
-      const updatedDeletedItems = 'id' in removedItem && removedItem.id
+    if (!removedItem) {
+      console.log("no item actually removed")
+      // If no item was actually removed, return the state as is.
+      return state;
+    }
+
+    const updatedDeletedItems = removedItem && 'id' in removedItem && removedItem.id
                                 ? [...state.deletedItems, removedItem]
                                 : state.deletedItems;
 
+    console.log("updated items:", updatedItems)
+    if (updatedItems.length > 0) {
       return {
-          ...state,
-          deletedItems: updatedDeletedItems,
-          itemsByDay: {
-              ...state.itemsByDay,
-              [state.currentDay]: reorderItems(updatedItems, 0, updatedItems.length - 1)
-          }
+        ...state,
+        deletedItems: updatedDeletedItems,
+        itemsByDay: {
+          ...state.itemsByDay,
+          [state.currentDay]: reorderItems(updatedItems, 0, updatedItems.length - 1)
+        }
       };
+    }
+
+    return {
+      ...state,
+      deletedItems: updatedDeletedItems,
+      itemsByDay: {
+        ...state.itemsByDay,
+        [state.currentDay]: updatedItems
+      }
+    };
+
   }),
 
   on(ItineraryActions.addActivityToMyDay, (state, { itineraryItem }) => {
     const currentDayItems = state.itemsByDay[state.currentDay] || [];
-    console.log('activity to add:', itineraryItem.activity);
+    // console.log('activity to add:', itineraryItem.activity);
 
     const order = itineraryItem.activity_order !== undefined ? itineraryItem.activity_order : currentDayItems.length;
 
@@ -119,7 +166,6 @@ export const itineraryReducer = createReducer(
       return state;
     }
 
-
     const newItem: NewItineraryItem = {
       tempId: tempId,
       trip: itineraryItem.trip!, // assuming you've checked this is non-null
@@ -128,7 +174,7 @@ export const itineraryReducer = createReducer(
       content_type: itineraryItem.content_type!,
       ...itineraryItem,
     }
-    console.log("new item in reducer:", newItem)
+    // console.log("new item in reducer:", newItem)
 
     const itemsWithNewItem = [...currentDayItems, newItem];
     const updatedItems = reorderItems(itemsWithNewItem, itemsWithNewItem.length - 1, order);
