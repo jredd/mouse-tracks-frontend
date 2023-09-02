@@ -43,6 +43,11 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
     });
   }
 
+  stringToDate(dateString: string): Date {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
   ngOnInit(): void {
     this.destinations$ = this.store.select(selectAllDestinations);
     this.store.dispatch(loadDestinations());
@@ -53,12 +58,12 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
       if (trip) {
         // Edit mode
         this.editTrip.patchValue({
-            title: trip.title,
-            destination: trip.destination,
-            dateRange: {
-                start: trip.start_date,
-                end: trip.end_date
-            }
+          title: trip.title,
+          destination: trip.destination,
+          dateRange: {
+            start: this.stringToDate(trip.start_date),
+            end: this.stringToDate(trip.end_date)
+          }
         });
         this.editTrip.enable();
       }
@@ -68,7 +73,23 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
       this.editTrip.enable()
     });
 
+    // this.editTrip.valueChanges.subscribe(val => {
+    //   const tripTitle = this.getTripTitle()
+    //   const currentTrip = this._currentTrip.value;
+    //   if (currentTrip) {
+    //     currentTrip.title = tripTitle
+    //   }
+    // });
+
+    this.editTrip.valueChanges.subscribe(val => {
+      const tripTitle = this.getTripTitle();
+      const currentTrip = this._currentTrip.value;
+      if (currentTrip && currentTrip.title !== tripTitle) {
+        this.store.dispatch(tripActions.updateTripTitle({newTitle: tripTitle}));
+      }
+    });
   }
+
   createTrip(tripData: Partial<Trip>): void {
     // Handle trip creation logic
     this.store.dispatch(tripActions.createTripRequest({ trip: tripData }));
@@ -84,27 +105,20 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
       const currentTrip = this._currentTrip.value;
 
       if (currentTrip) {
-        const trip = this.prepareUpdateFormData();
-        if (trip) {
-          this.updateTrip(trip);  // Update the existing trip
-        } else {
-          console.log('Preparing the form data failed', trip);
-        }
+        // const trip = this.prepareUpdateFormData();
+        // if (trip) {
+        //   this.updateTrip(trip);  // Update the existing trip
+        // } else {
+        //   console.log('Preparing the form data failed', trip);
+        // }
       } else {
-        console.log('Create Trip')
         this.createTrip(this.prepareCreateFormData());  // Create a new trip
       }
     }
   }
 
-  prepareUpdateFormData(): Partial<Trip> | null {
-    const formData = this.editTrip.value;
-    return {
-      title: formData.title,
-      destination_id: formData.destination,
-      start_date: formData.dateRange.start,
-      end_date: formData.dateRange.end
-    }
+  getTripTitle(): string {
+    return this.editTrip.value.title
   }
 
   private prepareCreateFormData(): Partial<Trip> {

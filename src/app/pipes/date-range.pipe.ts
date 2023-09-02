@@ -7,7 +7,7 @@ import * as moment from 'moment';
 })
 export class DateRangePipe implements PipeTransform {
 
-  transform(startDate: Date, endDate: Date): string {
+  transform(startDate: string, endDate: string): string {
     const start = moment(startDate);
     const end = moment(endDate);
 

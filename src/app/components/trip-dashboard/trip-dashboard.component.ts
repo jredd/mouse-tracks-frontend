@@ -24,9 +24,7 @@ export class TripDashboardComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<void>();
 
   constructor(private store: Store<AppState>, private cd: ChangeDetectorRef, private router: Router) {}
-  ngAfterInit() {
 
-  }
   ngOnInit() {
     // Dispatch the action to load the trips
     this.store.dispatch(loadTrips());

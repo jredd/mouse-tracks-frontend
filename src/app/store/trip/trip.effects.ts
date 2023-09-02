@@ -10,6 +10,7 @@ import * as fromItineraryItem from '../itinerary-item';
 import { selectTripNotFoundInStore} from "./trip.selectors";
 import {generateEmptyDateRange} from "../itinerary-item";
 import {loadTripError, loadTripsSuccess} from "./trip.actions";
+import * as moment from "moment/moment";
 
 
 @Injectable()
@@ -26,7 +27,10 @@ export class TripEffects {
       switchMap(action =>
         this.tripService.getTrip(action.trip_id).pipe(
           switchMap(trip => {
-            const itemsByDay = generateEmptyDateRange(trip.start_date, trip.end_date);
+            const startDate = moment(trip.start_date);
+            const endDate = moment(trip.end_date);
+            const itemsByDay = generateEmptyDateRange(startDate.toDate(), endDate.toDate());
+            // const itemsByDay = generateEmptyDateRange(trip.start_date, trip.end_date);
             // Use from to emit each action individually
             return from([
               tripActions.tripLoaded({ trip }),

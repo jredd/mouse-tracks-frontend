@@ -36,6 +36,7 @@ export const itineraryReducer = createReducer(
   on(tripLoaded, (state, { trip }) => {
       const startDate = moment(trip.start_date);
       const endDate = moment(trip.end_date);
+      // console.log(startDate, endDate)
       const itemsByDay = generateEmptyDateRange(startDate.toDate(), endDate.toDate());
       return {
           ...state,

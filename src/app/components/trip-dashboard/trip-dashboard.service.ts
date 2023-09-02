@@ -29,11 +29,6 @@ export class TripService {
 
   getTrips(): Observable<Trip[]> {
     return this.http.get<Trip[]>(`${this.BASE_URL}/trips/`).pipe(
-      map((trips: Trip[]) => trips.map(trip => ({
-        ...trip,
-        start_date: new Date(trip.start_date),
-        end_date: new Date(trip.end_date)
-      }))),
       tap((result: Trip[]) => this.dbService.bulkAdd('trip', result)),
       catchError(this.handleError<Trip[]>('getTrips', []))
     );
@@ -41,12 +36,12 @@ export class TripService {
 
   getTrip(id: string): Observable<Trip> {
     return this.http.get<Trip>(`${this.BASE_URL}/trips/${id}/`).pipe(
-      map((trip: Trip) => ({
-        ...trip,
-        start_date: new Date(trip.start_date),
-        end_date: new Date(trip.end_date),
-        last_content_update: new Date(trip.last_content_update)
-      })),
+      // map((trip: Trip) => ({
+      //   ...trip,
+      //   start_date: trip.start_date,
+      //   end_date: new Date(trip.end_date),
+      //   last_content_update: new Date(trip.last_content_update)
+      // })),
       tap((result: Trip) => this.dbService.update('trip', result)),
       catchError(this.handleError<Trip>('getTrip', {} as Trip))
     );
@@ -68,11 +63,12 @@ export class TripService {
   updateTrip(trip: Partial<Trip>): Observable<Trip> {
     const apiTrip: ApiTrip = {
       ...trip,
+      destination_id: trip.destination?.id,
       start_date: moment(trip.start_date).format('YYYY-MM-DD'),
       end_date: moment(trip.end_date).format('YYYY-MM-DD')
     };
 
-    return this.http.put<Trip>(`${this.BASE_URL}/trips/${trip.id}`, apiTrip).pipe(
+    return this.http.put<Trip>(`${this.BASE_URL}/trips/${trip.id}/`, apiTrip).pipe(
       tap((updatedTrip: Trip) => this.dbService.update('trip', updatedTrip)),
       catchError(this.handleError<Trip>('updateTrip'))
     );
@@ -84,34 +80,6 @@ export class TripService {
       tap((result: ItineraryItem[]) => this.dbService.bulkAdd('itinerary_item', result)),
       catchError(this.handleError<ItineraryItem[]>('getItineraryItems', []))
     );
-  }
-  private transformToAPIFormat(item: ItineraryItem): APIItineraryItem {
-    let activity: any = { ...item.activity };
-
-    if (item.content_type === 'meal' && activity) {
-      const mealActivity = activity as MealAPI;
-      if ('meal_experience' in mealActivity) {
-        // mealActivity.meal_experience = mealActivity.meal_experience_id;
-        delete (mealActivity as any).meal_experience;
-      }
-    }
-    const apiItem: APIItineraryItem = {
-      trip: item.trip.id,
-      notes: item.notes,
-      activity_order: item.activity_order,
-      start_time: item.start_time,
-      end_time: item.end_time,
-      activity_id: item.activity_id,
-      activity: activity, // Use the modified activity
-      content_type: item.content_type,
-      day: moment(item.day).format('YYYY-MM-DD')
-    };
-
-    if ('id' in item) {
-      (apiItem as any).id = item.id; // Adding the id if it exists in the item.
-    }
-
-    return apiItem
   }
 
   // Function to create a new itinerary item for a specific trip
@@ -158,9 +126,6 @@ export class TripService {
     );
   }
 
-
-
-
   // Function to update an existing itinerary item by its id
   updateItineraryItem(itemId: string, item: ItineraryItem): Observable<ItineraryItem> {
     return this.http.put<ItineraryItem>(`${this.BASE_URL}/itinerary-items/${itemId}/`, item).pipe(
@@ -168,38 +133,6 @@ export class TripService {
       catchError(this.handleError<ItineraryItem>('updateItineraryItem'))
     );
   }
-
-  // bulkSaveItineraryItems(items: ItineraryItem[]): Observable<ItineraryItem[]> {
-  //   console.log("gonna bulk")
-  //   // Using RxJS's forkJoin to execute multiple requests in parallel.
-  //   // forkJoin will wait for all of the observables to complete and then emit an array of the results.
-  //   return forkJoin(
-  //     items.map(item => this.createItineraryItem(item.trip, item))
-  //   ).pipe(
-  //     // (Optional) If you need to do something with the result array, you can use the map operator.
-  //     map(results => {
-  //       // Do any processing with results if needed.
-  //       return results;
-  //     }),
-  //     catchError(this.handleError<ItineraryItem[]>('bulkSaveItineraryItems'))
-  //   );
-  // }
-  //
-  // bulkUpdateItineraryItems(items: ExistingItineraryItem[]): Observable<ItineraryItem[]> {
-  //   // Map over each existing itinerary item and call the putItineraryItem service method
-  //   const updateTasks = items.map(item => this.putItineraryItem(item.id, item));
-  //
-  //   // Use forkJoin to execute the put requests in parallel
-  //   return forkJoin(updateTasks).pipe(
-  //     map(results => {
-  //       // If additional processing of results is required, do it here.
-  //       // For now, simply return the results.
-  //       return results;
-  //     }),
-  //     catchError(this.handleError<ItineraryItem[]>('bulkUpdateItineraryItems'))
-  //   );
-  // }
-
 
   // Function to partially update an existing itinerary item by its id
   putItineraryItem(itemId: string, item: Partial<ItineraryItem>): Observable<ItineraryItem> {
@@ -217,27 +150,6 @@ export class TripService {
     );
   }
 
-  getBreak(itineraryItemId: number, breakId: number): Observable<Break> {
-    return this.http.get<Break>(`${this.BASE_URL}/itinerary-items/${itineraryItemId}/breaks/${breakId}/`).pipe(
-      tap((result: Break) => this.dbService.update('break', result)),
-      catchError(this.handleError<Break>('getBreak', {} as Break))
-    );
-  }
-
-  getTravelEvent(itineraryItemId: number, eventId: number): Observable<TravelEvent> {
-    return this.http.get<TravelEvent>(`${this.BASE_URL}/itinerary-items/${itineraryItemId}/travel-events/${eventId}/`).pipe(
-      tap((result: TravelEvent) => this.dbService.update('travel_event', result)),
-      catchError(this.handleError<TravelEvent>('getTravelEvent', {} as TravelEvent))
-    );
-  }
-
-  getMeal(itineraryItemId: number, mealId: number): Observable<Meal> {
-    return this.http.get<Meal>(`${this.BASE_URL}/itinerary-items/${itineraryItemId}/meals/${mealId}/`).pipe(
-      tap((result: Meal) => this.dbService.update('meal', result)),
-      catchError(this.handleError<Meal>('getMeal', {} as Meal))
-    );
-  }
-
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: HttpErrorResponse): Observable<T> => {
       console.error(`${operation} failed: ${error.message}`);
@@ -245,4 +157,34 @@ export class TripService {
       return of(result as T);
     };
   }
+
+  private transformToAPIFormat(item: ItineraryItem): APIItineraryItem {
+    let activity: any = { ...item.activity };
+
+    if (item.content_type === 'meal' && activity) {
+      const mealActivity = activity as MealAPI;
+      if ('meal_experience' in mealActivity) {
+        // mealActivity.meal_experience = mealActivity.meal_experience_id;
+        delete (mealActivity as any).meal_experience;
+      }
+    }
+    const apiItem: APIItineraryItem = {
+      trip: item.trip.id,
+      notes: item.notes,
+      activity_order: item.activity_order,
+      start_time: item.start_time,
+      end_time: item.end_time,
+      activity_id: item.activity_id,
+      activity: activity, // Use the modified activity
+      content_type: item.content_type,
+      day: moment(item.day).format('YYYY-MM-DD')
+    };
+
+    if ('id' in item) {
+      (apiItem as any).id = item.id; // Adding the id if it exists in the item.
+    }
+
+    return apiItem
+  }
+
 }

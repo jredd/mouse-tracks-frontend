@@ -70,3 +70,8 @@ export const setCurrentTrip = createAction(
 export const deactivateCurrentTrip = createAction(
   '[Trip] Deactivate Current Trip'
 );
+
+export const updateTripTitle = createAction(
+  '[Trip] Update Current Trip Title',
+  props<{ newTitle: string }>()
+);

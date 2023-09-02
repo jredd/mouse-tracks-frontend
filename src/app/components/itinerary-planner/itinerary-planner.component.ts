@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatButtonToggleChange } from "@angular/material/button-toggle";
-import { EMPTY, Observable, take } from "rxjs";
+import {EMPTY, Observable, take, throttleTime} from "rxjs";
 
-import {Experience, Location, UIExperienceTypes} from "../../store";
+import {Experience, Location, Trip, UIExperienceTypes} from "../../store";
 import { select, Store} from "@ngrx/store";
 import { AppState } from "../../store/app.state";
 import * as fromLocationStore from '../../store/location/';
@@ -14,6 +14,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from "@angular/material/dialog";
 import { DialoguePlannerContentComponent } from "../dialogue-planner-content/dialogue-planner-content.component";
 import {FormType} from "../dialogue-planner-content/dialogue-planner-content.interface";
+import {filter} from "rxjs/operators";
 
 
 @Component({
@@ -40,6 +41,7 @@ export class ItineraryPlannerComponent implements OnInit {
   locId: string = "";
   defaultExperienceType: string = '';
   selectedDay: string = '';
+  currentTrip: Trip;
 
 
   // Define this mapping at the top-level of your component, outside any methods.
@@ -56,11 +58,15 @@ export class ItineraryPlannerComponent implements OnInit {
     // this.currentTypeExperiences$.subscribe(type => this.currentExperienceType = type);
     this.store.pipe(
     select(fromTripStore.selectCurrentTrip),
-      take(1)
+      filter(currentTrip => currentTrip !== null),
+      throttleTime(1000),
     ).subscribe(currentTrip => {
-      if (currentTrip && currentTrip.destination.id) {
+      if (currentTrip && currentTrip.destination.id && !this.currentTrip) {
         this.store.dispatch(fromLocationStore.loadLocations({ dest_id: currentTrip.destination.id }));
         this.store.dispatch(fromItineraryItemStore.getItineraryItemsRequest({ trip_id: currentTrip.id }));
+      }
+      if(currentTrip) {
+        this.currentTrip = currentTrip
       }
     });
     this.currentTypeExperiences$ = this.store.select(fromExperienceStore.selectCurrentExperienceType);
@@ -137,7 +143,11 @@ export class ItineraryPlannerComponent implements OnInit {
   }
 
   onSave() {
+    console.log('save this shit')
     // Assuming you have an array of itinerary items named 'itineraryItems' and a tripId variable.
     this.store.dispatch(fromItineraryItemStore.saveAllNonEmptyDays());
+    if (this.currentTrip) {
+      this.store.dispatch(fromTripStore.updateTrip({trip: this.currentTrip}))
+    }
   }
 }

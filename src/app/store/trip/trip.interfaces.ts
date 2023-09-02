@@ -6,9 +6,9 @@ export interface Trip extends BaseInterface {
   created_by: string;
   destination_id?: string;
   destination: Destination
-  start_date: Date;
-  end_date: Date;
-  last_content_update: Date;
+  start_date: string;
+  end_date: string;
+  last_content_update: string;
 }
 
 export interface ApiTrip {
@@ -16,7 +16,7 @@ export interface ApiTrip {
   created_by?: string;
   destination_id?: string;
   destination?: Destination;
-  last_content_update?: Date;
+  last_content_update?: string;
   start_date: string;
   end_date: string;
   id?: string;

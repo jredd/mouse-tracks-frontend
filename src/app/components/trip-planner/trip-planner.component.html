@@ -28,6 +28,7 @@
 
             <!-- Date Range -->
             <mat-grid-tile colspan="3">
+              <ng-container *ngIf="!(currentTrip$ | async)?.id; else showDateRangeDetails">
                 <mat-form-field appearance="fill" class="full-width">
                     <mat-label>Enter a date range</mat-label>
                     <mat-date-range-input formGroupName="dateRange" [rangePicker]="picker">
@@ -37,6 +38,7 @@
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-date-range-picker #picker></mat-date-range-picker>
                 </mat-form-field>
+              </ng-container>
             </mat-grid-tile>
 
             <ng-container *ngIf="!(currentTrip$ | async)">
@@ -59,4 +61,10 @@
             <h2>{{ currentTrip.destination.name }}</h2>
         </div>
     </ng-template>
+
+  <ng-template #showDateRangeDetails>
+    <div *ngIf="currentTrip$ | async as currentTrip">
+      <h3>{{ currentTrip.start_date | dateRange:currentTrip.end_date }}</h3>
+    </div>
+  </ng-template>
 </ng-container>
