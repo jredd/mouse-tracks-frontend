@@ -52,8 +52,25 @@
       font-size: .75em;
     }
   }
-  h3, h4, ul {
-    margin-bottom: 16px;
+  .card_content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Optional: Add some space between the columns */
+    .items_column1, .items_column2 {
+      flex: 1;
+      .item_group {
+        margin-bottom: 5px;
+        h3 {
+          font-size: 1.15em !important;
+          font-weight: 600;
+          margin-bottom: 0;
+        }
+        ul {
+          margin-bottom: 0;
+        }
+
+      }
+    }
   }
   h4 {
     margin-bottom: 0 !important;
@@ -85,3 +102,20 @@
     margin-top: 10px !important;
   }
 }
+
+//.grid-container {
+//  display: grid;
+//  grid-template-columns: repeat(2, 1fr);
+//  grid-auto-flow: column;
+//  max-height: 400px; // adjust this based on your needs
+//}
+//.grid-container {
+//  display: flex;
+//  flex-direction: column;
+//  flex-wrap: wrap;
+//  max-height: 400px; // adjust this based on your needs
+//}
+//
+//.grid-item {
+//  width: 50%; // adjust this based on your needs
+//}

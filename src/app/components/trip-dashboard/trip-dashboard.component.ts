@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { Store } from '@ngrx/store';
-import { EMPTY, Observable } from 'rxjs';
+import {EMPTY, Observable, Subject, takeUntil} from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -17,10 +17,12 @@ import { staggeredFadeIn } from "./trip-dashboard.animation";
   styleUrls: ['./trip-dashboard.component.scss'],
   animations: [staggeredFadeIn],
 })
-export class TripDashboardComponent implements OnInit {
+export class TripDashboardComponent implements OnInit, OnDestroy {
   loading$: Observable<boolean> = EMPTY;
   trips$: Observable<Trip[]> = EMPTY;
   displayTrips = false;
+  private ngUnsubscribe = new Subject<void>();
+
   constructor(private store: Store<AppState>, private cd: ChangeDetectorRef, private router: Router) {}
   ngAfterInit() {
 
@@ -33,7 +35,8 @@ export class TripDashboardComponent implements OnInit {
     this.animateTrips(); // Call this for the initial animation
 
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
+      filter(event => event instanceof NavigationEnd),
+      takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.animateTrips();
     });
@@ -42,5 +45,11 @@ export class TripDashboardComponent implements OnInit {
   animateTrips() {
     this.displayTrips = false;
     setTimeout(() => this.displayTrips = true, 100);
+  }
+
+  ngOnDestroy() {
+    // console.log('Destroy TripDashboardComponent');
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 }

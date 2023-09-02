@@ -13,7 +13,6 @@ const routes: Routes = [
   {
     path: 'trip',
     children: [
-      { path: '', component: TripDashboardComponent },
       {
         path: 'planner',
         component: TripPlannerComponent,
@@ -31,25 +30,8 @@ const routes: Routes = [
         canActivate: [currentTripGuard],
         canDeactivate: [deactivateCurrentTripGuard]
       }
-      // ... more trip-related routes here
     ]
   },
-  // {
-  //   path: 'settings',
-  //   children: [
-  //     { path: 'profile', component: UserProfileComponent },
-  //     { path: 'notifications', component: UserNotificationsComponent }
-  //     // ... more settings-related routes here
-  //   ]
-  // },
-  // {
-  //   path: 'user',
-  //   children: [
-  //     { path: 'login', component: LoginComponent },
-  //     { path: 'register', component: RegisterComponent }
-  //     // ... more user-related routes here
-  //   ]
-  // },
 ];
 
 

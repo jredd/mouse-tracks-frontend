@@ -7,23 +7,41 @@
         <h2>{{ currentTrip.title }}</h2>
         <span class="header_date"> {{ currentTrip.start_date | dateRange:currentTrip.end_date }}</span>
         <span class="header_day_name">{{ day | dayName }}: </span>
-        <span class="header_location_name" *ngIf="locationGroups.length > 0"> {{ locationGroups[0].locationName }}</span>
+        <!-- Display the first location name, if available -->
+        <span class="header_location_name" *ngIf="finalList.length > 0">
+          <!-- You can add the logic for extracting the first location name here -->
+        </span>
       </div>
     </mat-card-title>
   </mat-card-header>
 
-  <mat-card-content class="grid-container">
-    <ng-container *ngFor="let locationGroup of locationGroups">
-      <div class="grid-item">
-        <ng-container *ngFor="let landGroup of locationGroup.lands">
-          <h4>{{ landGroup.landName }}:</h4>
-          <ul>
-            <li *ngFor="let item of landGroup.activities">
-              {{ getActivityName(item) }}
-            </li>
-          </ul>
-        </ng-container>
-      </div>
-    </ng-container>
+  <mat-card-content class="card_content">
+    <!-- First column -->
+    <div class="items_column1">
+      <ng-container *ngFor="let item of groupColumn1">
+        <ng-container *ngTemplateOutlet="itemTemplate; context: { item: item }"></ng-container>
+      </ng-container>
+    </div>
+
+    <!-- Second column -->
+    <div class="items_column2">
+      <ng-container *ngFor="let item of groupColumn2">
+        <ng-container *ngTemplateOutlet="itemTemplate; context: { item: item }"></ng-container>
+      </ng-container>
+    </div>
   </mat-card-content>
 </mat-card>
+
+
+<ng-template #itemTemplate let-item="item">
+  <div class="item_group">
+    <ng-container *ngIf="item.header !== 'note'">
+      <h3>{{ item.header }}</h3>
+      <ul>
+        <li *ngFor="let activity of item.items">
+          {{ getActivityName(activity) }}
+        </li>
+      </ul>
+    </ng-container>
+  </div>
+</ng-template>

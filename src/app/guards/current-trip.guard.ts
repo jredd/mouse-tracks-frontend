@@ -12,7 +12,7 @@ export const currentTripGuard = (next: ActivatedRouteSnapshot) => {
     const tripId = next.params['id'];
 
     if (tripId) {
-        store.dispatch(tripActions.setCurrentTrip({ trip_id: tripId }));
+      store.dispatch(tripActions.setCurrentTrip({ trip_id: tripId }));
     }
 
   return true;

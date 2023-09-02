@@ -1,13 +1,3 @@
-<!-- Loading Spinner -->
-<mat-spinner *ngIf="isLoading$ | async"></mat-spinner>
-
-<ng-container *ngIf="!(isLoading$ | async)">
-  <div id="trip_detail_header" @fadeIn *ngIf="currentTrip$ | async as currentTrip">
-    <h2>{{ currentTrip.title }}</h2>
-    <p class="header_date"> {{ currentTrip.start_date | dateRange:currentTrip.end_date }}</p>
-  </div>
-</ng-container>
-
 <div>
   <app-itinerary-detail></app-itinerary-detail>
 </div>
