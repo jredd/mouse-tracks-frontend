@@ -161,30 +161,49 @@ export class TripService {
   private transformToAPIFormat(item: ItineraryItem): APIItineraryItem {
     let activity: any = { ...item.activity };
 
-    if (item.content_type === 'meal' && activity) {
-      const mealActivity = activity as MealAPI;
-      if ('meal_experience' in mealActivity) {
-        // mealActivity.meal_experience = mealActivity.meal_experience_id;
-        delete (mealActivity as any).meal_experience;
-      }
+    switch (item.content_type) {
+        case 'meal':
+            if ('meal_experience' in activity) {
+                delete (activity as any).meal_experience;
+            }
+            break;
+
+        case 'travelevent':
+            if (activity.from_location) {
+                activity.from_location_id = activity.from_location.id;
+                delete activity.from_location;
+            }
+            if (activity.to_location) {
+                activity.to_location_id = activity.to_location.id;
+                delete activity.to_location;
+            }
+            break;
+
+        case 'break':
+            if (activity.location) {
+                activity.location_id = activity.location.id;
+                delete activity.location;
+            }
+            break;
     }
+
     const apiItem: APIItineraryItem = {
-      trip: item.trip.id,
-      notes: item.notes,
-      activity_order: item.activity_order,
-      start_time: item.start_time,
-      end_time: item.end_time,
-      activity_id: item.activity_id,
-      activity: activity, // Use the modified activity
-      content_type: item.content_type,
-      day: moment(item.day).format('YYYY-MM-DD')
+        trip: item.trip.id,
+        notes: item.notes,
+        activity_order: item.activity_order,
+        start_time: item.start_time,
+        end_time: item.end_time,
+        activity_id: item.activity_id,
+        activity: activity, // Use the modified activity
+        content_type: item.content_type,
+        day: moment(item.day).format('YYYY-MM-DD')
     };
 
     if ('id' in item) {
-      (apiItem as any).id = item.id; // Adding the id if it exists in the item.
+        (apiItem as any).id = item.id; // Adding the id if it exists in the item.
     }
 
-    return apiItem
-  }
+    return apiItem;
+}
 
 }

@@ -28,6 +28,7 @@ import { MatDividerModule } from "@angular/material/divider";
 import { DayNamePipe} from "../../pipes/day-name.pipe";
 import { MatDialogModule} from "@angular/material/dialog";
 import { DialoguePlannerContentComponent } from "../dialogue-planner-content/dialogue-planner-content.component";
+import {MilitaryTo12HrPipe} from "../../pipes/military_to_12_hr.pipe";
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import { DialoguePlannerContentComponent } from "../dialogue-planner-content/dia
     ItineraryPlannerComponent,
     DateRangePipe,
     DayNamePipe,
+    MilitaryTo12HrPipe,
     DayPlannerComponent,
     DayDetailComponent,
     ItineraryDetailComponent,

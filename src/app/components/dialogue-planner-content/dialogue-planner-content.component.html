@@ -33,7 +33,7 @@
             <!-- From Location -->
             <mat-form-field class="location_field">
               <mat-label>From Location</mat-label>
-              <mat-select formControlName="from_location">
+              <mat-select formControlName="from_location_id">
                 <mat-option></mat-option> <!-- Allow empty selection -->
                 <mat-option *ngFor="let location of locations$ | async" [value]="location.id">
                   {{location.name}}
@@ -47,7 +47,7 @@
             <!-- To Location -->
             <mat-form-field class="location_field">
               <mat-label>To Location</mat-label>
-              <mat-select formControlName="to_location">
+              <mat-select formControlName="to_location_id">
                 <mat-option></mat-option> <!-- Allow empty selection -->
                 <mat-option *ngFor="let location of locations$ | async" [value]="location.id">
                   {{location.name}}

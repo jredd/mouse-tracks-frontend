@@ -161,7 +161,7 @@ export class DayPlannerComponent implements OnInit {
         const mealType = this.capitalizeFirstLetter(meal.meal_type) ?? 'Unknown Meal Type';
         const name = meal.meal_experience?.name ?? 'Unknown Experience';
         return `${mealType}: ${name}`;
-      case null:
+      case 'note':
         return 'Notes';
       case 'travelevent':
         return 'Travel Event';

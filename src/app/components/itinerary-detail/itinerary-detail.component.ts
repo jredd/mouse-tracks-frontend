@@ -1,12 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {distinctUntilChanged, first, Observable, Subject, Subscription, take, takeUntil, throttleTime} from "rxjs";
 import {select, Store} from "@ngrx/store";
-// import * as fromItineraryItemStore from "../../store/itinerary-item/itinerary-item.effects";
 import {AppState} from "../../store/app.state";
 import * as fromItineraryItemStore from '../../store/itinerary-item/';
-import {ItineraryItem} from "../../store";
 import * as fromTripStore from "../../store/trip";
-import {ItemsByDay, SelectAllItemsByDay} from "../../store/itinerary-item/";
+import {ItemsByDay} from "../../store/itinerary-item/";
 import {Router} from "@angular/router";
 import {filter, tap} from "rxjs/operators";
 
@@ -37,8 +35,9 @@ export class ItineraryDetailComponent implements OnInit, OnDestroy {
       throttleTime(1000),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(currentTrip => {
-      console.log("subscriber:", currentTrip)
+      // console.log("subscriber:", currentTrip)
       if (currentTrip) {
+        console.log(currentTrip.id)
         this.store.dispatch(fromItineraryItemStore.getItineraryItemsRequest({ trip_id: currentTrip.id }));
       }
     });

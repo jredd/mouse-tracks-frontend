@@ -1,10 +1,11 @@
 import { Experience} from "../experience/experience.interfaces";
 import { BaseInterface } from "../base.interface";
 import {Trip} from "../trip/trip.interfaces";
+import {Location} from "../location/location.interfaces";
 
 export interface TravelEvent extends BaseInterface {
-  from_location: string;
-  to_location: string;
+  from_location: Location;
+  to_location: Location;
   custom_from_location?: string;
   custom_to_location?: string;
   travel_type: string;

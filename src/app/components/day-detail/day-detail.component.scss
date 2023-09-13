@@ -20,6 +20,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   mat-card-header {
     background-color: $primary;
+    min-height: 85px;
   }
   .card_header {
     text-align: center;
@@ -52,13 +53,30 @@
       font-size: .75em;
     }
   }
+
   .card_content {
     display: flex;
     flex-direction: row;
     justify-content: space-between; /* Optional: Add some space between the columns */
     .items_column1, .items_column2 {
       flex: 1;
-      .item_group {
+      padding-left: 5px;
+      .location_title {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        .location_label {
+          font-size: 1.25em;
+          font-weight: 700;
+        }
+        .location_time_range {
+          font-style: italic;
+          font-size: .9em;
+        }
+        //font-size: 1.25em;
+        //margin-top: 10px;
+        //font-weight: 700;
+      }
+      .item_activity_group {
         margin-bottom: 5px;
         h3 {
           font-size: 1.15em !important;
@@ -67,8 +85,37 @@
         }
         ul {
           margin-bottom: 0;
+          .experience_item {
+
+          }
+          .meal_item {
+            .meal_notes {
+              display: block;
+              font-style: italic;
+            }
+          }
         }
 
+      }
+      .item_note_group {
+        align-items: baseline;
+        .note_label {
+          font-family: "hypatia-sans-pro", sans-serif !important;
+          font-size: 1.15em !important;
+          font-weight: 600;
+          margin-right: .5rem;
+        }
+      }
+      .item_travel_event_group {
+        .travel_event_label {
+          font-family: "hypatia-sans-pro", sans-serif !important;
+          font-size: 1.15em !important;
+          font-weight: 600;
+          margin-right: .5rem;
+        }
+        .travel_event_travel_to_from {
+          display: block;
+        }
       }
     }
   }

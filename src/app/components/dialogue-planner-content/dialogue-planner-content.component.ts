@@ -58,8 +58,8 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         break;
       case FormType.TRAVEL_EVENT:
         this.form = this.fb.group({
-          from_location: ['', Validators.required],
-          to_location: ['', Validators.required],
+          from_location_id: ['', Validators.required],
+          to_location_id: ['', Validators.required],
           custom_from_location: [''],
           custom_to_location: [''],
           travel_type: ['', Validators.required],
@@ -67,7 +67,7 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
           notes: ['']
         });
 
-        const fromLocationControl = this.form.get('from_location')!;
+        const fromLocationControl = this.form.get('from_location_id')!;
         fromLocationControl.valueChanges.subscribe(val => {
               if (val) {
                   this.form.get('custom_from_location')!.setValue(null, { emitEvent: false });
@@ -80,14 +80,14 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         const customFromLocationControl = this.form.get('custom_from_location')!;
         customFromLocationControl.valueChanges.subscribe(val => {
           if (val) {
-            this.form.get('from_location')!.setValue(null, { emitEvent: false });
-            this.form.get('from_location')!.disable({ emitEvent: false });
+            this.form.get('from_location_id')!.setValue(null, { emitEvent: false });
+            this.form.get('from_location_id')!.disable({ emitEvent: false });
           } else {
-            this.form.get('from_location')!.enable({ emitEvent: false });
+            this.form.get('from_location_id')!.enable({ emitEvent: false });
           }
         });
 
-        const toLocationControl = this.form.get('to_location')!;
+        const toLocationControl = this.form.get('to_location_id')!;
         toLocationControl.valueChanges.subscribe(val => {
           if (val) {
             this.form.get('custom_to_location')!.setValue(null, { emitEvent: false });
@@ -100,10 +100,10 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         const customToLocationControl = this.form.get('custom_to_location')!;
         customToLocationControl.valueChanges.subscribe(val => {
           if (val) {
-            this.form.get('to_location')!.setValue(null, { emitEvent: false });
-            this.form.get('to_location')!.disable({ emitEvent: false });
+            this.form.get('to_location_id')!.setValue(null, { emitEvent: false });
+            this.form.get('to_location_id')!.disable({ emitEvent: false });
           } else {
-            this.form.get('to_location')!.enable({ emitEvent: false });
+            this.form.get('to_location_id')!.enable({ emitEvent: false });
           }
         });
 
@@ -141,8 +141,8 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         };
       case FormType.TRAVEL_EVENT:
         return {
-          from_location: this.form.get('from_location')?.value,
-          to_location: this.form.get('to_location')?.value,
+          from_location_id: this.form.get('from_location_id')?.value,
+          to_location_id: this.form.get('to_location_id')?.value,
           custom_from_location: this.form.get('custom_from_location')?.value,
           custom_to_location: this.form.get('custom_to_location')?.value,
           travel_type: this.form.get('travel_type')?.value,

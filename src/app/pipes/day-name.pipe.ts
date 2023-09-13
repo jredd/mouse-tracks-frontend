@@ -7,7 +7,7 @@ import * as moment from 'moment';
 export class DayNamePipe implements PipeTransform {
   transform(value: string): string {
     const dayName = moment(value, 'YYYY-MM-DD').format('dddd');
-    const formattedDate = moment(value, 'YYYY-MM-DD').format('DD.MM.YYYY');
+    const formattedDate = moment(value, 'YYYY-MM-DD').format('MMMM Do');
     return `${dayName}, ${formattedDate}`;
   }
 }

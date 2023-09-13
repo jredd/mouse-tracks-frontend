@@ -5,12 +5,8 @@
     <mat-card-title class="card_title">
       <div class="card_title_content">
         <h2>{{ currentTrip.title }}</h2>
-        <span class="header_date"> {{ currentTrip.start_date | dateRange:currentTrip.end_date }}</span>
-        <span class="header_day_name">{{ day | dayName }}: </span>
-        <!-- Display the first location name, if available -->
-        <span class="header_location_name" *ngIf="finalList.length > 0">
-          <!-- You can add the logic for extracting the first location name here -->
-        </span>
+        <span *ngIf="currentTrip.start_date != currentTrip.end_date" class="header_date"> {{ currentTrip.start_date | dateRange:currentTrip.end_date }}</span>
+        <span class="header_day_name">{{ day | dayName }} </span>
       </div>
     </mat-card-title>
   </mat-card-header>
@@ -18,30 +14,84 @@
   <mat-card-content class="card_content">
     <!-- First column -->
     <div class="items_column1">
-      <ng-container *ngFor="let item of groupColumn1">
-        <ng-container *ngTemplateOutlet="itemTemplate; context: { item: item }"></ng-container>
+      <ng-container *ngFor="let location of column1">
+        <div class="location_title" *ngIf="location.name && location.display">
+          <span class="location_label">{{ location.name }}: </span>
+          <span class="location_time_range">8:30 AM - 6:00 PM</span>
+        </div>
+        <ng-container *ngFor="let item of location.itemGroups">
+          <ng-container [ngSwitch]="item.type">
+            <ng-container *ngSwitchCase="'activity'">
+              <ng-container *ngTemplateOutlet="activityItemTemplate; context: { item: item }"></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'note'">
+              <ng-container *ngTemplateOutlet="noteItemTemplate; context: { item: item }"></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'travelevent'">
+              <ng-container *ngTemplateOutlet="travelEventItemTemplate; context: { item: item }"></ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
       </ng-container>
     </div>
 
     <!-- Second column -->
     <div class="items_column2">
-      <ng-container *ngFor="let item of groupColumn2">
-        <ng-container *ngTemplateOutlet="itemTemplate; context: { item: item }"></ng-container>
-      </ng-container>
+       <ng-container *ngFor="let location of column2">
+         <div class="location_title" *ngIf="location.name && location.display">
+           <span class="location_label">{{ location.name }}: </span>
+           <span class="location_time_range">10:00 AM - 11:00 PM</span>
+         </div>
+         <ng-container *ngFor="let item of location.itemGroups">
+          <ng-container [ngSwitch]="item.type">
+            <ng-container *ngSwitchCase="'activity'">
+              <ng-container *ngTemplateOutlet="activityItemTemplate; context: { item: item }"></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'note'">
+              <ng-container *ngTemplateOutlet="noteItemTemplate; context: { item: item }"></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'travelevent'">
+              <ng-container *ngTemplateOutlet="travelEventItemTemplate; context: { item: item }"></ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+       </ng-container>
     </div>
   </mat-card-content>
 </mat-card>
 
 
-<ng-template #itemTemplate let-item="item">
-  <div class="item_group">
-    <ng-container *ngIf="item.header !== 'note'">
-      <h3>{{ item.header }}</h3>
-      <ul>
-        <li *ngFor="let activity of item.items">
+<ng-template #activityItemTemplate let-item="item">
+  <div class="item_activity_group">
+    <h3>{{ item.header }}</h3>
+    <ul>
+      <ng-container *ngFor="let activity of item.items">
+        <li class="experience_item" *ngIf="activity.content_type === 'experience'; else mealItem">
           {{ getActivityName(activity) }}
+          <span *ngIf="activity.start_time">: {{ activity.start_time | militaryTo12Hr }}</span>
         </li>
-      </ul>
-    </ng-container>
+        <ng-template #mealItem>
+          <li class="meal_item">
+            <span class="meal_title">{{ buildMealTitle(activity) }}</span>
+            <span class="meal_notes">{{ activity.notes }}</span>
+          </li>
+        </ng-template>
+      </ng-container>
+    </ul>
   </div>
 </ng-template>
+
+<ng-template #noteItemTemplate let-item="item">
+  <div class="item_note_group">
+    <span class="note_label">Note:</span>
+    <span>{{ getNoteInformation(item) }}</span>
+  </div>
+</ng-template>
+<ng-template #travelEventItemTemplate let-item="item">
+  <div class="item_travel_event_group">
+    <span class="travel_event_label">Travel Event:</span>
+    <span class="travel_event_travel_to_from">{{ getTravelToFrom(item) }}</span>
+    <span class="travel_event_travel_notes">Notes: {{ getNoteInformation(item) }}</span>
+  </div>
+</ng-template>
+
