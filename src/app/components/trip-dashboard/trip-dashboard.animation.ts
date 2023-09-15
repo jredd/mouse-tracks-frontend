@@ -47,3 +47,14 @@ export const fadeInOut = trigger('fadeInOut', [
     animate('600ms', style({ opacity: 0 }))
   ])
 ]);
+
+export const flyInOut = trigger('flyInOut', [
+  state('in', style({ transform: 'translateX(0)' })),
+  transition('void => *', [
+    style({ transform: 'translateX(100%)' }),
+    animate('200ms 100ms ease-out')  // 200ms duration, 100ms delay
+  ]),
+  transition('* => void', [
+    animate('100ms ease-in', style({ transform: 'translateX(100%)' }))
+  ])
+])

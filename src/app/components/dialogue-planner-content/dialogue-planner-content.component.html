@@ -1,4 +1,4 @@
-<div id="dialogue_content_container">
+<div id="dialogue_content_container" [ngStyle]="{'width': width, 'height': height}">
   <h2 mat-dialog-title>{{ data.title ? data.title : 'Default Title' }}</h2>
   <mat-dialog-content *ngIf="form && isFormReady">
     <form [formGroup]="form">
@@ -117,11 +117,29 @@
           </div>
         </ng-container>
       </div>
+      <div id="experience_container" *ngIf="currentFormType === FormType.EXPERIENCE">
+        <ng-container>
+          <!-- Start Time -->
+          <mat-form-field class="full_width">
+            <mat-label>Experience Start Time</mat-label>
+            <input matInput type="time" placeholder="Start Time" formControlName="start_time">
+          </mat-form-field>
+          <!-- Notes -->
+          <div id="experience_notes">
+            <mat-form-field class="full_width notes">
+              <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+            </mat-form-field>
+          </div>
+        </ng-container>
+      </div>
     </form>
   </mat-dialog-content>
 
   <mat-dialog-actions *ngIf="form">
-    <button mat-stroked-button (click)="onNoClick()">Close</button>
-    <button mat-stroked-button [disabled]="form.invalid" (click)="onSave()">Add</button>
+    <button mat-stroked-button (click)="onNoClick()">Cancel</button>
+<!--    <button mat-stroked-button [disabled]="form.invalid" (click)="onAdd()">Add</button>-->
+    <button mat-stroked-button [disabled]="form.invalid || !form.dirty" (click)="data.itineraryItem ? onDone() : onAdd()">
+        {{ data.itineraryItem ? 'Done' : 'Add' }}
+    </button>
   </mat-dialog-actions>
 </div>

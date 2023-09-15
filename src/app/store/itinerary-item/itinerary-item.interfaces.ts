@@ -5,7 +5,9 @@ import {Location} from "../location/location.interfaces";
 
 export interface TravelEvent extends BaseInterface {
   from_location: Location;
+  from_location_id: string;
   to_location: Location;
+  to_location_id: string;
   custom_from_location?: string;
   custom_to_location?: string;
   travel_type: string;
@@ -34,7 +36,7 @@ export interface NewItineraryItem {
   notes?: string;
   activity_order: number;
   start_time?: Date;
-  end_time?: Date;
+  end_time?: Date; // we probably don't need the endtime column
   day: Date;
   activity_id?: string;
   activity?: Experience | Break | Meal | TravelEvent;

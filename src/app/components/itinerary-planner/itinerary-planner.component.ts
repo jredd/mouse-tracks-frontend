@@ -82,10 +82,8 @@ export class ItineraryPlannerComponent implements OnInit {
     this.updateExperienceTypes()
   }
 
-  openDialog(formType: FormType, dialogTitle: string, height: string, autofocus = true) {
+  openDialog(formType: FormType, dialogTitle: string, autofocus = true) {
     this.dialogue.open(DialoguePlannerContentComponent, {
-      width: '600px',
-      height: height,
       data: { type: formType, title: dialogTitle },
       autoFocus: autofocus
     });
@@ -131,15 +129,15 @@ export class ItineraryPlannerComponent implements OnInit {
   }
 
   onAddNotes() {
-    this.openDialog(FormType.NOTES, "Add Note", '350px');
+    this.openDialog(FormType.NOTES, "Add Note",);
   }
 
   onTravelEvents() {
-    this.openDialog(FormType.TRAVEL_EVENT, "Add Travel", '600px', false);
+    this.openDialog(FormType.TRAVEL_EVENT, "Add Travel", false);
   }
 
   onAddBreak() {
-    this.openDialog(FormType.BREAK, "Add Break", '350px');
+    this.openDialog(FormType.BREAK, "Add Break",);
   }
 
   onSave() {

@@ -65,6 +65,11 @@ export const reorderItem = createAction(
   props<{ previousIndex: number, currentIndex: number }>()
 );
 
+export const updateItem = createAction(
+  '[Item Component] Update Item',
+  props<{ updatedItem: ItineraryItem }>()
+);
+
 // export const addActivityToMyDay = createAction(
 //   '[Itinerary] Update My Day Plan',
 //   props<{ activity: Experience, activity_order?: number, trip: Trip }>()

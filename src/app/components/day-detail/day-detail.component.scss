@@ -72,9 +72,6 @@
           font-style: italic;
           font-size: .9em;
         }
-        //font-size: 1.25em;
-        //margin-top: 10px;
-        //font-weight: 700;
       }
       .item_activity_group {
         margin-bottom: 5px;
@@ -86,7 +83,9 @@
         ul {
           margin-bottom: 0;
           .experience_item {
-
+            .experience_notes {
+              display: block;
+            }
           }
           .meal_item {
             .meal_notes {
@@ -149,20 +148,3 @@
     margin-top: 10px !important;
   }
 }
-
-//.grid-container {
-//  display: grid;
-//  grid-template-columns: repeat(2, 1fr);
-//  grid-auto-flow: column;
-//  max-height: 400px; // adjust this based on your needs
-//}
-//.grid-container {
-//  display: flex;
-//  flex-direction: column;
-//  flex-wrap: wrap;
-//  max-height: 400px; // adjust this based on your needs
-//}
-//
-//.grid-item {
-//  width: 50%; // adjust this based on your needs
-//}

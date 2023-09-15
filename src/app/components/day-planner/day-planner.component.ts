@@ -1,100 +1,82 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
-import {CdkDragDrop, CdkDragMove, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {Experience, ItineraryItem, Meal, Trip} from "../../store";
-import {combineLatest, EMPTY, Observable, switchMap} from "rxjs";
+import { Component, OnInit } from '@angular/core';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import {ContentType, Experience, ItineraryItem, Meal, Trip} from "../../store";
+import { EMPTY, Observable } from "rxjs";
 import { select, Store } from "@ngrx/store";
 import { AppState } from "../../store/app.state";
 import * as fromExperienceStore from '../../store/experience/';
 import * as fromItineraryItemStore from '../../store/itinerary-item/';
-import {tap, take, map} from "rxjs/operators";
-import * as moment from 'moment';
-import {addActivityToMyDay, selectAllCurrentDayItems} from "../../store/itinerary-item/";
-import {loadTrip, selectCurrentTrip, selectTrip} from "../../store/trip";
-import {fadeIn} from "../trip-dashboard/trip-dashboard.animation";
-import {DialoguePlannerContentComponent} from "../dialogue-planner-content/dialogue-planner-content.component";
-import {MatDialog} from "@angular/material/dialog";
-import {FormType} from "../dialogue-planner-content/dialogue-planner-content.interface";
+import { tap, take, map } from "rxjs/operators";
+import { selectCurrentTrip } from "../../store/trip";
+import { fadeIn, flyInOut } from "../trip-dashboard/trip-dashboard.animation";
+import { DialoguePlannerContentComponent } from "../dialogue-planner-content/dialogue-planner-content.component";
+import { MatDialog } from "@angular/material/dialog";
+import { FormType } from "../dialogue-planner-content/dialogue-planner-content.interface";
 import { ElementRef, ViewChild } from '@angular/core';
-import { DragRef, CdkDrag} from '@angular/cdk/drag-drop';
-import { HostListener } from '@angular/core';
 
-type UnifiedDragDropEvent = CdkDragDrop<Experience[] | Partial<ItineraryItem>[] | null, any>;
 
 @Component({
   selector: 'app-day-planner',
   templateUrl: './day-planner.component.html',
   styleUrls: ['./day-planner.component.scss'],
-  animations: [fadeIn]
+  animations: [fadeIn, flyInOut]
 })
 export class DayPlannerComponent implements OnInit {
   available$: Observable<Experience[] | null> = EMPTY;
   @ViewChild('dragScrollingContainer') dragScrollingContainer: ElementRef;
-  availableActivities: Experience[] = []; // Populate this based on your API or logic
   currentTrip$: Observable<Trip | null> = EMPTY;
-  autoScrolling: any;
-  currentDay$: Observable<string> = this.store.pipe(
-    select(fromItineraryItemStore.selectCurrentDay)
-  );
-  itineraryItemsByDay$: Observable<Partial<ItineraryItem>[]> = this.store.pipe(
+  isIconsVisible: { [id: string]: boolean } = {};
+  itineraryItemsByDay$: Observable<ItineraryItem[]> = this.store.pipe(
     select(fromItineraryItemStore.selectAllCurrentDayItems),
     map(items => [...items].sort((a, b) => a.activity_order - b.activity_order))
   );
 
 
-
   constructor(public dialogue: MatDialog, private store: Store<AppState>) { }
 
-  openDialog(experience: Experience) {
+  getFormTypeFromContentType(contentType: ContentType): FormType {
+  switch (contentType) {
+    case 'meal':
+      return FormType.MEAL;
+    case 'travelevent':
+      return FormType.TRAVEL_EVENT;
+    case 'note':
+      return FormType.NOTES;
+    case 'break':
+      return FormType.BREAK;
+    case 'experience':
+      return FormType.EXPERIENCE;
+    default:
+      return FormType.NOTES; // default to notes or throw an error if unrecognized
+  }
+}
+
+  openDialog(experience: Experience | false = false, item: ItineraryItem | false = false): void {
+    let dialogData;
+
+    // Type guards
+    const isExperience = (exp: Experience | false): exp is Experience => typeof exp !== 'boolean';
+    const isItineraryItem = (it: ItineraryItem | false): it is ItineraryItem => typeof it !== 'boolean';
+
+    if (!experience && !item) {
+      throw new Error('Either experience or item must be provided');
+    }
+
+    if (isExperience(experience)) { // This is an Experience
+      dialogData = { type: FormType.MEAL, title: 'Add Meal', activity: experience };
+    } else if (isItineraryItem(item)) { // This is an ItineraryItem
+      const formType = this.getFormTypeFromContentType(item.content_type);
+      console.log("found form type", formType)
+      dialogData = { type: formType, title: 'Edit Item', itineraryItem: item };
+    } else {
+      throw new Error('Invalid input types');
+    }
+
     this.dialogue.open(DialoguePlannerContentComponent, {
-      width: '400px',
-      height: '400px',
-      data: { type: FormType.MEAL, title: 'Add Meal', experience }
+        data: dialogData
     });
   }
 
-  // startAutoScroll(direction: 'up' | 'down') {
-  //   this.stopAutoScroll();
-  //   const container = this.dragScrollingContainer.nativeElement;
-  //   this.autoScrolling = setInterval(() => {
-  //     container.scrollTop += direction === 'up' ? -5 : 5;
-  //   }, 16);
-  // }
-
-  // stopAutoScroll() {
-  //   if (this.autoScrolling) {
-  //     clearInterval(this.autoScrolling);
-  //     this.autoScrolling = null;
-  //   }
-  // }
-
-  // onDragMove(event: CdkDragMove<any>) {
-  //   // Access the native event from the CdkDragMove event object
-  //   const nativeEvent = event.event;
-  //
-  //   // Initialize clientY variable
-  //   let clientY: number;
-  //
-  //   // Check whether the native event is a MouseEvent or a TouchEvent
-  //   if (nativeEvent instanceof MouseEvent) {
-  //     clientY = nativeEvent.clientY;
-  //   } else if (nativeEvent instanceof TouchEvent && nativeEvent.touches.length > 0) {
-  //     clientY = nativeEvent.touches[0].clientY;
-  //   } else {
-  //     // Unrecognized event type, return or handle accordingly
-  //     return;
-  //   }
-  //
-  //   const containerRect = this.dragScrollingContainer.nativeElement.getBoundingClientRect();
-  //   const threshold = 50;
-  //
-  //   if (clientY - containerRect.top < threshold) {
-  //     this.startAutoScroll('up');
-  //   } else if (containerRect.bottom - clientY < threshold) {
-  //     this.startAutoScroll('down');
-  //   } else {
-  //     this.stopAutoScroll();
-  //   }
-  // }
 
   ngOnInit() {
     // this.currentTrip$ = this.store.select(selectCurrentTrip).subscribe(trip => {
@@ -126,18 +108,18 @@ export class DayPlannerComponent implements OnInit {
     // console.log(event.previousContainer.id)
     if (event.previousContainer.id == "AvailableExperiences") {
       // console.log("add")
-      const itemToAdd = event.previousContainer.data[event.previousIndex];
-      console.log(itemToAdd)
-      if (itemToAdd.experience_type == 'restaurant') {
-        this.openDialog(itemToAdd)
+      const experienceToAdd = event.previousContainer.data[event.previousIndex];
+      console.log(experienceToAdd)
+      if (experienceToAdd.experience_type == 'restaurant') {
+        this.openDialog(experienceToAdd, false)
         return
       }
       this.currentTrip$.pipe(take(1)).subscribe(trip => {
         if (trip) {
           this.store.dispatch(fromItineraryItemStore.addActivityToMyDay({
             itineraryItem: {
-              activity: itemToAdd,
-              activity_id: itemToAdd.id,
+              activity: experienceToAdd,
+              activity_id: experienceToAdd.id,
               activity_order: event.currentIndex,
               trip: trip,
               content_type: 'experience',
@@ -151,7 +133,6 @@ export class DayPlannerComponent implements OnInit {
     } else if (event.previousContainer.id == "MyDayPlan") {
       this.store.dispatch(fromItineraryItemStore.removeActivityFromMyDay({index: event.previousIndex}))
     }
-
   }
 
   getFallbackName(item: ItineraryItem): string { // Replace 'any' with the actual type, if you can
@@ -184,5 +165,41 @@ export class DayPlannerComponent implements OnInit {
     return this.getFallbackName(item);
   }
 
+  getItemKey(item: ItineraryItem): string {
+    if ('id' in item) {
+      return item.id;
+    }
+    if ('tempId' in item) {
+      return item.tempId;
+    }
+    return '';
+  }
 
+  // showIcons(item: ItineraryItem) {
+  //   const key = this.getItemKey(item);
+  //   this.isIconsVisible[key] = true;
+  // }
+  //
+  // hideIcons(item: ItineraryItem) {
+  //   const key = this.getItemKey(item);
+  //   this.isIconsVisible[key] = false;
+  // }
+
+  showIcons(item: ItineraryItem) {
+    const key = this.getItemKey(item);
+    this.isIconsVisible[key] = true;
+  }
+
+  hideIcons(item: ItineraryItem) {
+    const key = this.getItemKey(item);
+    this.isIconsVisible[key] = false;
+  }
+
+  onEdit(item: ItineraryItem) {
+    this.openDialog(false, item);
+  }
+
+  onDelete(id: string) {
+    // Logic to delete the item by id
+  }
 }

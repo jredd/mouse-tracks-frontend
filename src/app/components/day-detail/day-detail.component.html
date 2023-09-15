@@ -69,6 +69,7 @@
         <li class="experience_item" *ngIf="activity.content_type === 'experience'; else mealItem">
           {{ getActivityName(activity) }}
           <span *ngIf="activity.start_time">: {{ activity.start_time | militaryTo12Hr }}</span>
+          <span class="experience_notes" *ngIf="activity.notes">{{ activity.notes }}</span>
         </li>
         <ng-template #mealItem>
           <li class="meal_item">

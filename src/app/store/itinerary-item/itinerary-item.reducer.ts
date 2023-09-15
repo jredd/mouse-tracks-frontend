@@ -1,8 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
-import { moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 
 import * as ItineraryActions from './itinerary-item.actions';
-import {ItineraryItem, NewItineraryItem} from './itinerary-item.interfaces';
+import { ItineraryItem, NewItineraryItem } from './itinerary-item.interfaces';
 import * as moment from 'moment';
 import { tripLoaded } from "../trip";
 
@@ -217,7 +217,32 @@ on(ItineraryActions.getItineraryItemsSuccess, (state, { items }) => {
 
   on(ItineraryActions.setCurrentDay, (state, { day }) => {
     return { ...state, currentDay: day };
-  })
+  }),
+
+  on(ItineraryActions.updateItem, (state, { updatedItem }) => {
+    // Update the item in the itemsByDay list
+    console.log('updated item:', updatedItem)
+    const dayKey = moment(updatedItem.day).format('YYYY-MM-DD');
+    const currentDayItems = state.itemsByDay[dayKey] || [];
+    const updatedDayItems = currentDayItems.map(item => {
+        if (isNewItem(item) && isNewItem(updatedItem) && item.tempId === updatedItem.tempId) {
+          return updatedItem;
+        } else if (!isNewItem(item) && !isNewItem(updatedItem) && item.id === updatedItem.id) {
+          console.log("has id")
+          return updatedItem;
+        }
+        return item;
+    });
+    console.log('updated items:', updatedDayItems)
+    return {
+        ...state,
+        itemsByDay: {
+            ...state.itemsByDay,
+            [dayKey]: updatedDayItems
+        }
+    };
+  }),
+
 );
 
 export function generateEmptyDateRange(startDate: Date, endDate: Date): Record<string, ItineraryItem[]> {
