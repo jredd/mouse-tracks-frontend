@@ -13,6 +13,7 @@ import { DialoguePlannerContentComponent } from "../dialogue-planner-content/dia
 import { MatDialog } from "@angular/material/dialog";
 import { FormType } from "../dialogue-planner-content/dialogue-planner-content.interface";
 import { ElementRef, ViewChild } from '@angular/core';
+import {removeActivityFromMyDay} from "../../store/itinerary-item/";
 
 
 @Component({
@@ -130,8 +131,6 @@ export class DayPlannerComponent implements OnInit {
       });
     } else if (event.previousContainer == event.container) {
       this.store.dispatch(fromItineraryItemStore.reorderMyDayActivities({fromIndex: event.previousIndex, toIndex: event.currentIndex}))
-    } else if (event.previousContainer.id == "MyDayPlan") {
-      this.store.dispatch(fromItineraryItemStore.removeActivityFromMyDay({index: event.previousIndex}))
     }
   }
 
@@ -199,7 +198,7 @@ export class DayPlannerComponent implements OnInit {
     this.openDialog(false, item);
   }
 
-  onDelete(id: string) {
-    // Logic to delete the item by id
+  onDelete(item: ItineraryItem) {
+    this.store.dispatch(removeActivityFromMyDay({ item }));
   }
 }

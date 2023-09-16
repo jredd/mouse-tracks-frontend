@@ -94,36 +94,84 @@ on(ItineraryActions.getItineraryItemsSuccess, (state, { items }) => {
     return { ...state, itemsByDay: updatedItemsByDay };
   }),
 
-  on(ItineraryActions.removeActivityFromMyDay, (state, { index }) => {
-    const currentDayItems = state.itemsByDay[state.currentDay] || [];
-    // console.log("index:",index)
-    if(index < 0 || index >= currentDayItems.length) {
-      // console.log("out of bounds")
-      // Index out of bounds. Return the state as is.
+  // on(ItineraryActions.removeActivityFromMyDay, (state, { index }) => {
+  //   const currentDayItems = state.itemsByDay[state.currentDay] || [];
+  //   // console.log("index:",index)
+  //   if(index < 0 || index >= currentDayItems.length) {
+  //     // console.log("out of bounds")
+  //     // Index out of bounds. Return the state as is.
+  //     return state;
+  //   }
+  //
+  //   const updatedItems = [...currentDayItems];
+  //   const removedItem = updatedItems.splice(index, 1)[0];
+  //
+  //   if (!removedItem) {
+  //     // console.log("no item actually removed")
+  //     // If no item was actually removed, return the state as is.
+  //     return state;
+  //   }
+  //
+  //   const updatedDeletedItems = removedItem && 'id' in removedItem && removedItem.id
+  //                               ? [...state.deletedItems, removedItem]
+  //                               : state.deletedItems;
+  //
+  //   // console.log("updated items:", updatedItems)
+  //   if (updatedItems.length > 0) {
+  //     return {
+  //       ...state,
+  //       deletedItems: updatedDeletedItems,
+  //       itemsByDay: {
+  //         ...state.itemsByDay,
+  //         [state.currentDay]: reorderItems(updatedItems, 0, updatedItems.length - 1)
+  //       }
+  //     };
+  //   }
+  //
+  //   return {
+  //     ...state,
+  //     deletedItems: updatedDeletedItems,
+  //     itemsByDay: {
+  //       ...state.itemsByDay,
+  //       [state.currentDay]: updatedItems
+  //     }
+  //   };
+  //
+  // }),
+
+  on(ItineraryActions.removeActivityFromMyDay, (state, { item }) => {
+    const dayKey = moment(item.day).format('YYYY-MM-DD');
+    const dayItems = state.itemsByDay[dayKey] || [];
+
+    const itemIndex = dayItems.findIndex(i => {
+      if (isNewItem(i) && isNewItem(item)) {
+        return i.tempId === item.tempId;
+      } else if (!isNewItem(i) && !isNewItem(item)) {
+        return i.id === item.id;
+      }
+      return false; // this is the default case if none of the above matches
+    });
+
+    console.log("found index:", itemIndex)
+
+    if (itemIndex === -1) {
+      // Item not found. Return the state as is.
       return state;
     }
 
-    const updatedItems = [...currentDayItems];
-    const removedItem = updatedItems.splice(index, 1)[0];
-
-    if (!removedItem) {
-      // console.log("no item actually removed")
-      // If no item was actually removed, return the state as is.
-      return state;
-    }
-
+    const updatedItems = [...dayItems];
+    const removedItem = updatedItems.splice(itemIndex, 1)[0];
     const updatedDeletedItems = removedItem && 'id' in removedItem && removedItem.id
                                 ? [...state.deletedItems, removedItem]
                                 : state.deletedItems;
 
-    // console.log("updated items:", updatedItems)
     if (updatedItems.length > 0) {
       return {
         ...state,
         deletedItems: updatedDeletedItems,
         itemsByDay: {
           ...state.itemsByDay,
-          [state.currentDay]: reorderItems(updatedItems, 0, updatedItems.length - 1)
+          [dayKey]: reorderItems(updatedItems, 0, updatedItems.length - 1)
         }
       };
     }
@@ -133,11 +181,11 @@ on(ItineraryActions.getItineraryItemsSuccess, (state, { items }) => {
       deletedItems: updatedDeletedItems,
       itemsByDay: {
         ...state.itemsByDay,
-        [state.currentDay]: updatedItems
+        [dayKey]: updatedItems
       }
     };
-
   }),
+
 
   on(ItineraryActions.addActivityToMyDay, (state, { itineraryItem }) => {
     const currentDayItems = state.itemsByDay[state.currentDay] || [];

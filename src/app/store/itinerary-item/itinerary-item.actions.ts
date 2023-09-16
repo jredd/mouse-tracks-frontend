@@ -70,12 +70,6 @@ export const updateItem = createAction(
   props<{ updatedItem: ItineraryItem }>()
 );
 
-// export const addActivityToMyDay = createAction(
-//   '[Itinerary] Update My Day Plan',
-//   props<{ activity: Experience, activity_order?: number, trip: Trip }>()
-// );
-
-
 export const addActivityToMyDay = createAction(
   '[Itinerary] Add Activity To My Day',
   props<{ itineraryItem: Partial<NewItineraryItem> }>()
@@ -88,7 +82,7 @@ export const reorderMyDayActivities = createAction(
 
 export const removeActivityFromMyDay = createAction(
     '[Itinerary] Remove Activity from My Day Plan',
-    props<{ index: number }>() // Using index for removal
+    props<{ item: ItineraryItem }>() // Using index for removal
 );
 
 export const updateItineraryItemRequest = createAction(
