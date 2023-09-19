@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Store } from "@ngrx/store";
-import { BehaviorSubject, EMPTY, Observable, of, Subject } from "rxjs";
+import {select, Store} from "@ngrx/store";
+import {BehaviorSubject, EMPTY, Observable, of, Subject, takeUntil} from "rxjs";
 
 import { loadDestinations, selectAllDestinations, selectAllDestinationsLoading } from "../../store/destination";
 import { fadeIn, fadeInOut } from "../trip-dashboard/trip-dashboard.animation";
@@ -9,6 +9,8 @@ import * as tripSelector from '../../store/trip/trip.selectors';
 import * as tripActions from '../../store/trip/trip.actions';
 import { Destination, Trip } from "../../store";
 import { AppState } from "../../store/app.state";
+import {Router} from "@angular/router";
+import {filter, take} from "rxjs/operators";
 
 
 @Component({
@@ -30,6 +32,7 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<AppState>,
+    private router: Router,
     private fb: FormBuilder
   ) {
     this.isLoading$ = this.store.select(tripSelector.selectLoading);
@@ -73,14 +76,6 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
       this.editTrip.enable()
     });
 
-    // this.editTrip.valueChanges.subscribe(val => {
-    //   const tripTitle = this.getTripTitle()
-    //   const currentTrip = this._currentTrip.value;
-    //   if (currentTrip) {
-    //     currentTrip.title = tripTitle
-    //   }
-    // });
-
     this.editTrip.valueChanges.subscribe(val => {
       const tripTitle = this.getTripTitle();
       const currentTrip = this._currentTrip.value;
@@ -91,9 +86,21 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
   }
 
   createTrip(tripData: Partial<Trip>): void {
-    // Handle trip creation logic
+    // Dispatch the action to create the trip
     this.store.dispatch(tripActions.createTripRequest({ trip: tripData }));
+
+    // Subscribe to the currentTrip$ just once to get the newly created trip and navigate
+    this.store.pipe(
+        select(tripSelector.selectCurrentTrip),
+        filter(trip => !!trip),  // Ensure the trip is not null or undefined
+        take(1)
+    ).subscribe(trip => {
+      if (trip) {
+        this.router.navigate(['/trip/planner', trip.id]);
+      }
+    });
   }
+
 
   updateTrip(trip: Partial<Trip>): void {
     this.store.dispatch(tripActions.updateTrip({ trip: trip }));
