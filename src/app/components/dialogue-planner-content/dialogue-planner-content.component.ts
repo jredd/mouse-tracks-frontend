@@ -9,7 +9,7 @@ import * as fromLocationStore from "../../store/location";
 import {AppState} from "../../store/app.state";
 import * as fromItineraryItemStore from '../../store/itinerary-item/';
 import * as fromTripStore from '../../store/trip/';
-import { take } from "rxjs/operators";
+import {take} from "rxjs/operators";
 
 
 @Component({
@@ -191,6 +191,10 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
           notes: notes,
         };
 
+        if (this.currentFormType == FormType.NOTES) {
+          itineraryItem.content_type = 'note'
+        }
+
         const startTime = this.form.get('start_time')?.value;
         const endTime = this.form.get('end_time')?.value;
         if (this.currentFormType != 'note') {
@@ -209,8 +213,6 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
           itineraryItem
         }));
         if (this.data.index != null) {
-          // this.currentDayItems.pip
-          // this.store.dispatch(fromItineraryItemStore.reorderMyDayActivities({fromIndex: 50, toIndex: this.data.index}))
           // Using the currentDayItems observable
           this.subscriptions.push(this.currentDayItems.pipe(
               take(1)  // Take just one emitted value
