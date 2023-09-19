@@ -174,16 +174,6 @@ export class DayPlannerComponent implements OnInit {
     return '';
   }
 
-  // showIcons(item: ItineraryItem) {
-  //   const key = this.getItemKey(item);
-  //   this.isIconsVisible[key] = true;
-  // }
-  //
-  // hideIcons(item: ItineraryItem) {
-  //   const key = this.getItemKey(item);
-  //   this.isIconsVisible[key] = false;
-  // }
-
   showIcons(item: ItineraryItem) {
     const key = this.getItemKey(item);
     this.isIconsVisible[key] = true;
