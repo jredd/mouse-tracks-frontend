@@ -4,51 +4,51 @@
 <ng-container *ngIf="!(isLoading$ | async)">
   <form [formGroup]="editTrip" (ngSubmit)="onSubmit()" [@fadeIn]>
     <mat-grid-list cols="12" gutterSize="10px">
-            <!-- Destination Select -->
-            <mat-grid-tile colspan="3">
-                <ng-container *ngIf="!(currentTrip$ | async)?.id; else showTripDetails">
-                    <mat-form-field appearance="fill" class="full-width">
-                        <mat-label>Select Destination</mat-label>
-                        <mat-select formControlName="destination" placeholder="Select a destination">
-                            <mat-option *ngFor="let destination of (destinations$ | async)" [value]="destination.id">
-                                {{destination.name}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </ng-container>
-            </mat-grid-tile>
+      <!-- Destination Select -->
+      <mat-grid-tile colspan="3">
+        <ng-container *ngIf="!(currentTrip$ | async)?.id; else showTripDetails">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Select Destination</mat-label>
+            <mat-select id="destination_drop_down" formControlName="destination" placeholder="Select a destination">
+              <mat-option *ngFor="let destination of (destinations$ | async)" [value]="destination.id">
+                {{destination.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+      </mat-grid-tile>
 
-            <!-- Trip Title -->
-            <mat-grid-tile colspan="6">
-                <mat-form-field id="trip_title" appearance="fill" class="full-width">
-                    <mat-label>Trip Title</mat-label>
-                    <input matInput formControlName="title">
-                </mat-form-field>
-            </mat-grid-tile>
+      <!-- Trip Title -->
+      <mat-grid-tile colspan="6">
+        <mat-form-field id="trip_title_field" appearance="fill" class="full-width">
+          <mat-label for="trip_title_input">Trip Title</mat-label>
+          <input id="trip_title_input" matInput formControlName="title">
+        </mat-form-field>
+      </mat-grid-tile>
 
-            <!-- Date Range -->
-            <mat-grid-tile colspan="3">
-              <ng-container *ngIf="!(currentTrip$ | async)?.id; else showDateRangeDetails">
-                <mat-form-field appearance="fill" class="full-width">
-                    <mat-label>Enter a date range</mat-label>
-                    <mat-date-range-input formGroupName="dateRange" [rangePicker]="picker">
-                        <input matStartDate formControlName="start" placeholder="Start date">
-                        <input matEndDate formControlName="end" placeholder="End date">
-                    </mat-date-range-input>
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-date-range-picker #picker></mat-date-range-picker>
-                </mat-form-field>
-              </ng-container>
-            </mat-grid-tile>
+      <!-- Date Range -->
+      <mat-grid-tile colspan="3">
+        <ng-container *ngIf="!(currentTrip$ | async)?.id; else showDateRangeDetails">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Enter a date range</mat-label>
+            <mat-date-range-input formGroupName="dateRange" [rangePicker]="picker">
+              <input aria-label="Start date" id="start_date_input" matStartDate formControlName="start" placeholder="Start date">
+              <input aria-label="End date" id="end_date_input" matEndDate formControlName="end" placeholder="End date">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </ng-container>
+      </mat-grid-tile>
 
-            <ng-container *ngIf="!(currentTrip$ | async)">
-              <mat-grid-tile colspan="12">
-                <button *ngIf="editTrip.valid" @fadeInOut mat-raised-button color="primary">
-                  Start Planning Your Trip!
-                </button>
-              </mat-grid-tile>
-          </ng-container>
-        </mat-grid-list>
+      <ng-container *ngIf="!(currentTrip$ | async)">
+        <mat-grid-tile colspan="12">
+          <button *ngIf="editTrip.valid" @fadeInOut mat-raised-button>
+            Start Planning Your Trip!
+          </button>
+        </mat-grid-tile>
+      </ng-container>
+    </mat-grid-list>
   </form>
   <div id="itinerary_container">
     <app-itinerary-planner *ngIf="currentTrip$ | async"></app-itinerary-planner>
