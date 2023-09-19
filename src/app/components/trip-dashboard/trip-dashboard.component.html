@@ -6,7 +6,8 @@
 
 <ng-template #content>
   <div *ngIf="trips$ | async as trips; else noTrips">
-    <mat-grid-list cols="2" rowHeight="50px">
+    <div *ngIf="trips.length > 0; else noTrips">
+      <mat-grid-list cols="2" rowHeight="50px">
       <mat-grid-tile>
         <div class="content-wrapper-left">
           <h1>Your Disney Trips</h1>
@@ -18,7 +19,7 @@
         </div>
       </mat-grid-tile>
     </mat-grid-list>
-    <div *ngIf="displayTrips" [@staggeredFadeIn]="trips.length">
+      <div *ngIf="displayTrips" [@staggeredFadeIn]="trips.length">
       <div *ngFor="let trip of trips">
         <mat-card id="trip-card" routerLink="/trip/detail/{{trip.id}}">
           <mat-card-header>
@@ -36,10 +37,13 @@
         </mat-card>
       </div>
     </div>
+    </div>
   </div>
 </ng-template>
 
 <ng-template #noTrips>
-  <h1>You don't have any trips yet</h1>
-  <button mat-raised-button color="" routerLink="/trip/planner">Start planning your new trip</button>
+  <div id="no_trips">
+    <h1>You don't have any trips yet</h1>
+    <button mat-raised-button color="" routerLink="/trip/planner">Start planning your new trip</button>
+  </div>
 </ng-template>
