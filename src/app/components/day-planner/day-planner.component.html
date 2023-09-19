@@ -21,7 +21,10 @@
                    (mouseenter)="showIcons(item)"
                    (mouseleave)="hideIcons(item)"
               >
-                {{ getDisplayName(item) }}
+                <div class="content_container">
+                  <span class="display_name">{{ getDisplayName(item) }}</span>
+                  <span class="display_notes" *ngIf="item.content_type == 'note'">: {{ truncateNotes(item.notes) }}</span>
+                </div>
                 <div class="icons_container" [ngClass]="{'show': isIconsVisible[getItemKey(item)]}">
                   <mat-icon (click)="onEdit(item)">edit</mat-icon>
                   <mat-icon (click)="onDelete(item)">delete</mat-icon>

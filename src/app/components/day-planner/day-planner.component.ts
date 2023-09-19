@@ -152,6 +152,13 @@ export class DayPlannerComponent implements OnInit {
     }
   }
 
+  truncateNotes(notes?: string, limit: number = 8): string {
+    if (!notes) return '';  // Return empty string if notes are undefined or falsy
+
+    const words = notes.split(' ').slice(0, limit);
+    return words.join(' ') + (words.length < notes.split(' ').length ? '...' : '');
+  }
+
   capitalizeFirstLetter(value: string) {
     return value.charAt(0).toUpperCase() + value.slice(1);
   }
