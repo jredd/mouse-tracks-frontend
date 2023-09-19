@@ -99,7 +99,7 @@ export class DayDetailComponent implements AfterViewInit, OnInit {
       }
     }
 
-    if (groups.length > 1 && itineraryItems.length > 8) {
+    if (groups.length > 1 && itineraryItems.length > 7) {
       const middleIndex = Math.ceil(groups.length / 2);
       this.groupColumn1 = groups.slice(0, middleIndex);
       this.groupColumn2 = groups.slice(middleIndex);
