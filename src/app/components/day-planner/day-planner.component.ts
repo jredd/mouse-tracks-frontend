@@ -52,7 +52,7 @@ export class DayPlannerComponent implements OnInit {
   }
 }
 
-  openDialog(experience: Experience | false = false, item: ItineraryItem | false = false): void {
+  openDialog(experience: Experience | false = false, item: ItineraryItem | false = false, index: number | null = null): void {
     let dialogData;
 
     // Type guards
@@ -64,7 +64,7 @@ export class DayPlannerComponent implements OnInit {
     }
 
     if (isExperience(experience)) { // This is an Experience
-      dialogData = { type: FormType.MEAL, title: 'Add Meal', activity: experience };
+      dialogData = { type: FormType.MEAL, title: 'Add Meal', activity: experience, index };
     } else if (isItineraryItem(item)) { // This is an ItineraryItem
       const formType = this.getFormTypeFromContentType(item.content_type);
       console.log("found form type", formType)
@@ -112,7 +112,7 @@ export class DayPlannerComponent implements OnInit {
       const experienceToAdd = event.previousContainer.data[event.previousIndex];
       console.log(experienceToAdd)
       if (experienceToAdd.experience_type == 'restaurant') {
-        this.openDialog(experienceToAdd, false)
+        this.openDialog(experienceToAdd, false, event.currentIndex)
         return
       }
       this.currentTrip$.pipe(take(1)).subscribe(trip => {

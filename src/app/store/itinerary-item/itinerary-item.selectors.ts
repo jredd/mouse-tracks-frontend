@@ -28,8 +28,8 @@ export const selectTheCurrentDay = createSelector(
 
 // Selector for items of the current day
 export const selectItemsForCurrentDay = createSelector(
-  selectItemsByDay,
-  selectCurrentDay,
+  SelectAllItemsByDay,
+  selectTheCurrentDay,
   (itemsByDay, currentDay) => itemsByDay[currentDay] || []
 );
 

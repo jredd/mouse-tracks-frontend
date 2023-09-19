@@ -225,9 +225,8 @@ on(ItineraryActions.getItineraryItemsSuccess, (state, { items }) => {
 
   on(ItineraryActions.reorderMyDayActivities, (state, { fromIndex, toIndex }) => {
     const currentDayItems = state.itemsByDay[state.currentDay] || [];
-    // console.log("currentDayItems:", currentDayItems)
-
     const updatedItems = reorderItems(currentDayItems, fromIndex, toIndex);
+
     return {
         ...state,
         itemsByDay: {

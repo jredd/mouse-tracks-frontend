@@ -64,6 +64,7 @@ export class DayDetailComponent implements AfterViewInit, OnInit {
     let lastLand = null;
     for (const item of sortedItems) {
       const landName = this.getLandNameFromItem(item);
+      console.log(landName)
       if (!['note', 'break', 'travelevent'].includes(item.content_type)) {
         if (lastLand !== landName) {
           const newGroup: itineraryItemGroup  = {
@@ -98,7 +99,7 @@ export class DayDetailComponent implements AfterViewInit, OnInit {
       }
     }
 
-    if (groups.length > 1) {
+    if (groups.length > 1 && itineraryItems.length > 8) {
       const middleIndex = Math.ceil(groups.length / 2);
       this.groupColumn1 = groups.slice(0, middleIndex);
       this.groupColumn2 = groups.slice(middleIndex);
@@ -160,6 +161,7 @@ export class DayDetailComponent implements AfterViewInit, OnInit {
     if (item.content_type === 'meal') {
       return (item.activity as Meal).meal_experience.land?.name || 'Unknown Land';
     } else if (item.activity && 'land' in item.activity) {
+      console.log(item.activity)
       return item.activity.land?.name || 'Unknown Land';
     } else {
       return 'Unknown Land';

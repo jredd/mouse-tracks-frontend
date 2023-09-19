@@ -9,7 +9,7 @@ import * as fromLocationStore from "../../store/location";
 import {AppState} from "../../store/app.state";
 import * as fromItineraryItemStore from '../../store/itinerary-item/';
 import * as fromTripStore from '../../store/trip/';
-import {updateItem} from "../../store/itinerary-item/";
+import { take } from "rxjs/operators";
 
 
 @Component({
@@ -23,6 +23,7 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
   public FormType = FormType;  // to access the enum from template
   public currentFormType: FormType;
   private tripSubscription: Subscription | null = null;
+  private subscriptions: Subscription[] = [];
 
 
   currentTrip: Trip | null = null;
@@ -31,13 +32,14 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
   isFormReady = false;
   locations$: Observable<Location[]> = this.store.pipe(select(fromLocationStore.selectAllLocations));
   trip$: Observable<Trip | null> = this.store.pipe(select(fromTripStore.selectCurrentTrip))
+  currentDayItems: Observable<ItineraryItem[]> = this.store.select(fromItineraryItemStore.selectItemsForCurrentDay);
 
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     public dialogRef: MatDialogRef<DialoguePlannerContentComponent>,
     private store: Store<AppState>,
-    @Inject(MAT_DIALOG_DATA) public data: { type: FormType, title: string, itineraryItem: ItineraryItem, activity: Experience }
+    @Inject(MAT_DIALOG_DATA) public data: { type: FormType, title: string, itineraryItem: ItineraryItem, activity: Experience, index: number | null }
   ) {
     this.currentFormType = data.type;
   }
@@ -80,14 +82,14 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         });
 
         const fromLocationControl = this.form.get('from_location_id')!;
-        fromLocationControl.valueChanges.subscribe(val => {
+        this.subscriptions.push(fromLocationControl.valueChanges.subscribe(val => {
               if (val) {
                   this.form.get('custom_from_location')!.setValue(null, { emitEvent: false });
                   this.form.get('custom_from_location')!.disable({ emitEvent: false });
               } else {
                   this.form.get('custom_from_location')!.enable({ emitEvent: false });
               }
-          });
+          }));
 
         const customFromLocationControl = this.form.get('custom_from_location')!;
         customFromLocationControl.valueChanges.subscribe(val => {
@@ -206,6 +208,23 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         this.store.dispatch(fromItineraryItemStore.addActivityToMyDay({
           itineraryItem
         }));
+        if (this.data.index != null) {
+          // this.currentDayItems.pip
+          // this.store.dispatch(fromItineraryItemStore.reorderMyDayActivities({fromIndex: 50, toIndex: this.data.index}))
+          // Using the currentDayItems observable
+          this.subscriptions.push(this.currentDayItems.pipe(
+              take(1)  // Take just one emitted value
+          ).subscribe(currentItems => {
+            if (this.data.index != null) {
+              const fromIndex = currentItems.length - 1; // Assuming the new item gets added to the end
+              const toIndex = this.data.index;
+              console.log(fromIndex, toIndex)
+              this.store.dispatch(fromItineraryItemStore.reorderMyDayActivities({ fromIndex, toIndex }));
+            }
+          }));
+        }
+
+
       } else {
         console.log("Error: Trip is not set")
       }
@@ -273,7 +292,7 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
     }
 
     // After processing based on the form type, dispatch to your store
-    this.store.dispatch(updateItem({ updatedItem }));
+    this.store.dispatch(fromItineraryItemStore.updateItem({ updatedItem }));
     this.dialogRef.close();
 }
 
@@ -290,8 +309,6 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
   }
 
   ngOnDestroy(): void {
-    if (this.tripSubscription) {
-      this.tripSubscription.unsubscribe();
-    }
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }
