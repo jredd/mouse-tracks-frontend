@@ -33,9 +33,9 @@
             <!-- From Location -->
             <mat-form-field class="location_field">
               <mat-label>From Location</mat-label>
-              <mat-select formControlName="from_location_id">
+              <mat-select formControlName="from_location" [compareWith]="compareLocations">
                 <mat-option></mat-option> <!-- Allow empty selection -->
-                <mat-option *ngFor="let location of locations$ | async" [value]="location.id">
+                <mat-option *ngFor="let location of locations$ | async" [value]="location">
                   {{location.name}}
                 </mat-option>
               </mat-select>
@@ -47,9 +47,9 @@
             <!-- To Location -->
             <mat-form-field class="location_field">
               <mat-label>To Location</mat-label>
-              <mat-select formControlName="to_location_id">
+              <mat-select formControlName="to_location" [compareWith]="compareLocations">
                 <mat-option></mat-option> <!-- Allow empty selection -->
-                <mat-option *ngFor="let location of locations$ | async" [value]="location.id">
+                <mat-option *ngFor="let location of locations$ | async" [value]="location">
                   {{location.name}}
                 </mat-option>
               </mat-select>

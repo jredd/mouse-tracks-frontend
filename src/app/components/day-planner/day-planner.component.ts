@@ -67,7 +67,7 @@ export class DayPlannerComponent implements OnInit {
       dialogData = { type: FormType.MEAL, title: 'Add Meal', activity: experience, index };
     } else if (isItineraryItem(item)) { // This is an ItineraryItem
       const formType = this.getFormTypeFromContentType(item.content_type);
-      console.log("found form type", formType)
+      // console.log("found form type", formType)
       dialogData = { type: formType, title: 'Edit Item', itineraryItem: item };
     } else {
       throw new Error('Invalid input types');

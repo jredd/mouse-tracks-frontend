@@ -1,15 +1,15 @@
-import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {formDimensions, FormType} from "./dialogue-planner-content.interface";
-import {Observable, Subscription} from "rxjs";
-import {Break, ContentType, Experience, ItineraryItem, Location, Meal, TravelEvent, Trip} from "../../store";
-import {select, Store} from "@ngrx/store";
+import { AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { formDimensions, FormType } from "./dialogue-planner-content.interface";
+import { Observable, Subscription } from "rxjs";
+import { Break, ContentType, Experience, ItineraryItem, Location, Meal, TravelEvent, Trip } from "../../store";
+import { select, Store } from "@ngrx/store";
 import * as fromLocationStore from "../../store/location";
-import {AppState} from "../../store/app.state";
+import { AppState } from "../../store/app.state";
 import * as fromItineraryItemStore from '../../store/itinerary-item/';
 import * as fromTripStore from '../../store/trip/';
-import {take} from "rxjs/operators";
+import { take } from "rxjs/operators";
 
 
 @Component({
@@ -24,7 +24,6 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
   public currentFormType: FormType;
   private tripSubscription: Subscription | null = null;
   private subscriptions: Subscription[] = [];
-
 
   currentTrip: Trip | null = null;
   height = '150px'; // can also add height if needed
@@ -55,11 +54,26 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
     });
   }
 
+  locationOrCustomValidator(locationKey: string, customLocationKey: string) {
+    return (group: FormGroup): ValidationErrors | null => {
+        const locationValue = group.controls[locationKey].value;
+        const customLocationValue = group.controls[customLocationKey].value;
+
+        if (!locationValue && !customLocationValue) {
+            return { 'neitherProvided': true };
+        }
+        return null;
+    };
+  }
+
+  compareLocations(l1: any, l2: any): boolean {
+    return l1 && l2 ? l1.id === l2.id : l1 === l2;
+  }
 
   initForm() {
     const item: ItineraryItem = this.data.itineraryItem || {};
     let activity = item.activity
-    console.log(this.currentFormType)
+    // console.log(this.currentFormType)
     switch (this.currentFormType) {
       case FormType.MEAL:
         activity = item.activity as Meal
@@ -71,37 +85,46 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         break;
       case FormType.TRAVEL_EVENT:
         activity = item.activity as TravelEvent
+        // console.log('event:', activity)
         this.form = this.fb.group({
-          from_location_id: [activity?.from_location.id || '', Validators.required],
-          to_location_id: [activity?.to_location.id || '', Validators.required],
+          from_location: [activity?.from_location || ''],
+          to_location: [activity?.to_location || ''],
           custom_from_location: [activity?.custom_from_location || ''],
           custom_to_location: [activity?.custom_to_location || ''],
           travel_type: [activity?.travel_type || '', Validators.required],
           start_time: [item.start_time || null],
           notes: [item.notes || '']
+        }, {
+          validators: [
+            this.locationOrCustomValidator('from_location', 'custom_from_location'),
+            this.locationOrCustomValidator('to_location', 'custom_to_location')
+          ]
         });
 
-        const fromLocationControl = this.form.get('from_location_id')!;
+        // console.log("herps:", this.form)
+        // console.log("activity:", item)
+
+        const fromLocationControl = this.form.get('from_location')!;
         this.subscriptions.push(fromLocationControl.valueChanges.subscribe(val => {
-              if (val) {
-                  this.form.get('custom_from_location')!.setValue(null, { emitEvent: false });
-                  this.form.get('custom_from_location')!.disable({ emitEvent: false });
-              } else {
-                  this.form.get('custom_from_location')!.enable({ emitEvent: false });
-              }
-          }));
+          if (val) {
+            this.form.get('custom_from_location')!.setValue(null, { emitEvent: false });
+            this.form.get('custom_from_location')!.disable({ emitEvent: false });
+          } else {
+            this.form.get('custom_from_location')!.enable({ emitEvent: false });
+          }
+        }));
 
         const customFromLocationControl = this.form.get('custom_from_location')!;
         customFromLocationControl.valueChanges.subscribe(val => {
           if (val) {
-            this.form.get('from_location_id')!.setValue(null, { emitEvent: false });
-            this.form.get('from_location_id')!.disable({ emitEvent: false });
+            this.form.get('from_location')!.setValue(null, { emitEvent: false });
+            this.form.get('from_location')!.disable({ emitEvent: false });
           } else {
-            this.form.get('from_location_id')!.enable({ emitEvent: false });
+            this.form.get('from_location')!.enable({ emitEvent: false });
           }
         });
 
-        const toLocationControl = this.form.get('to_location_id')!;
+        const toLocationControl = this.form.get('to_location')!;
         toLocationControl.valueChanges.subscribe(val => {
           if (val) {
             this.form.get('custom_to_location')!.setValue(null, { emitEvent: false });
@@ -114,10 +137,10 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         const customToLocationControl = this.form.get('custom_to_location')!;
         customToLocationControl.valueChanges.subscribe(val => {
           if (val) {
-            this.form.get('to_location_id')!.setValue(null, { emitEvent: false });
-            this.form.get('to_location_id')!.disable({ emitEvent: false });
+            this.form.get('to_location')!.setValue(null, { emitEvent: false });
+            this.form.get('to_location')!.disable({ emitEvent: false });
           } else {
-            this.form.get('to_location_id')!.enable({ emitEvent: false });
+            this.form.get('to_location')!.enable({ emitEvent: false });
           }
         });
 
@@ -161,8 +184,10 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         };
       case FormType.TRAVEL_EVENT:
         return {
-          from_location_id: this.form.get('from_location_id')?.value,
-          to_location_id: this.form.get('to_location_id')?.value,
+          from_location: this.form.get('from_location')?.value,
+          from_location_id: this.form.get('from_location')?.value.id,
+          to_location: this.form.get('to_location')?.value,
+          to_location_id: this.form.get('to_location')?.value.id,
           custom_from_location: this.form.get('custom_from_location')?.value,
           custom_to_location: this.form.get('custom_to_location')?.value,
           travel_type: this.form.get('travel_type')?.value,
@@ -177,7 +202,6 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         return null;
     }
   }
-
 
   onAdd() {
     if (this.form.valid) {
@@ -225,8 +249,6 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
             }
           }));
         }
-
-
       } else {
         console.log("Error: Trip is not set")
       }
@@ -262,16 +284,20 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
 
       case FormType.TRAVEL_EVENT:
         const travelEventActivity = item.activity as TravelEvent;
+
         updatedItem.notes = this.form.get('notes')?.value || null;
         updatedItem.start_time = this.form.get('start_time')?.value || null;
         updatedItem.activity = {
             ...travelEventActivity,
-            from_location: this.form.get('from_location_id')?.value || null,
-            to_location: this.form.get('to_location_id')?.value || null,
+            from_location: this.form.get('from_location')?.value || null,
+            from_location_id: this.form.get('from_location')?.value.id || null,
+            to_location: this.form.get('to_location')?.value || null,
+            to_location_id: this.form.get('to_location')?.value.id || null,
             custom_from_location: this.form.get('custom_from_location')?.value || null,
             custom_to_location: this.form.get('custom_to_location')?.value || null,
             travel_type: this.form.get('travel_type')?.value || null
         };
+        console.log(updatedItem)
         break;
 
       case FormType.NOTES:
@@ -297,8 +323,6 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
     this.store.dispatch(fromItineraryItemStore.updateItem({ updatedItem }));
     this.dialogRef.close();
 }
-
-
 
   onNoClick(): void {
     this.dialogRef.close();
