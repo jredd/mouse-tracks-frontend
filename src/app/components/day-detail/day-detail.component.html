@@ -66,15 +66,26 @@
     <h3>{{ item.header }}</h3>
     <ul>
       <ng-container *ngFor="let activity of item.items">
-        <li class="experience_item" *ngIf="activity.content_type === 'experience'; else mealItem">
-          {{ getActivityName(activity) }}
-          <span *ngIf="activity.start_time">: {{ activity.start_time | militaryTo12Hr }}</span>
-          <span class="experience_notes" *ngIf="activity.notes">{{ activity.notes }}</span>
-        </li>
-        <ng-template #mealItem>
-          <li class="meal_item">
-            <span class="meal_title">{{ buildMealTitle(activity) }}</span>
-            <span class="meal_notes">{{ activity.notes }}</span>
+        <ng-container *ngIf="activity.content_type === 'experience'; else otherItem">
+          <li class="experience_item">
+            <span>{{ getActivityName(activity) }}</span>
+            <span *ngIf="activity.start_time">: {{ activity.start_time | militaryTo12Hr }}</span>
+            <span class="experience_notes" *ngIf="activity.notes">{{ activity.notes }}</span>
+          </li>
+        </ng-container>
+        <ng-template #otherItem>
+          <ng-container *ngIf="activity.content_type === 'meal'; else noteItem">
+            <li class="meal_item">
+              <span class="meal_title">{{ buildMealTitle(activity) }}</span>
+              <span class="meal_notes">{{ activity.notes }}</span>
+            </li>
+          </ng-container>
+        </ng-template>
+
+        <ng-template #noteItem>
+          <li class="note_item">
+            <!-- Render your note content here. Adjust as per your design -->
+            <span>{{ activity.notes }}</span>
           </li>
         </ng-template>
       </ng-container>
@@ -90,9 +101,9 @@
 </ng-template>
 <ng-template #travelEventItemTemplate let-item="item">
   <div class="item_travel_event_group">
-    <span class="travel_event_label">Travel Event:</span>
+    <span class="travel_event_label">{{ getTravelType(item) }}</span>
     <span class="travel_event_travel_to_from">{{ getTravelToFrom(item) }}</span>
-    <span class="travel_event_travel_notes">Notes: {{ getNoteInformation(item) }}</span>
+    <span class="travel_event_travel_notes">{{ getNoteInformation(item) }}</span>
   </div>
 </ng-template>
 

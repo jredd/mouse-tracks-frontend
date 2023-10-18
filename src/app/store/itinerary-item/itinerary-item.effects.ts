@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
-import { EMPTY, forkJoin, of, switchMap, withLatestFrom } from 'rxjs';
-import { mergeMap, map, catchError, tap } from 'rxjs/operators';
+import { concat, concatMap, EMPTY, forkJoin, of, withLatestFrom } from 'rxjs';
+import { mergeMap, map, catchError, tap, filter } from 'rxjs/operators';
 
 import * as ItineraryActions from './itinerary-item.actions';
 import { TripService } from "../../components/trip-dashboard/trip-dashboard.service";
@@ -45,64 +45,68 @@ export class ItineraryItemEffects {
   saveAllItemsByDay$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ItineraryActions.saveAllNonEmptyDays),
-      tap(() => console.log('Effect triggered!')),
+      tap(() => console.log('Effect saveAllItemsByDay$ triggered!')),
       withLatestFrom(
         this.store.select(fromItineraryItemStore.selectNonEmptyDaysWithItems),
         this.store.select(fromItineraryItemStore.selectAllDeletedItems)
       ),
       mergeMap(([action, daysWithItems, deletedItems]) => {
-      // Split the items into new and existing across all days
-      const allNewItems = daysWithItems
-        .flatMap(day => day.items)
-        .filter(item => 'tempId' in item) as NewItineraryItem[];
+        // Split the items into new and existing across all days
+        const allNewItems = daysWithItems
+          .flatMap(day => day.items)
+          .filter(item => 'tempId' in item) as NewItineraryItem[];
 
-      const allExistingItems = daysWithItems
-        .flatMap(day => day.items)
-        .filter(item => 'id' in item) as ExistingItineraryItem[];
+        const allExistingItems = daysWithItems
+          .flatMap(day => day.items)
+          .filter(item => 'id' in item) as ExistingItineraryItem[];
 
-      // Create tasks based on new and existing items
-      const newTasks = allNewItems.length ? [this.tripService.bulkSaveItineraryItems(allNewItems)] : [];
-      const updateTasks = allExistingItems.length ? [this.tripService.bulkUpdateItineraryItems(allExistingItems)] : [];
+        const newTasks = allNewItems.length ? [this.tripService.bulkSaveItineraryItems(allNewItems)] : [];
+        const updateTasks = allExistingItems.length ? [this.tripService.bulkUpdateItineraryItems(allExistingItems)] : [];
 
-      // Delete tasks for the deleted items
-      const allDeletedItems = deletedItems.filter(isExistingItineraryItem);
-      const deleteTasks = allDeletedItems.length ? [this.tripService.bulkDeleteItineraryItems(allDeletedItems)] : [];
+        const allDeletedItems = deletedItems.filter(isExistingItineraryItem);
+        const deleteTasks = allDeletedItems.length ? [this.tripService.bulkDeleteItineraryItems(allDeletedItems)] : [];
 
-      // Combine all tasks
-      return forkJoin([...newTasks, ...updateTasks, ...deleteTasks]).pipe(
-      // return forkJoin([...newTasks, ...deleteTasks]).pipe(
-        map(results => ({ results, allNewItems }))
-      );
-    }),
+        return forkJoin([...newTasks, ...updateTasks, ...deleteTasks]).pipe(
+          map(results => ({ results, allNewItems }))
+        );
+      }),
       mergeMap(({ results, allNewItems }) => {
-      // Here, results would contain the combined results of new, updated, and deleted tasks.
-      // And you have access to allNewItems as well.
-      // You can perform logic to update the local DB and state here.
+        const updateDbObservables = allNewItems.map((item, index) => {
+    if (results[0]) {
+      const newItem = results[0][index];
+      const tempId = item.tempId;
 
-      if (results[0]) {  // Assuming the first result corresponds to new items
-        results[0].forEach((newItem, index) => {
-        const tempId = allNewItems[index].tempId;
-
-    // Delete the temporary item
-    this.dbService.delete('itinerary_item', tempId).pipe(
-          // Once the delete is successful, add the new item
-          switchMap(() => this.dbService.add('itinerary_item', newItem)),
-          // After adding the new item to the database, dispatch the REPLACE_ITEM action
-          tap(() => {
-            this.store.dispatch(ItineraryActions.replaceItem({ tempId, newItem }));
-          })
-        ).subscribe();
-      });
+      return of(tempId).pipe(  // Wrapping tempId in an observable for debugging
+        concatMap(() => this.dbService.delete('itinerary_item', tempId)),
+        concatMap(() => this.dbService.add('itinerary_item', newItem)),
+        tap(() => {
+          this.store.dispatch(ItineraryActions.replaceItem({ tempId, newItem }));
+        }),
+        map(() => null)
+      );
     }
-
-      return [
-        ItineraryActions.saveAllSuccess(),
-        ItineraryActions.clearDeletedItems() // Action to clear deleted items from the state after they've been deleted
-      ];
-    }),
+    return [];
+  });
+  //       const updateDbObservables = allNewItems.map((item, index) => {
+  //         console.log("Inside map with item:", item);
+  //         return of('mock delete directly').pipe(
+  //           delay(100),
+  //           tap(val => console.log('turtles:', val))
+  //         );
+  //       });
+        return concat(...updateDbObservables).pipe(
+          tap(obs => console.log("Emitting from updateDbObservables:", obs)),
+          filter(result => result !== null),
+          mergeMap(() => [
+            ItineraryActions.saveAllSuccess(),
+            ItineraryActions.clearDeletedItems()
+          ])
+        );
+      }),
       catchError((error) => of(ItineraryActions.saveAllFailure({ error })))
     )
   );
+
 }
 function isExistingItineraryItem(item: any): item is ExistingItineraryItem {
   return 'id' in item && item.id !== undefined;

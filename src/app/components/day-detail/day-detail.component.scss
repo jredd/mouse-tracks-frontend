@@ -85,6 +85,7 @@
           .experience_item {
             .experience_notes {
               display: block;
+              font-style: italic;
             }
           }
           .meal_item {
@@ -147,4 +148,8 @@
   .day-card {
     margin-top: 10px !important;
   }
+}
+
+.travel_event_travel_notes {
+  font-style: italic;
 }

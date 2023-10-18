@@ -7,8 +7,7 @@ export type UIExperienceTypes = 'attractions' | 'entertainment' | 'events' | 're
 
 export interface Experience extends BaseInterface {
   name: string;
-  land_id: string | null;
-  land: Land | null;
+  lands: Land[];
   locations: Location[];
   destination: string;
   experience_type: ExperienceType; // Can be 'attraction', 'entertainment', 'event', 'restaurant', 'dining-event', or 'dinner-show'

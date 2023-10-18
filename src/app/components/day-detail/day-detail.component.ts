@@ -51,20 +51,20 @@ export class DayDetailComponent implements AfterViewInit, OnInit {
     // this.currentTrip$ = this.store.select(fromTripStore.selectCurrentTrip);
   }
 
-  groupItineraryByLocation(itineraryItems: ItineraryItem[]): void {
+  groupItineraryByLocationOriginal(itineraryItems: ItineraryItem[]): void {
     if (itineraryItems.length < 1) {
       return;
     }
     this.locationNames = [];
     const groups = []
-
-    // Sort by activity_order
     const sortedItems = [...itineraryItems].sort((a, b) => a.activity_order - b.activity_order);
 
     let lastLand = null;
     for (const item of sortedItems) {
+      // console.log('item:', item)
       const landName = this.getLandNameFromItem(item);
-      console.log(landName)
+      // console.log(item.content_type)
+      console.log((item.content_type != 'note' && groups.length == 0))
       if (!['note', 'break', 'travelevent'].includes(item.content_type)) {
         if (lastLand !== landName) {
           const newGroup: itineraryItemGroup  = {
@@ -75,11 +75,15 @@ export class DayDetailComponent implements AfterViewInit, OnInit {
           }
           groups.push(newGroup);
         } else {
+          console.log("groups", groups, item)
           groups[groups.length - 1].items.push(item)
         }
-        lastLand = landName
+        if (item.content_type != 'note') {
+         lastLand = landName
+        }
       } else {
         let newGroup: itineraryItemGroup
+        // console.log('herp:', item.content_type)
         switch (item.content_type) {
           case 'note':
             newGroup = { header: 'Note', items: [item], type: 'note', land: null };
@@ -107,27 +111,104 @@ export class DayDetailComponent implements AfterViewInit, OnInit {
       this.groupColumn1 = groups
     }
 
+    console.log('column1:', this.column1, 'column2:', this.groupColumn2)
     this.column1 = this.buildLocationGroups(this.groupColumn1)
     this.column2 = this.buildLocationGroups(this.groupColumn2)
+    console.log('group1:', this.groupColumn1, 'group2:', this.groupColumn2)
+  }
+
+  groupItineraryByLocation(itineraryItems: ItineraryItem[]): void {
+    if (itineraryItems.length < 1) {
+      return;
+    }
+    this.locationNames = [];
+    const groups = []
+    const sortedItems = [...itineraryItems].sort((a, b) => a.activity_order - b.activity_order);
+
+    let lastLand = null;
+    for (const item of sortedItems) {
+      // console.log('item:', item)
+      const landName = this.getLandNameFromItem(item);
+      // console.log(item.content_type)
+      console.log((item.content_type != 'note' && groups.length == 0))
+      if (!['note', 'break', 'travelevent'].includes(item.content_type)) {
+        if (lastLand !== landName) {
+          const newGroup: itineraryItemGroup  = {
+            header: landName,
+            items: [item],
+            type: 'activity',
+            land: null
+          }
+          groups.push(newGroup);
+        } else {
+          console.log("groups", groups, item)
+          groups[groups.length - 1].items.push(item)
+        }
+        if (item.content_type != 'note') {
+         lastLand = landName
+        }
+      } else {
+        let newGroup: itineraryItemGroup
+        // console.log('herp:', item.content_type)
+        switch (item.content_type) {
+          case 'note':
+            newGroup = { header: 'Note', items: [item], type: 'note', land: null };
+            break;
+          case 'break':
+            newGroup = { header: 'Break', items: [item], type: item.content_type, land: null };
+            break;
+          case 'travelevent':
+            newGroup = { header: 'Travel Event', items: [item], type: item.content_type, land: null };
+            break;
+          default:
+            newGroup = { header: 'Unknown Group', items: [item], type: item.content_type, land: null };
+            break;
+        }
+        groups.push(newGroup);
+        lastLand = item.content_type
+      }
+    }
+
+    if (groups.length > 1 && itineraryItems.length > 7) {
+      const middleIndex = Math.ceil(groups.length / 2);
+      this.groupColumn1 = groups.slice(0, middleIndex);
+      this.groupColumn2 = groups.slice(middleIndex);
+    } else {
+      this.groupColumn1 = groups
+    }
+
+    console.log('column1:', this.column1, 'column2:', this.groupColumn2)
+    this.column1 = this.buildLocationGroups(this.groupColumn1)
+    this.column2 = this.buildLocationGroups(this.groupColumn2)
+    console.log('group1:', this.groupColumn1, 'group2:', this.groupColumn2)
   }
 
   buildLocationGroups(groupColumn: itineraryItemGroup[]): locationGroup[] {
     const column = []
     if (groupColumn) {
-      let lastLocationName = null;
+      let lastLocationName = '';
       for (const group of groupColumn) {
         if (group.type == 'activity') {
           let locationName: string;
+          let locationType: string;
           if (group.items[0].content_type == 'experience') {
             const activity = group.items[0].activity as Experience
             locationName = activity.locations[0].name
-          } else {
+            locationType = activity.locations[0].location_type
+          } else if (group.items[0].content_type == 'note') {
+            locationName = 'defaultName'
+            locationType = 'defaultLocationType'
+          } else{
+            console.log('hi:', group.items[0].content_type)
             const activity = group.items[0].activity as Meal
             locationName = activity.meal_experience.locations[0].name
+            locationType = activity.meal_experience.locations[0].location_type
           }
           if (lastLocationName !== locationName) {
             let display = true;
-            if (this.locationNames.includes(locationName)) {
+            // const location =  group.items[0].activity.locations[0]
+            // console.log('location type:', locationType)
+            if (this.locationNames.includes(locationName) || locationType != "theme-park") {
               display = false;
             }
             const newLocation: locationGroup  = {
@@ -159,14 +240,25 @@ export class DayDetailComponent implements AfterViewInit, OnInit {
 
   getLandNameFromItem(item: ItineraryItem): string {
     if (item.content_type === 'meal') {
-      return (item.activity as Meal).meal_experience.land?.name || 'Unknown Land';
-    } else if (item.activity && 'land' in item.activity) {
-      console.log(item.activity)
-      return item.activity.land?.name || 'Unknown Land';
+      const meal = item.activity as Meal;
+      if (meal.meal_experience.lands.length > 0) {
+        console.log('herp derp', meal)
+        return meal.meal_experience.lands[0].name;
+      } else if (meal.meal_experience.locations && meal.meal_experience.locations.length > 0) {
+        // Defaulting to the first location's name if available
+        return meal.meal_experience.locations[0].name;
+      } else {
+        return 'Unknown Land';
+      }
+    } else if (item.activity && 'lands' in item.activity) {
+      console.log('herp derp', item.activity.lands)
+      return item.activity.lands?.[0]?.name || 'Unknown Land';
+
     } else {
       return 'Unknown Land';
     }
   }
+
 
   getActivityName(item: ItineraryItem): string {
     if (item.content_type === 'meal') {
@@ -188,10 +280,30 @@ export class DayDetailComponent implements AfterViewInit, OnInit {
     return item.items[0].notes
   }
 
-  getTravelToFrom(item: itineraryItemGroup) {
-    const activity = item.items[0].activity as TravelEvent
-    return `${activity.from_location.name} -> ${activity.to_location.name}`
+  capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   }
+
+  getTravelType(item: itineraryItemGroup) {
+    const activity = item.items[0].activity as TravelEvent
+    return this.capitalizeFirstLetter(activity.travel_type)
+  }
+
+  getTravelToFrom(item: itineraryItemGroup): string {
+
+    const activity = item.items[0].activity as TravelEvent;
+
+    const fromLocation = activity.custom_from_location
+                          ? activity.custom_from_location
+                          : activity.from_location.name;
+
+    const toLocation = activity.custom_to_location
+                        ? activity.custom_to_location
+                        : activity.to_location.name;
+
+    return `${fromLocation} -> ${toLocation}`;
+  }
+
 
   buildMealTitle(item: ItineraryItem) {
     const meal = item.activity as Meal;

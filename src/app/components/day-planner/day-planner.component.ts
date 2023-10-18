@@ -122,7 +122,7 @@ export class DayPlannerComponent implements OnInit {
               activity: experienceToAdd,
               activity_id: experienceToAdd.id,
               activity_order: event.currentIndex,
-              trip: trip,
+              trip: trip.id,
               content_type: 'experience',
               notes: ''
             }

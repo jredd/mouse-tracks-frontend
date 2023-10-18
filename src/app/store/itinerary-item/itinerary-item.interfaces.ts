@@ -32,7 +32,7 @@ export type ContentType = 'meal' | 'note' | 'travelevent' | 'break' | 'experienc
 
 export interface NewItineraryItem {
   tempId: string; // Optional tempId for new items
-  trip: Trip;
+  trip: string;
   notes?: string;
   activity_order: number;
   start_time?: Date;

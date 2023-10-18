@@ -185,9 +185,9 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
       case FormType.TRAVEL_EVENT:
         return {
           from_location: this.form.get('from_location')?.value,
-          from_location_id: this.form.get('from_location')?.value.id,
+          from_location_id: this.form.get('from_location')?.value?.id,
           to_location: this.form.get('to_location')?.value,
-          to_location_id: this.form.get('to_location')?.value.id,
+          to_location_id: this.form.get('to_location')?.value?.id,
           custom_from_location: this.form.get('custom_from_location')?.value,
           custom_to_location: this.form.get('custom_to_location')?.value,
           travel_type: this.form.get('travel_type')?.value,
@@ -211,7 +211,7 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
       if (this.currentTrip) {
         let itineraryItem: Partial<ItineraryItem> = {
           activity_order: 50,
-          trip: this.currentTrip,
+          trip: this.currentTrip.id,
           notes: notes,
         };
 

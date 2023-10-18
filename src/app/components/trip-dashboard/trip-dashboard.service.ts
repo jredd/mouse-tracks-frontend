@@ -1,20 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
-import {forkJoin, Observable, of} from 'rxjs';
-import { catchError, map, tap} from 'rxjs/operators';
+import { Observable, of} from 'rxjs';
+import { catchError, tap} from 'rxjs/operators';
 import * as moment from 'moment';
 
 import {
   Trip,
   ItineraryItem,
-  Break,
-  TravelEvent,
-  Meal,
   ApiTrip,
   APIItineraryItem,
-  Experience,
-  ExistingItineraryItem, MealAPI
+  ExistingItineraryItem
 } from '../../store/';
 import { environment } from "../../../environments/environment";
 
@@ -96,7 +92,7 @@ export class TripService {
 
   bulkSaveItineraryItems(items: ItineraryItem[]): Observable<ItineraryItem[]> {
     const transformedItems = items.map(item => this.transformToAPIFormat(item));
-    const tripId = items[0]?.trip.id; // Assuming all items belong to the same trip; adjust if this isn't the case.
+    const tripId = items[0]?.trip; // Assuming all items belong to the same trip; adjust if this isn't the case.
 
     return this.http.post<ItineraryItem[]>(`${this.BASE_URL}/trips/${tripId}/itinerary-items-bulk/`, transformedItems).pipe(
         tap(results => results.forEach(result => this.dbService.add('itinerary_item', result))),
@@ -162,33 +158,33 @@ export class TripService {
     let activity: any = { ...item.activity };
 
     switch (item.content_type) {
-        case 'meal':
-            if ('meal_experience' in activity) {
-                delete (activity as any).meal_experience;
-            }
-            break;
+      case 'meal':
+        // console.log(item)
+        if ('meal_experience' in activity) {
+            delete (activity as any).meal_experience;
+        }
+        break;
 
-        case 'travelevent':
-            if (activity.from_location) {
-                activity.from_location_id = activity.from_location.id;
-                delete activity.from_location;
-            }
-            if (activity.to_location) {
-                activity.to_location_id = activity.to_location.id;
-                delete activity.to_location;
-            }
-            break;
+      case 'travelevent':
+        if (activity.from_location) {
+          activity.from_location_id = activity.from_location.id;
+        }
+        if (activity.to_location) {
+          activity.to_location_id = activity.to_location.id;
+        }
+        delete activity.from_location;
+        delete activity.to_location;
+        break;
 
-        case 'break':
-            if (activity.location) {
-                activity.location_id = activity.location.id;
-                delete activity.location;
-            }
-            break;
+      case 'break':
+        if (activity.location) {
+          activity.location_id = activity.location.id;
+          delete activity.location;
+        }
+        break;
     }
-
     const apiItem: APIItineraryItem = {
-        trip: item.trip.id,
+        trip: item.trip,
         notes: item.notes,
         activity_order: item.activity_order,
         start_time: item.start_time,
@@ -202,7 +198,6 @@ export class TripService {
     if ('id' in item) {
         (apiItem as any).id = item.id; // Adding the id if it exists in the item.
     }
-
     return apiItem;
 }
 

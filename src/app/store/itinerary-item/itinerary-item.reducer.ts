@@ -171,7 +171,7 @@ on(ItineraryActions.getItineraryItemsSuccess, (state, { items }) => {
         deletedItems: updatedDeletedItems,
         itemsByDay: {
           ...state.itemsByDay,
-          [dayKey]: reorderItems(updatedItems, 0, updatedItems.length - 1)
+          [dayKey]: adjustOrderAfterRemoval(updatedItems)
         }
       };
     }
@@ -315,6 +315,15 @@ function reorderItems(items: ItineraryItem[], fromIndex: number, toIndex: number
     // Remove item from the original position and insert it to the new position
     const [itemToMove] = updatedItems.splice(fromIndex, 1);
     updatedItems.splice(toIndex, 0, itemToMove);
+    // Recalculate activity_order for the reordered items
+    return updatedItems.map((item, index) => {
+        return { ...item, activity_order: index };
+    });
+}
+
+function adjustOrderAfterRemoval(items: ItineraryItem[]): ItineraryItem[] {
+    // Create a new copy of items array to ensure immutability
+    const updatedItems = [...items];
     // Recalculate activity_order for the reordered items
     return updatedItems.map((item, index) => {
         return { ...item, activity_order: index };
