@@ -40,7 +40,10 @@
       </div>
       <!-- Available Experiences Section -->
       <div class="planner_container move_container">
-        <h2>Available Experiences</h2>
+        <div class="header-container">
+          <h2>Experiences</h2>
+          <input type="text" placeholder="Search..." [(ngModel)]="searchTerm" (input)="searchChanged($event)" />
+        </div>
         <div class="planner_content_wrapper">
             <div
               cdkDropList

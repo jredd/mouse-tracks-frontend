@@ -14,6 +14,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { FormType } from "../dialogue-planner-content/dialogue-planner-content.interface";
 import { ElementRef, ViewChild } from '@angular/core';
 import {removeActivityFromMyDay} from "../../store/itinerary-item/";
+import Fuse from "fuse.js";
 
 
 @Component({
@@ -31,26 +32,48 @@ export class DayPlannerComponent implements OnInit {
     select(fromItineraryItemStore.selectAllCurrentDayItems),
     map(items => [...items].sort((a, b) => a.activity_order - b.activity_order))
   );
+  searchTerm: string = '';
+
 
 
   constructor(public dialogue: MatDialog, private store: Store<AppState>) { }
 
-  getFormTypeFromContentType(contentType: ContentType): FormType {
-  switch (contentType) {
-    case 'meal':
-      return FormType.MEAL;
-    case 'travelevent':
-      return FormType.TRAVEL_EVENT;
-    case 'note':
-      return FormType.NOTES;
-    case 'break':
-      return FormType.BREAK;
-    case 'experience':
-      return FormType.EXPERIENCE;
-    default:
-      return FormType.NOTES; // default to notes or throw an error if unrecognized
+  // filterExperiences(experiences: Experience[] | null): Experience[] {
+  //     if (!experiences || !this.searchTerm) return experiences ? experiences : [];
+  //     return experiences.filter(exp => exp.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
+  // }
+
+  filterExperiences(experiences: Experience[] | null): Experience[] {
+    if (!experiences || !this.searchTerm) return experiences ? experiences : [];
+
+    const options = {
+        keys: ['name'],
+        includeScore: true,
+        threshold: 0.3  // You can adjust this for stricter or more lenient matching.
+    };
+
+    const fuse = new Fuse(experiences, options);
+    const results = fuse.search(this.searchTerm);
+
+    return results.map(result => result.item);
   }
-}
+
+  getFormTypeFromContentType(contentType: ContentType): FormType {
+    switch (contentType) {
+      case 'meal':
+        return FormType.MEAL;
+      case 'travelevent':
+        return FormType.TRAVEL_EVENT;
+      case 'note':
+        return FormType.NOTES;
+      case 'break':
+        return FormType.BREAK;
+      case 'experience':
+        return FormType.EXPERIENCE;
+      default:
+        return FormType.NOTES; // default to notes or throw an error if unrecognized
+    }
+  }
 
   openDialog(experience: Experience | false = false, item: ItineraryItem | false = false, index: number | null = null): void {
     let dialogData;
@@ -78,11 +101,23 @@ export class DayPlannerComponent implements OnInit {
     });
   }
 
+  searchChanged(event: any) {
+    // re-fetch the data or update the available list
+    this.available$ = this.store.pipe(
+        select(fromExperienceStore.selectExperiencesByType),
+        map(experiences => this.filterExperiences(experiences))
+    );
+  }
 
   ngOnInit() {
-    // this.currentTrip$ = this.store.select(selectCurrentTrip).subscribe(trip => {
-    //   this.store.dispatch(fromItineraryItemStore.getItineraryItemsRequest(trip.id))
-    // })
+
+    this.available$ = this.store.pipe(
+      select(fromExperienceStore.selectExperiencesByType),
+      map(experiences => this.filterExperiences(experiences)),
+      tap(data => {
+          // console.log('Selected Experiences:', data);
+      })
+    );
 
     this.available$ = this.store.pipe(
       select(fromExperienceStore.selectExperiencesByType),
