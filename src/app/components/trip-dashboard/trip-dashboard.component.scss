@@ -67,9 +67,12 @@
 
 button[mat-raised-button][disabled] {
   opacity: 0 !important;
+  background-color: #FFC857;
 }
 
 mat-card-actions {
   //background-color: orange;
   //float: left;
 }
+
+
