@@ -19,7 +19,7 @@
   min-height: 600px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   mat-card-header {
-    background-color: $primary;
+    background-color: #E0EEF5;
     min-height: 85px;
   }
   .card_header {
@@ -133,15 +133,15 @@
   }
 }
 
-.flex-container {
-    display: flex;
-    flex-wrap: wrap;
-
-    .flex-item {
-        flex: 1 1 50%; /* This splits the container into two equal columns */
-        padding: 10px;
-    }
-}
+//.flex-container {
+//    display: flex;
+//    flex-wrap: wrap;
+//
+//    .flex-item {
+//        flex: 1 1 50%; /* This splits the container into two equal columns */
+//        padding: 10px;
+//    }
+//}
 
 @media (max-width: 768px) {
 
@@ -153,3 +153,52 @@
 .travel_event_travel_notes {
   font-style: italic;
 }
+
+
+//.two-column-list {
+//  column-count: 2;
+//  column-gap: 20px;
+//  list-style-type: none;
+//  padding: 0;
+//  .two-column-list li div {
+//    break-inside: avoid-column;    /* Prevents breaking divs across columns */
+//    -webkit-column-break-inside: avoid; /* For older WebKit browsers */
+//    page-break-inside: avoid; /* For older browsers */
+//    margin-bottom: 10px;    /* Optional: Adds some space below each item */
+//  }
+//  //.two-column-list li {
+//  //  break-inside: avoid;    /* Prevents breaking list items across columns */
+//  //  -webkit-column-break-inside: avoid; /* For older WebKit browsers */
+//  //  page-break-inside: avoid; /* For older browsers */
+//  //  box-decoration-break: clone; /* For some visual effects when breaking is unavoidable */
+//  //  margin-bottom: 10px;    /* Optional: Adds some space below each item */
+//  //}
+//}
+
+.two_column_list {
+    column-count: 2;        /* This creates two columns */
+    column-gap: 20px;       /* This sets the gap between the columns */
+  .no_break {
+    break-inside: avoid-column;    /* Prevents breaking divs across columns */
+    -webkit-column-break-inside: avoid; /* For older WebKit browsers */
+    page-break-inside: avoid; /* For older browsers */
+    margin-bottom: 10px;    /* Optional: Adds some space below each item */
+  }
+  .location_header {
+    margin-top: 5px;
+    margin-bottom: 2px;
+  }
+  .sub_header {
+    margin-bottom: 2px;
+  }
+  .item {
+    //background-color: blue;
+    margin-bottom: 4px;
+    div {
+      line-height: 1.25;
+    }
+  }
+}
+
+
+

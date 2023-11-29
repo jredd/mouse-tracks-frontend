@@ -184,15 +184,16 @@ export class TripService {
         break;
     }
     const apiItem: APIItineraryItem = {
-        trip: item.trip,
-        notes: item.notes,
-        activity_order: item.activity_order,
-        start_time: item.start_time,
-        end_time: item.end_time,
-        activity_id: item.activity_id,
-        activity: activity, // Use the modified activity
-        content_type: item.content_type,
-        day: moment(item.day).format('YYYY-MM-DD')
+      trip: item.trip,
+      notes: item.notes,
+      activity_order: item.activity_order,
+      start_time: item.start_time,
+      end_time: item.end_time,
+      activity_id: item.activity_id,
+      activity: activity, // Use the modified activity
+      content_type: item.content_type,
+      day: moment(item.day).format('YYYY-MM-DD'),
+      attributes: item.attributes
     };
 
     if ('id' in item) {

@@ -37,6 +37,7 @@ export class ItineraryDetailComponent implements OnInit, OnDestroy {
     ).subscribe(currentTrip => {
       // console.log("subscriber:", currentTrip)
       if (currentTrip) {
+        // console.log('currentTrip', currentTrip)
         this.store.dispatch(fromItineraryItemStore.getItineraryItemsRequest({ trip_id: currentTrip.id }));
       }
     });

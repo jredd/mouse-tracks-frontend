@@ -12,98 +12,111 @@
   </mat-card-header>
 
   <mat-card-content class="card_content">
-    <!-- First column -->
-    <div class="items_column1">
-      <ng-container *ngFor="let location of column1">
-        <div class="location_title" *ngIf="location.name && location.display">
-          <span class="location_label">{{ location.name }}: </span>
-          <span class="location_time_range">8:30 AM - 6:00 PM</span>
-        </div>
-        <ng-container *ngFor="let item of location.itemGroups">
-          <ng-container [ngSwitch]="item.type">
-            <ng-container *ngSwitchCase="'activity'">
-              <ng-container *ngTemplateOutlet="activityItemTemplate; context: { item: item }"></ng-container>
-            </ng-container>
-            <ng-container *ngSwitchCase="'note'">
-              <ng-container *ngTemplateOutlet="noteItemTemplate; context: { item: item }"></ng-container>
-            </ng-container>
-            <ng-container *ngSwitchCase="'travelevent'">
-              <ng-container *ngTemplateOutlet="travelEventItemTemplate; context: { item: item }"></ng-container>
-            </ng-container>
+    <ul class="two_column_list">
+      <ng-container *ngFor="let location of groupColumn1">
+        <li class="no_break location_header" *ngIf="location.header && location.type == 'activity'">
+          <div class="location_title">
+            <h4 class="location_label">{{ locationDetails(location.header) }} </h4>
+          </div>
+        </li>
+        <ng-container [ngSwitch]="location.type" *ngIf="location.items">
+          <ng-container *ngSwitchCase="'activity'">
+            <ng-container *ngTemplateOutlet="activityItemTemplate; context: { location: location }"></ng-container>
+          </ng-container>
+          <ng-container *ngSwitchCase="'note'">
+            <ng-container *ngTemplateOutlet="noteItemTemplate; context: { item: location.items[0] }"></ng-container>
+          </ng-container>
+          <ng-container *ngSwitchCase="'travelevent'">
+            <ng-container *ngTemplateOutlet="travelEventItemTemplate; context: { item: location.items[0] }"></ng-container>
+          </ng-container>
+          <ng-container *ngSwitchCase="'break'">
+            <ng-container *ngTemplateOutlet="breakItemTemplate; context: { item: location.items[0] }"></ng-container>
           </ng-container>
         </ng-container>
       </ng-container>
-    </div>
-
-    <!-- Second column -->
-    <div class="items_column2">
-       <ng-container *ngFor="let location of column2">
-         <div class="location_title" *ngIf="location.name && location.display">
-           <span class="location_label">{{ location.name }}: </span>
-           <span class="location_time_range">10:00 AM - 11:00 PM</span>
-         </div>
-         <ng-container *ngFor="let item of location.itemGroups">
-          <ng-container [ngSwitch]="item.type">
-            <ng-container *ngSwitchCase="'activity'">
-              <ng-container *ngTemplateOutlet="activityItemTemplate; context: { item: item }"></ng-container>
-            </ng-container>
-            <ng-container *ngSwitchCase="'note'">
-              <ng-container *ngTemplateOutlet="noteItemTemplate; context: { item: item }"></ng-container>
-            </ng-container>
-            <ng-container *ngSwitchCase="'travelevent'">
-              <ng-container *ngTemplateOutlet="travelEventItemTemplate; context: { item: item }"></ng-container>
-            </ng-container>
-          </ng-container>
-        </ng-container>
-       </ng-container>
-    </div>
+    </ul>
   </mat-card-content>
 </mat-card>
 
 
-<ng-template #activityItemTemplate let-item="item">
-  <div class="item_activity_group">
-    <h3>{{ item.header }}</h3>
-    <ul>
-      <ng-container *ngFor="let activity of item.items">
-        <ng-container *ngIf="activity.content_type === 'experience'; else otherItem">
-          <li class="experience_item">
-            <span>{{ getActivityName(activity) }}</span>
-            <span *ngIf="activity.start_time">: {{ activity.start_time | militaryTo12Hr }}</span>
-            <span class="experience_notes" *ngIf="activity.notes">{{ activity.notes }}</span>
-          </li>
-        </ng-container>
-        <ng-template #otherItem>
-          <ng-container *ngIf="activity.content_type === 'meal'; else noteItem">
-            <li class="meal_item">
-              <span class="meal_title">{{ buildMealTitle(activity) }}</span>
-              <span class="meal_notes">{{ activity.notes }}</span>
-            </li>
+<ng-template #activityItemTemplate let-location="location">
+  <ng-container *ngIf="location.landItems.length">
+    <ng-container *ngFor="let land of location.landItems">
+      <li class="no_break sub_header" *ngIf="land.name">
+        <h4>{{ land.name }}</h4>
+      </li>
+      <ng-container *ngFor="let item of land.items">
+        <ng-container [ngSwitch]="item.content_type">
+          <ng-container *ngSwitchCase="'experience'">
+            <ng-container *ngTemplateOutlet="experienceItemTemplate; context: { item: item }"></ng-container>
           </ng-container>
-        </ng-template>
-
-        <ng-template #noteItem>
-          <li class="note_item">
-            <!-- Render your note content here. Adjust as per your design -->
-            <span>{{ activity.notes }}</span>
-          </li>
-        </ng-template>
+          <ng-container *ngSwitchCase="'note'">
+            <ng-container *ngTemplateOutlet="noteItemTemplate; context: { item: item }"></ng-container>
+          </ng-container>
+          <ng-container *ngSwitchCase="'meal'">
+            <ng-container *ngTemplateOutlet="mealItemTemplate; context: { item: item }"></ng-container>
+          </ng-container>
+        </ng-container>
       </ng-container>
-    </ul>
-  </div>
+    </ng-container>
+  </ng-container>
+  <ng-container *ngIf="!location.landItems.length">
+    <ng-container *ngFor="let item of location.items">
+      <ng-container [ngSwitch]="item.content_type">
+        <ng-container *ngSwitchCase="'experience'">
+          <ng-container *ngTemplateOutlet="experienceItemTemplate; context: { item: item }"></ng-container>
+        </ng-container>
+        <ng-container *ngSwitchCase="'note'">
+          <ng-container *ngTemplateOutlet="noteItemTemplate; context: { item: item }"></ng-container>
+        </ng-container>
+        <ng-container *ngSwitchCase="'meal'">
+          <ng-container *ngTemplateOutlet="mealItemTemplate; context: { item: item }"></ng-container>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</ng-template>
+
+
+<ng-template #experienceItemTemplate let-item="item">
+  <li class="no_break item">
+    <span>{{item.activity.name}}</span>
+    <span *ngIf="item.start_time">: {{ item.start_time | militaryTo12Hr }}</span><br>
+    <span>{{ item.notes}}</span>
+  </li>
 </ng-template>
 
 <ng-template #noteItemTemplate let-item="item">
-  <div class="item_note_group">
-    <span class="note_label">Note:</span>
-    <span>{{ getNoteInformation(item) }}</span>
-  </div>
+  <li class="no_break item">
+    <div class="item_note_group">
+      <span>{{ getNoteInformation(item) }}</span>
+    </div>
+  </li>
+</ng-template>
+
+<ng-template #mealItemTemplate let-item="item">
+  <li class="no_break item">
+    <div class="item_meal_group">
+      <span>{{ buildMealTitle(item)}}</span><br>
+      <span>{{ item.notes }}</span>
+    </div>
+  </li>
 </ng-template>
 <ng-template #travelEventItemTemplate let-item="item">
-  <div class="item_travel_event_group">
-    <span class="travel_event_label">{{ getTravelType(item) }}</span>
-    <span class="travel_event_travel_to_from">{{ getTravelToFrom(item) }}</span>
-    <span class="travel_event_travel_notes">{{ getNoteInformation(item) }}</span>
-  </div>
+  <li class="no_break item">
+    <div class="item_travel_event_group">
+      <span class="travel_event_label">{{ getTravelType(item) }}: </span>
+      <span class="travel_event_travel_to_from">{{ getTravelToFrom(item) }}</span><br>
+      <span class="travel_event_travel_notes">{{ getNoteInformation(item) }}</span>
+    </div>
+  </li>
+</ng-template>
+
+<ng-template #breakItemTemplate let-item="item">
+  <li class="no_break item">
+    <div class="item_break_group">
+      <span class="break_label"><strong>Break:</strong> {{ item.activity.location.name }}</span>
+    </div>
+  </li>
 </ng-template>
 
