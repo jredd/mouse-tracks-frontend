@@ -4,7 +4,7 @@ import { TripDashboardComponent } from "./components/trip-dashboard/trip-dashboa
 import { TripPlannerComponent } from "./components/trip-planner/trip-planner.component";
 import { currentTripGuard, deactivateCurrentTripGuard } from "./guards/current-trip.guard";
 import { TripDetailComponent } from "./components/trip-detail/trip-detail.component";
-import { AuthGuard } from "./guards/auth/auth.guard";
+import { authGuard } from "./guards/auth/auth.guard";
 import { LoginComponent } from "./auth/components/login/login.component";
 
 
@@ -14,11 +14,11 @@ const routes: Routes = [
   },
   {
     path: '', component: TripDashboardComponent,
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'trip',
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     children: [
       {
         path: 'planner',

@@ -7,6 +7,8 @@ import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import {environment} from "../../environments/environment";
 import { LoginResponse, RefreshResponse, TokenData, User} from "../store";
+import {Store} from "@ngrx/store";
+import * as AuthActions from '../store/auth/auth.actions';
 
 
 @Injectable({
@@ -25,12 +27,20 @@ export class AuthService implements OnDestroy {
   constructor(
     private http: HttpClient,
     private dbService: NgxIndexedDBService,
+    private store: Store // Inject the store
   ) { }
 
   login(credentials: { email: string; password: string }): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(this.LOGIN_URL, credentials).pipe(
       tap(response => this.storeUserAndTokens(response.user_id, response.access, response.refresh)),
       tap(response => this.scheduleTokenRefresh({userId: response.user_id, accessToken: response.access, refreshToken: response.refresh})),
+      tap(response => {
+        this.store.dispatch(AuthActions.loginSuccess({
+          user_id: response.user_id,
+          accessToken: response.access,
+          refreshToken: response.refresh
+        }));
+      }),
       map(response => ({
         user_id: response.user_id,
         access: response.access,  // Ensure this matches the interface
@@ -62,6 +72,13 @@ export class AuthService implements OnDestroy {
         this.storeUserAndTokens(currentUserId, response.access, response.refresh);
       }),
       tap(response => {
+        this.store.dispatch(AuthActions.loginSuccess({
+          user_id: currentUserId,
+          accessToken: response.access,
+          refreshToken: response.refresh
+        }));
+      }),
+      tap(response => {
         return this.scheduleTokenRefresh({
           userId: currentUserId,
           accessToken: response.access,
@@ -90,9 +107,8 @@ export class AuthService implements OnDestroy {
     this.dbService.getByKey(this.TOKEN_STORE, 1).subscribe((existingData) => {
       if (existingData) {
         this.dbService.update(this.TOKEN_STORE, tokenData).subscribe((_) => {
-          console.log(tokenData)
-          }
-        );
+          // console.log(tokenData)
+        });
       } else {
         this.dbService.add(this.TOKEN_STORE, tokenData).subscribe((_) =>
             console.log('Added new user and tokens')
@@ -232,6 +248,14 @@ export class AuthService implements OnDestroy {
     const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
     return (decodedToken.exp - currentTime) * 1000; // Remaining time in milliseconds
   }
+
+  logout(): void {
+    // Perform any logout operations, like removing tokens from IndexedDB
+    this.removeTokens().subscribe(() => {
+      this.store.dispatch(AuthActions.logout());
+    });
+  }
+
 
 
   private storeUser(email: string): Observable<User> {
