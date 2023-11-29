@@ -1,0 +1,17 @@
+/* login.component.css */
+mat-card {
+  max-width: 400px; /* or any other width you prefer */
+  margin: 0 auto; /* Center the card */
+  display: block;
+  margin-top: 10%;
+}
+
+.full-width {
+  width: 100%;
+  display: block; /* Ensure each element takes its own line */
+}
+
+
+.center {
+  text-align: center;
+}

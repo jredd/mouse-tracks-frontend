@@ -15,6 +15,6 @@ export class MilitaryTo12HrPipe implements PipeTransform {
     const militaryTime = moment(value, 'HH:mm:ss');
 
     // Format the moment object to a 12-hour string with AM/PM
-    return militaryTime.format('hh:mm A');
+    return militaryTime.format('h:mm A');
   }
 }

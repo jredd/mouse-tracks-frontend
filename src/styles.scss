@@ -21,7 +21,8 @@ $custom-theme: mat.define-light-theme((
 
 
 
-html, body { background-color: $white; height: 100%; color: $black !important; }
+//html, body { background-color: $white; height: 100%; color: $black !important; }
+html, body { background-color: $primary; height: 100%; color: $black !important; }
 body { margin: 0; font-family: "specter", sans-serif; }
 p, span, div {
   font-family: "specter", sans-serif !important;

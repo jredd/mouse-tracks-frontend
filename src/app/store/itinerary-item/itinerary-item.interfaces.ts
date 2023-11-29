@@ -14,7 +14,7 @@ export interface TravelEvent extends BaseInterface {
 }
 
 export interface Break extends BaseInterface {
-  location: string;
+  location: Location;
 }
 
 export interface Meal extends BaseInterface {
@@ -41,6 +41,7 @@ export interface NewItineraryItem {
   activity_id?: string;
   activity?: Experience | Break | Meal | TravelEvent;
   content_type: ContentType;
+  attributes: any;
 }
 
 export interface ExistingItineraryItem extends Omit<NewItineraryItem, 'tempId'> { // Omitting the tempId as existing items don't need it

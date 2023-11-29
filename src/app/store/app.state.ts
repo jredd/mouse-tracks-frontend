@@ -6,6 +6,8 @@ import { destinationReducer, DestinationState } from "./destination";
 import { locationReducer, LocationState } from "./location";
 import { experienceReducer, ExperienceState } from "./experience";
 import { itineraryReducer, ItineraryState } from "./itinerary-item";
+import {AuthState} from "./auth/auth.interfaces";
+import {authReducer} from "./auth/auth.reducer";
 
 
 export interface AppState {
@@ -14,6 +16,7 @@ export interface AppState {
   location: LocationState;
   experience: ExperienceState;
   itinerary_item: ItineraryState
+  auth: AuthState
   // Add other feature states as needed
 }
 
@@ -23,6 +26,7 @@ export const appReducers: ActionReducerMap<AppState> = {
   location: locationReducer,
   experience: experienceReducer,
   itinerary_item: itineraryReducer,
+  auth: authReducer
 
   // Add other feature reducers as needed
 };

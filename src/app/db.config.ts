@@ -2,7 +2,7 @@ import { DBConfig } from 'ngx-indexed-db';
 
 export const dbConfig: DBConfig = {
   name: 'MouseTracksDB',
-  version: 1,
+  version: 5,
   objectStoresMeta: [
     {
       store: 'destination',
@@ -90,6 +90,26 @@ export const dbConfig: DBConfig = {
         { name: 'day', keypath: 'day', options: { unique: false } },
         { name: 'activity_id', keypath: 'activity_id', options: { unique: false } },
         { name: 'content_type', keypath: 'content_type', options: { unique: false } },
+      ]
+    },
+    {
+      store: 'user',
+      storeConfig: { keyPath: 'id', autoIncrement: false },
+      storeSchema: [
+        { name: 'accessToken', keypath: 'access', options: { unique: false } },
+        { name: 'refreshToken', keypath: 'refresh', options: { unique: false } },
+        { name: 'email', keypath: 'email', options: { unique: true } },
+        { name: 'first_name', keypath: 'first_name', options: { unique: false } },
+        { name: 'last_name', keypath: 'last_name', options: { unique: false } },
+      ]
+    },
+    {
+      store: 'auth',
+      storeConfig: { keyPath: 'id', autoIncrement: true },
+      storeSchema: [
+        { name: 'user_id', keypath: 'user_id', options: { unique: false } },
+        { name: 'access_token', keypath: 'access_token', options: { unique: false } },
+        { name: 'refresh_token', keypath: 'refresh_token', options: { unique: false } }
       ]
     }
   ]

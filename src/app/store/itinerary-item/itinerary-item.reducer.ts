@@ -207,6 +207,7 @@ on(ItineraryActions.getItineraryItemsSuccess, (state, { items }) => {
       activity_order: itineraryItem.activity_order ?? 0, // provide a default value
       day: moment(state.currentDay).toDate(),
       content_type: itineraryItem.content_type!,
+      attributes: null,
       ...itineraryItem,
     }
     // console.log("new item in reducer:", newItem)
