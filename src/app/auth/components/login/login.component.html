@@ -1,7 +1,8 @@
 <!-- login.component.html -->
 <mat-card>
-  <!-- ... card header ... -->
-  <mat-card-content>
+  <mat-card-header>
+    <h1>Login</h1>
+  </mat-card-header>  <mat-card-content>
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Email</mat-label>
@@ -15,6 +16,9 @@
 
       <div class="full-width center">
         <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">Login</button>
+      </div>
+      <div class="registration">
+        <a routerLink="/auth/register">Register</a>
       </div>
     </form>
   </mat-card-content>

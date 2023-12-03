@@ -6,11 +6,15 @@ import { currentTripGuard, deactivateCurrentTripGuard } from "./guards/current-t
 import { TripDetailComponent } from "./components/trip-detail/trip-detail.component";
 import { authGuard } from "./guards/auth/auth.guard";
 import { LoginComponent } from "./auth/components/login/login.component";
+import {RegistrationComponent} from "./auth/components/registration/registration.component";
 
 
 const routes: Routes = [
   {
-    path: 'login', component: LoginComponent
+    path: 'auth/login', component: LoginComponent
+  },
+  {
+    path: 'auth/register', component: RegistrationComponent
   },
   {
     path: '', component: TripDashboardComponent,
