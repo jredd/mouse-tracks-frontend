@@ -372,14 +372,14 @@ export class DayDetailComponent implements AfterViewInit, OnInit {
     } else if (item.content_type === 'experience') {
       return `${(item.activity as Experience).name}`;
     } else if (item.content_type === 'note') {
-      return `${ item.notes }`;
+      return `${ item.note }`;
     } else {
       return 'Unknown Activity';
     }
   }
 
   getNoteInformation(item: ItineraryItem) {
-    return item.notes
+    return item.note
   }
 
   capitalizeFirstLetter(string: string) {

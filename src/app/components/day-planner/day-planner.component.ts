@@ -65,13 +65,13 @@ export class DayPlannerComponent implements OnInit {
       case 'travelevent':
         return FormType.TRAVEL_EVENT;
       case 'note':
-        return FormType.NOTES;
+        return FormType.NOTE;
       case 'break':
         return FormType.BREAK;
       case 'experience':
         return FormType.EXPERIENCE;
       default:
-        return FormType.NOTES; // default to notes or throw an error if unrecognized
+        return FormType.NOTE; // default to note or throw an error if unrecognized
     }
   }
 
@@ -159,7 +159,7 @@ export class DayPlannerComponent implements OnInit {
               activity_order: event.currentIndex,
               trip: trip.id,
               content_type: 'experience',
-              notes: ''
+              note: ''
             }
           }));
         }
@@ -177,7 +177,7 @@ export class DayPlannerComponent implements OnInit {
         const name = meal.meal_experience?.name ?? 'Unknown Experience';
         return `${mealType}: ${name}`;
       case 'note':
-        return 'Notes';
+        return 'Note';
       case 'travelevent':
         return 'Travel Event';
       case 'break':
@@ -187,11 +187,11 @@ export class DayPlannerComponent implements OnInit {
     }
   }
 
-  truncateNotes(notes?: string, limit: number = 8): string {
-    if (!notes) return '';  // Return empty string if notes are undefined or falsy
+  truncateNote(note?: string, limit: number = 8): string {
+    if (!note) return '';  // Return empty string if note are undefined or falsy
 
-    const words = notes.split(' ').slice(0, limit);
-    return words.join(' ') + (words.length < notes.split(' ').length ? '...' : '');
+    const words = note.split(' ').slice(0, limit);
+    return words.join(' ') + (words.length < note.split(' ').length ? '...' : '');
   }
 
   capitalizeFirstLetter(value: string) {

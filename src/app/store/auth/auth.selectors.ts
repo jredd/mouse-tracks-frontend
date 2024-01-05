@@ -24,3 +24,13 @@ export const selectAccessToken = createSelector(
   selectAuthState,
   AccessToken
 )
+
+const UserId = createSelector(
+  selectAuthState,
+  auth => auth.user_id
+)
+
+export const selectUserId = createSelector(
+  selectAuthState,
+  UserId
+)

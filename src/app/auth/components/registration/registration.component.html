@@ -22,12 +22,14 @@
       </mat-form-field>
 
       <div class="full-width center">
-        <button mat-raised-button color="primary" type="submit" [disabled]="!registrationForm.valid">Login</button>
-      </div>
-      <div class="cancel_registration">
-        <a routerLink="/auth/login">Cancel</a>
-
+        <button mat-raised-button color="primary" type="submit" [disabled]="!registrationForm.valid">Register</button>
       </div>
     </form>
+    <div class="social_row">
+      Social Auth stuff goes here?
+    </div>
+    <div class="cancel_registration">
+      <a routerLink="/auth/login">Cancel</a>
+    </div>
   </mat-card-content>
 </mat-card>

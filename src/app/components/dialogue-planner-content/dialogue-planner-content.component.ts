@@ -80,7 +80,7 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         this.form = this.fb.group({
             start_time: [item.start_time || ''],
             meal_type: [activity?.meal_type || 'breakfast', Validators.required],
-            notes: [item.notes || '']
+            note: [item.note || '']
         });
         break;
       case FormType.TRAVEL_EVENT:
@@ -93,7 +93,7 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
           custom_to_location: [activity?.custom_to_location || ''],
           travel_type: [activity?.travel_type || '', Validators.required],
           start_time: [item.start_time || null],
-          notes: [item.notes || '']
+          note: [item.note || '']
         }, {
           validators: [
             this.locationOrCustomValidator('from_location', 'custom_from_location'),
@@ -145,9 +145,9 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         });
 
         break;
-      case FormType.NOTES:
+      case FormType.NOTE:
         this.form = this.fb.group({
-          notes: [item.notes || '', Validators.required],
+          note: [item.note || '', Validators.required],
           start_time: [item.start_time || ''],
           end_time: [item.end_time || '']
         });
@@ -156,13 +156,13 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         activity = item.activity as Break
         this.form = this.fb.group({
           location: [activity?.location || '', Validators.required],
-          notes: [item.notes || '']
+          note: [item.note || '']
         });
         break;
       case FormType.EXPERIENCE:
         this.form = this.fb.group({
           start_time: [item?.start_time || ''],
-          notes: [item?.notes || '']
+          note: [item?.note || '']
         });
         break;
 
@@ -192,7 +192,7 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
           custom_to_location: this.form.get('custom_to_location')?.value,
           travel_type: this.form.get('travel_type')?.value,
         };
-      case FormType.NOTES:
+      case FormType.NOTE:
         return {};
       case FormType.BREAK:
         return {
@@ -206,16 +206,16 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
   onAdd() {
     if (this.form.valid) {
       const newActivity = this.createNewActivity();
-      const notes = this.form.get('notes')?.value
+      const note = this.form.get('note')?.value
 
       if (this.currentTrip) {
         let itineraryItem: Partial<ItineraryItem> = {
           activity_order: 50,
           trip: this.currentTrip.id,
-          notes: notes,
+          note: note,
         };
 
-        if (this.currentFormType == FormType.NOTES) {
+        if (this.currentFormType == FormType.NOTE) {
           itineraryItem.content_type = 'note'
         }
 
@@ -268,14 +268,14 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
 
     switch (this.currentFormType) {
       case FormType.EXPERIENCE:
-        updatedItem.notes = this.form.get('notes')?.value || null;
+        updatedItem.note = this.form.get('note')?.value || null;
         updatedItem.start_time = this.form.get('start_time')?.value || null;
         break;
 
       case FormType.MEAL:
         const mealActivity = item.activity as Meal;
         updatedItem.start_time = this.form.get('start_time')?.value || null;
-        updatedItem.notes = this.form.get('notes')?.value || null;
+        updatedItem.note = this.form.get('note')?.value || null;
         updatedItem.activity = {
             ...mealActivity,
             meal_type: this.form.get('meal_type')?.value || 'breakfast' // assuming default as 'breakfast' is desired
@@ -285,7 +285,7 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
       case FormType.TRAVEL_EVENT:
         const travelEventActivity = item.activity as TravelEvent;
 
-        updatedItem.notes = this.form.get('notes')?.value || null;
+        updatedItem.note = this.form.get('note')?.value || null;
         updatedItem.start_time = this.form.get('start_time')?.value || null;
         updatedItem.activity = {
             ...travelEventActivity,
@@ -300,15 +300,15 @@ export class DialoguePlannerContentComponent implements AfterViewInit, OnInit, O
         console.log(updatedItem)
         break;
 
-      case FormType.NOTES:
-        updatedItem.notes = this.form.get('notes')?.value || null;
+      case FormType.NOTE:
+        updatedItem.note = this.form.get('note')?.value || null;
         updatedItem.start_time = this.form.get('start_time')?.value || null;
         updatedItem.end_time = this.form.get('end_time')?.value || null;
         break;
 
       case FormType.BREAK:
         const breakActivity = item.activity as Break;
-        updatedItem.notes = this.form.get('notes')?.value || null;
+        updatedItem.note = this.form.get('note')?.value || null;
         updatedItem.activity = {
             ...breakActivity,
             location: this.form.get('location')?.value || null

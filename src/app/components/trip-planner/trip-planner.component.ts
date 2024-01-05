@@ -10,7 +10,8 @@ import * as tripActions from '../../store/trip/trip.actions';
 import { Destination, Trip } from "../../store";
 import { AppState } from "../../store/app.state";
 import {Router} from "@angular/router";
-import {filter, take} from "rxjs/operators";
+import {filter, first, map, take} from "rxjs/operators";
+import {selectUserId} from "../../store/auth/auth.selectors";
 
 
 @Component({
@@ -28,7 +29,7 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
   isLoading$: Observable<boolean> = this.store.select(tripSelector.selectLoading);
   editTrip: FormGroup;
   private destroy$ = new Subject<void>();
-
+  userId: string;
 
   constructor(
     private store: Store<AppState>,
@@ -46,16 +47,11 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
     });
   }
 
-  stringToDate(dateString: string): Date {
-    const [year, month, day] = dateString.split('-').map(Number);
-    return new Date(year, month - 1, day);
-  }
-
   ngOnInit(): void {
     this.destinations$ = this.store.select(selectAllDestinations);
     this.store.dispatch(loadDestinations());
     this.editTrip.disable();  // Disable the form while loading
-
+    this.store.select(selectUserId).pipe(first()).subscribe(id => this.userId = id);
     this.store.select(tripSelector.selectCurrentTrip).subscribe(trip => {
       this._currentTrip.next(trip);
       if (trip) {
@@ -83,6 +79,11 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
         this.store.dispatch(tripActions.updateTripTitle({newTitle: tripTitle}));
       }
     });
+  }
+
+  stringToDate(dateString: string): Date {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
   }
 
   createTrip(tripData: Partial<Trip>): void {
@@ -128,12 +129,35 @@ export class TripPlannerComponent implements OnInit, OnDestroy {
     return this.editTrip.value.title
   }
 
+  // private prepareCreateFormData(): Partial<Trip> {
+  //   const formData = this.editTrip.value;
+  //   let userId: string;
+  //   this.userId$.subscribe(id => userId = id); // Subscribe to get the user ID
+  //
+  //   console.log("destination:", formData.destination)
+  //   return {
+  //     title: formData.title,
+  //     created_by: userId,
+  //     destination_id: formData.destination,
+  //     start_date: formData.dateRange.start,
+  //     end_date: formData.dateRange.end
+  //   };
+  // }
+
   private prepareCreateFormData(): Partial<Trip> {
     const formData = this.editTrip.value;
+
+    // Make sure userId is available
+    if (!this.userId) {
+      // Handle the case where userId is not available
+      console.error('User ID is not available');
+      return {};
+    }
+
     console.log("destination:", formData.destination)
     return {
       title: formData.title,
-      created_by: '928a9da6-fd89-4b1b-9f78-4d6fcfee3038',
+      created_by: this.userId, // Use the userId from the component property
       destination_id: formData.destination,
       start_date: formData.dateRange.start,
       end_date: formData.dateRange.end

@@ -27,11 +27,11 @@
       </mat-button-toggle>
     </mat-button-toggle-group>
   </mat-grid-tile>
-  <mat-grid-tile colspan="6" *ngIf="locId" id="notes_travel_save" @fadeIn>
-    <button mat-stroked-button aria-label="Add Notes" (click)="onAddNotes()" class="icon-label-button">
+  <mat-grid-tile colspan="6" *ngIf="locId" id="note_travel_save" @fadeIn>
+    <button mat-stroked-button aria-label="Add Note" (click)="onAddNote()" class="icon-label-button">
       <div class="button-content">
         <mat-icon>note_add</mat-icon>
-        <div class="button-label">Notes</div>
+        <div class="button-label">Note</div>
       </div>
     </button>
     <button mat-stroked-button aria-label="Add Break" (click)="onAddBreak()" class="icon-label-button">

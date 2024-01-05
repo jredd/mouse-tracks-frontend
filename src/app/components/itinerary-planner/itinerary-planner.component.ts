@@ -128,8 +128,8 @@ export class ItineraryPlannerComponent implements OnInit {
     this.store.dispatch(fromExperienceStore.setCurrentExperienceType({ experienceType: event.value.toLowerCase() }));
   }
 
-  onAddNotes() {
-    this.openDialog(FormType.NOTES, "Add Note",);
+  onAddNote() {
+    this.openDialog(FormType.NOTE, "Add Note",);
   }
 
   onTravelEvents() {

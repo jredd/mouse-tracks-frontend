@@ -18,10 +18,10 @@
           <mat-label>Reservation Time</mat-label>
           <input matInput type="time" placeholder="Meal Time" formControlName="start_time">
         </mat-form-field>
-        <!-- Notes -->
-          <div id="meal_notes">
+        <!-- Note -->
+          <div id="meal_note">
             <mat-form-field class="full_width">
-          <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+          <textarea matInput placeholder="Note" formControlName="note"></textarea>
         </mat-form-field>
           </div>
       </ng-container>
@@ -88,17 +88,17 @@
             </mat-form-field>
           </div>
           <!--Row 4-->
-          <div id="travel_event_notes">
-            <mat-form-field class="full_width notes">
-              <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+          <div id="travel_event_note">
+            <mat-form-field class="full_width note">
+              <textarea matInput placeholder="Note" formControlName="note"></textarea>
             </mat-form-field>
           </div>
         </ng-container>
       </div>
-      <div id="notes_container" *ngIf="currentFormType === FormType.NOTES">
+      <div id="note_container" *ngIf="currentFormType === FormType.NOTE">
         <ng-container>
-          <mat-form-field class="full_width notes">
-            <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+          <mat-form-field class="full_width note">
+            <textarea matInput placeholder="Note" formControlName="note"></textarea>
           </mat-form-field>
         </ng-container>
       </div>
@@ -110,10 +110,10 @@
               <mat-option *ngFor="let loc of locations$ | async" [value]="loc.id">{{ loc.name }}</mat-option>
             </mat-select>
           </mat-form-field>
-          <!-- Notes -->
-          <div id="break_notes">
-            <mat-form-field class="full_width notes">
-              <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+          <!-- Note -->
+          <div id="break_note">
+            <mat-form-field class="full_width note">
+              <textarea matInput placeholder="Note" formControlName="note"></textarea>
             </mat-form-field>
           </div>
         </ng-container>
@@ -125,10 +125,10 @@
             <mat-label>Experience Start Time</mat-label>
             <input matInput type="time" placeholder="Start Time" formControlName="start_time">
           </mat-form-field>
-          <!-- Notes -->
-          <div id="experience_notes">
-            <mat-form-field class="full_width notes">
-              <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+          <!-- Note -->
+          <div id="experience_note">
+            <mat-form-field class="full_width note">
+              <textarea matInput placeholder="Note" formControlName="note"></textarea>
             </mat-form-field>
           </div>
         </ng-container>

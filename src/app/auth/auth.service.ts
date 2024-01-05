@@ -18,6 +18,7 @@ export class AuthService implements OnDestroy {
 
   private readonly LOGIN_URL = `${environment.apiBaseUrl}/auth/login/`;
   private readonly REFRESH_URL = `${environment.apiBaseUrl}/auth/login/refresh/`;
+  private readonly REGISTRATION_URL = `${environment.apiBaseUrl}/auth/register/`;
   private readonly USER_STORE = 'user';
   private readonly TOKEN_STORE = 'auth';
   private refreshSubscription: Subscription;
@@ -32,6 +33,34 @@ export class AuthService implements OnDestroy {
 
   login(credentials: { email: string; password: string }): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(this.LOGIN_URL, credentials).pipe(
+      tap(response => this.storeUserAndTokens(response.user_id, response.access, response.refresh)),
+      tap(response => this.scheduleTokenRefresh({userId: response.user_id, accessToken: response.access, refreshToken: response.refresh})),
+      tap(response => {
+        this.store.dispatch(AuthActions.loginSuccess({
+          user_id: response.user_id,
+          accessToken: response.access,
+          refreshToken: response.refresh
+        }));
+      }),
+      map(response => ({
+        user_id: response.user_id,
+        access: response.access,  // Ensure this matches the interface
+        refresh: response.refresh  // Ensure this matches the interface
+      })),
+      catchError(error => {
+        console.error(error);
+        // Return a default error response that matches LoginResponse interface
+        return of({
+          user_id: '',
+          access: '',
+          refresh: ''
+        });
+      })
+    );
+  }
+
+  register(credentials: { email: string; password1: string, password2: string }): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(this.REGISTRATION_URL, credentials).pipe(
       tap(response => this.storeUserAndTokens(response.user_id, response.access, response.refresh)),
       tap(response => this.scheduleTokenRefresh({userId: response.user_id, accessToken: response.access, refreshToken: response.refresh})),
       tap(response => {
@@ -255,8 +284,6 @@ export class AuthService implements OnDestroy {
       this.store.dispatch(AuthActions.logout());
     });
   }
-
-
 
   private storeUser(email: string): Observable<User> {
     // Here you would retrieve user data from the server or another source

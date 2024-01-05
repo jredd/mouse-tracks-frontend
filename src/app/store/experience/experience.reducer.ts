@@ -21,6 +21,7 @@ export interface ExperienceState {
     restaurants: Experience[];
     entertainment: Experience[];
     events: Experience[];
+    note: Experience[];
   };
   experiences: Experience[];
   loading: boolean;
@@ -34,6 +35,7 @@ export const initialState: ExperienceState = {
     attractions: [],
     entertainment: [],
     events: [],
+    note: [],
   },
   experiences: [],
   loading: false,
@@ -59,7 +61,8 @@ export const experienceReducer = createReducer(
         exp.experience_type === 'event' ||
         exp.experience_type === 'dining-event' ||
         exp.experience_type === 'dinner-show'
-      )
+      ),
+      note: [],
     };
     return {
       ...state,

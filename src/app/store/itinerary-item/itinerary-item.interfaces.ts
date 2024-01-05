@@ -33,7 +33,7 @@ export type ContentType = 'meal' | 'note' | 'travelevent' | 'break' | 'experienc
 export interface NewItineraryItem {
   tempId: string; // Optional tempId for new items
   trip: string;
-  notes?: string;
+  note?: string;
   activity_order: number;
   start_time?: Date;
   end_time?: Date; // we probably don't need the endtime column

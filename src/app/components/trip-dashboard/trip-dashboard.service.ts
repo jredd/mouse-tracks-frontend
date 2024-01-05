@@ -185,7 +185,7 @@ export class TripService {
     }
     const apiItem: APIItineraryItem = {
       trip: item.trip,
-      notes: item.notes,
+      note: item.note,
       activity_order: item.activity_order,
       start_time: item.start_time,
       end_time: item.end_time,

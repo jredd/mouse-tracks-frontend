@@ -2,7 +2,7 @@ import { DBConfig } from 'ngx-indexed-db';
 
 export const dbConfig: DBConfig = {
   name: 'MouseTracksDB',
-  version: 5,
+  version: 9,
   objectStoresMeta: [
     {
       store: 'destination',
@@ -27,7 +27,6 @@ export const dbConfig: DBConfig = {
       storeSchema: [
         { name: 'name', keypath: 'name', options: { unique: true } },
         { name: 'park_id', keypath: 'park_id', options: { unique: false } },
-        // Additional fields as needed
       ]
     },
     {
@@ -37,7 +36,6 @@ export const dbConfig: DBConfig = {
         { name: 'name', keypath: 'name', options: { unique: true } },
         { name: 'experience_type', keypath: 'experience_type', options: { unique: false } },
         { name: 'land_id', keypath: 'land_id', options: { unique: false } },
-        // Additional fields as needed
       ]
     },
     {
@@ -79,11 +77,20 @@ export const dbConfig: DBConfig = {
       ]
     },
     {
+      store: 'note',
+      storeConfig: { keyPath: 'id', autoIncrement: true },
+      storeSchema: [
+        { name: 'location_id', keypath: 'location_id', options: { unique: false } },
+        { name: 'land_id', keypath: 'land_id', options: { unique: false } },
+        { name: 'note', keypath: 'note', options: { unique: false } }
+      ]
+    },
+    {
       store: 'itinerary_item',
       storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
         { name: 'trip', keypath: 'trip', options: { unique: false } },
-        { name: 'notes', keypath: 'notes', options: { unique: false } },
+        { name: 'note', keypath: 'note', options: { unique: false } },
         { name: 'activity_order', keypath: 'activity_order', options: { unique: false } },
         { name: 'start_time', keypath: 'start_time', options: { unique: false } },
         { name: 'end_time', keypath: 'end_time', options: { unique: false } },

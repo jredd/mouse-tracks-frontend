@@ -23,7 +23,7 @@
               >
                 <div class="content_container">
                   <span class="display_name">{{ getDisplayName(item) }}</span>
-                  <span class="display_notes" *ngIf="item.content_type == 'note'">: {{ truncateNotes(item.notes) }}</span>
+                  <span class="display_note" *ngIf="item.content_type == 'note'">: {{ truncateNote(item.note) }}</span>
                 </div>
                 <div class="icons_container" [ngClass]="{'show': isIconsVisible[getItemKey(item)]}">
                   <mat-icon (click)="onEdit(item)">edit</mat-icon>

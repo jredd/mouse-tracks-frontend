@@ -83,13 +83,13 @@
         ul {
           margin-bottom: 0;
           .experience_item {
-            .experience_notes {
+            .experience_note {
               display: block;
               font-style: italic;
             }
           }
           .meal_item {
-            .meal_notes {
+            .meal_note {
               display: block;
               font-style: italic;
             }
@@ -150,7 +150,7 @@
   }
 }
 
-.travel_event_travel_notes {
+.travel_event_travel_note {
   font-style: italic;
 }
 

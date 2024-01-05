@@ -82,7 +82,7 @@
   <li class="no_break item">
     <span>{{item.activity.name}}</span>
     <span *ngIf="item.start_time">: {{ item.start_time | militaryTo12Hr }}</span><br>
-    <span>{{ item.notes}}</span>
+    <span>{{ item.note}}</span>
   </li>
 </ng-template>
 
@@ -98,7 +98,7 @@
   <li class="no_break item">
     <div class="item_meal_group">
       <span>{{ buildMealTitle(item)}}</span><br>
-      <span>{{ item.notes }}</span>
+      <span>{{ item.note }}</span>
     </div>
   </li>
 </ng-template>
@@ -107,7 +107,7 @@
     <div class="item_travel_event_group">
       <span class="travel_event_label">{{ getTravelType(item) }}: </span>
       <span class="travel_event_travel_to_from">{{ getTravelToFrom(item) }}</span><br>
-      <span class="travel_event_travel_notes">{{ getNoteInformation(item) }}</span>
+      <span class="travel_event_travel_note">{{ getNoteInformation(item) }}</span>
     </div>
   </li>
 </ng-template>
